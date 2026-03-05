@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const middlewares = require('./configuration_pipelines/middlewares');
 
 const PORT = process.env.URL_SERVER_EXPRESS;
 const server = express();
 
-middlewares(server)
+middlewares(server);
 
 server.listen(PORT, (error) => {
     if (!error) {
