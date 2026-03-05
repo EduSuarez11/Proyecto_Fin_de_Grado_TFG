@@ -1,6 +1,6 @@
 import { useState } from "react"
 import './Registro.css';
-import InputHTMLComponent from "../../global_components/InputComponent/InputHTML";
+import InputHTMLComponent from '../../global_components/InputComponent/InputHTML'
 
 function Registro() {
 
@@ -12,9 +12,19 @@ function Registro() {
         })
     }
 
-
-    function handleSubmit(ev) {
+    async function handleSubmit(ev) {
         ev.preventDefault();
+        console.log('Datos form: ', formRegistro)
+
+        const response = await fetch('api/Cliente/Registro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formRegistro)
+        });
+
+        const data = await response.json();
     }
 
     return (
@@ -23,23 +33,24 @@ function Registro() {
                 <h2 className="text-center register-title">Creando tu Cuenta</h2>
                 <form method="POST" onSubmit={handleSubmit}>
                     {
-                        ['nombre', 'email', 'password', 'confirmPassword'].map((value, pos) => {
+                        ['nombre', 'email', 'password', 'confirmPassword'].map((value, pos) => (
                             <InputHTMLComponent
-                                key={pos}
-                                id={value}
-                                labelInput={value === 'confirmPassword' ? 'Confirmar Contraseña' : value.charAt(0).toUpperCase() + value.slice(1)}
-                                nameInput={value}
-                                tipo={value === 'email' ? 'email' : (value === 'password' ? 'password' : 'text')}
-                                placeholder={value === 'confirmPassword' ? 'Repite tu contraseña' : `Escribe tu ${value}`}
-                                change={onChangeInput}
-                            />
-                        })
+                                 key={pos}
+                                 id={value}
+                                 labelInput={value === 'confirmPassword' ? 'Confirmar Contraseña' : value.charAt(0).toUpperCase() + value.slice(1)}
+                                 nameInput={value}
+                                 tipo={value === 'email' ? 'email' : (value === 'password' ? 'password' : 'text')}
+                                 placeholder={value === 'confirmPassword' ? 'Repite tu contraseña' : `Escribe tu ${value}`}
+                                 change={onChangeInput}
+                             />
+
+                        ))
                     }
 
-                    <div class="mb-3">
-                        <label class="form-label">Género</label>
-                        <select class="form-select">
-                            <option selected disabled>Selecciona tu género</option>
+                    <div className="mb-3">
+                        <label className="form-label">Género</label>
+                        <select defaultValue='' name="genero" className="form-select" onChange={onChangeInput}>
+                            <option value='' selected>Selecciona tu género</option>
                             <option>Masculino</option>
                             <option>Femenino</option>
                             <option>Otro género</option>
@@ -53,3 +64,5 @@ function Registro() {
         </div>
     )
 }
+
+export default Registro

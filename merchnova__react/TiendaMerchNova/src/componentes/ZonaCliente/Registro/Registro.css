@@ -54,4 +54,5 @@ body {
 
 .btn-custom:hover {
     background-color: #34183f;
+    color: white;
 }

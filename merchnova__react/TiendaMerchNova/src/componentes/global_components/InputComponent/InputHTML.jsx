@@ -1,6 +1,7 @@
 import './InputHTML.css';
 
 function InputHTMLComponent(props) {
+
     return (
         <div className="mb-3">
             <label className="form-label">{props.labelInput}</label>
