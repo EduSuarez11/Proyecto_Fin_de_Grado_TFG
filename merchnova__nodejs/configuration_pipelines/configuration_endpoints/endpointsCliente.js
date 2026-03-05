@@ -6,7 +6,7 @@ const clientRouter = express.Router();
 
 clientRouter.post('/Registro', async (req, resp, next) => {
     try {
-        mongoose.connect(process.env.URL_MONGODB);
+        await mongoose.connect(process.env.URL_MONGODB);
         const existClient = await mongoose.connection.collection('clientes').findOne({ email: req.body.email });
 
         if (existClient) throw new Error('Ese cliente ya existe en la base de datos');
@@ -29,6 +29,9 @@ clientRouter.post('/Registro', async (req, resp, next) => {
         )
 
         if (!insertData.insertedId) throw new Error('No se pudo realizar la inserción');    
+
+        // 2º mandar email
+        
 
     } catch (error) {
         resp.status(200).send({code : 1, message: `Error: ${error}`});
