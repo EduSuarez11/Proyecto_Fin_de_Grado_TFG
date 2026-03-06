@@ -13,8 +13,9 @@ const messageEmail = (data, url) => {
 
 module.exports = {
     sendEmail: async (clientData, token) => {
-        const EnlaceActivacion = `http://localhost:3000/api/Cliente/ActivacionCuenta?token=${token}&email=${clientData.cuenta.email}`;
-        const BASE64_APIKEYS_COD = Buffer.from(`${process.env.MAILJET_PUBLIC_APIKEY}:${process.env.MAILJET_SECRET_APIKEY}`).toString('base64');
+        try {
+            const EnlaceActivacion = `http://localhost:3000/api/Cliente/ActivacionCuenta?token=${token}&email=${clientData.email}`;
+        const BASE64_APIKEYS_COD = Buffer.from(`${process.env.MAILJET_PUBLIC_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64');
 
         const MailjetBody = JSON.stringify({
             "Messages": [
@@ -25,7 +26,7 @@ module.exports = {
                     },
                     "To": [
                         {
-                            "Email": clientData.cuenta.email,
+                            "Email": clientData.email,
                             "Name": clientData.nombre
                         }
                     ],
@@ -54,8 +55,12 @@ module.exports = {
 
         const bodyResponseMailjet = await peticionSendMailjet.json();
 
+        console.log('Respuesta de Mailjet:', bodyResponseMailjet);
         if (bodyResponseMailjet.Messages[0].Status !== 'success') throw new Error('No se pudo enviar el email de activación');
-
         return bodyResponseMailjet;
+        } catch (error) {
+            
+        }
+        
     }
 }

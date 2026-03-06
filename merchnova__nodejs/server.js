@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const middlewares = require('./configuration_pipelines/middlewares');
 
-const PORT = process.env.URL_SERVER_EXPRESS;
+const Puerto = process.env.PORT;
 const server = express();
 
 middlewares(server);
 
-server.listen(PORT, (error) => {
+server.listen(Puerto, (error) => {
     if (!error) {
         console.log('Servidor Web iniciado en el puerto 3000');
     } else {

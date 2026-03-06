@@ -6,6 +6,8 @@ const clientRouter = require('./configuration_endpoints/endpointsCliente');
 
 module.exports = (confServerExpress) => {
     // Configuracion de peticiones json
+
+    console.log('Configurando PIPELINE de Express...');
     confServerExpress.use(express.json());
 
     // Configuracion de peticiones URL

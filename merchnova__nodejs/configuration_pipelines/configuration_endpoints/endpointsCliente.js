@@ -9,7 +9,7 @@ const clientRouter = express.Router();
 clientRouter.post('/Registro', async (req, resp, next) => {
     try {
         await mongoose.connect(process.env.URL_MONGODB);
-        const existClient = await mongoose.connection.collection('clientes').findOne({ email: req.body.email });
+        const existClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': req.body.email });
 
         if (existClient) throw new Error('Ese cliente ya existe en la base de datos');
 
@@ -35,7 +35,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
 
         // 2º mandar email
         const token = jwtService.generateToken({ idCliente: insertData.insertedId, email: req.body.email }, { expiresIn: '10min' });
-        mailjetService.sendEmail({ insertData }, token);
+        mailjetService.sendEmail({ nombre: req.body.nombre, email: req.body.email }, token);
 
         console.log('Cliente registrado correctamente');
         resp.status(200).send({ code: 0, message: 'Cliente registrado correctamente' });
@@ -72,7 +72,7 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
 
 clientRouter.post('/Login', (req, resp, next) => {
     try {
-        
+
     } catch (error) {
         console.log('Error en el Login: ', error);
         resp.status(200).send({ code: 2, message: `Error en el Login: ${error}` });
