@@ -1,0 +1,27 @@
+.logo-navbar {
+    height: 50px;
+    width: auto;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.cart-icon:hover {
+    color: #ddd;
+}
+
+.cart-icon {
+    font-size: 1.4rem;
+    color: white;
+    text-decoration: none;
+}
+
+.search-bar {
+    width: 40%;
+}
+
+.navbar-merchnova {
+    background: linear-gradient(90deg, #6a0dad, #8a2be2);
+}

@@ -1,0 +1,41 @@
+.logo {
+    font-weight: bold;
+    font-size: 28px;
+    color: #7b2ff7;
+}
+
+.hero {
+    height: 500px;
+    background: linear-gradient(135deg, #7b2ff7, #b84cff);
+}
+
+.category-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: scale(1.05);
+}
+
+.product-card {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.btn-purple {
+    background: #7b2ff7;
+    color: white;
+}
+
+.btn-purple:hover {
+    background: #5a1edb;
+    color: white;
+}
+
+.promo {
+    background: #7b2ff7;
+}
