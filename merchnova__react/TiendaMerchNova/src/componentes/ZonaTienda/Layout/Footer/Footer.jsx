@@ -47,11 +47,11 @@ function Footer() {
 
                 </div>
 
-                <hr className="footer-divider"/>
+                <hr className="footer-divider" />
 
-                    <div className="text-center footer-bottom">
-                        © 2025 MerchNova. Todos los derechos reservados.
-                    </div>
+                <div className="text-center footer-bottom">
+                    © 2026 MerchNova. Todos los derechos reservados.
+                </div>
             </div>
         </footer>
     );
