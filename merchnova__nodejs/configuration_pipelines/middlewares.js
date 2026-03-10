@@ -3,6 +3,9 @@
 const cors = require('cors');
 const express = require('express');
 const clientRouter = require('./configuration_endpoints/endpointsCliente');
+const shopRouter = require('./configuration_endpoints/endPointsTienda');
+const path = require("path");
+const pathImages = path.join(__dirname, "../images");
 
 module.exports = (confServerExpress) => {
     // Configuracion de peticiones json
@@ -20,6 +23,8 @@ module.exports = (confServerExpress) => {
     // }));
     confServerExpress.use(cors());
 
+    confServerExpress.use("/images", express.static(pathImages));
+    
     confServerExpress.use('/api/Cliente', clientRouter);
-    confServerExpress.use('/api/Tienda', clientRouter)
+    confServerExpress.use('/api/Tienda', shopRouter);
 }
