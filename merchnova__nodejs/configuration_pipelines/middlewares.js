@@ -10,7 +10,7 @@ const pathImages = path.join(__dirname, "../images");
 module.exports = (confServerExpress) => {
     // Configuracion de peticiones json
 
-    console.log('Configurando PIPELINE de Express...');
+    //console.log('Configurando PIPELINE de Express...');
     confServerExpress.use(express.json());
 
     // Configuracion de peticiones URL
