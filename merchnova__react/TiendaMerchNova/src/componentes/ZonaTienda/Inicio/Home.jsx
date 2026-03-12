@@ -5,8 +5,7 @@ import './Home.css';
 function Home() {
 
     const products = useLoaderData();
-    //console.log('Productos en Home: ', JSON.stringify(products));
-
+    //console.log('Productos en Home: ', JSON.stringify(products.data[0].imagen));
     return (
         <>
             <div className="hero text-center text-white d-flex align-items-center">
@@ -59,7 +58,7 @@ function Home() {
             <div className="py-5">
                 <div className="container">
                     <h2 className="text-center mb-5">Productos destacados</h2>
-                    {/* <div className="row g-4">
+                    <div className="row g-4">
                         {products.data.map((product, index) =>
                             <div className="col-md-3" key={index}>
                                 <div className="card product-card">
@@ -75,9 +74,9 @@ function Home() {
                                 </div>
                             </div>
                         )}
-                    </div> */}
+                    </div>
 
-                    <div className="row g-4">
+                    {/* <div className="row g-4">
                         <div className="col-md-3">
                             <div className="card product-card">
                                 <img src='miimagen.png' className="card-img-top"/>
@@ -91,7 +90,7 @@ function Home() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 

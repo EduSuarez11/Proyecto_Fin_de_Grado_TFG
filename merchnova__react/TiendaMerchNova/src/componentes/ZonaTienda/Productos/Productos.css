@@ -47,10 +47,11 @@
 }
 
 
-.product-title {
+.title-product {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 17px;
   margin-bottom: 5px;
+  color: #6a0dad;
 }
 
 

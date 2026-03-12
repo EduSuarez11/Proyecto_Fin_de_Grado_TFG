@@ -1,7 +1,12 @@
+import { Link, useLoaderData } from 'react-router-dom';
 import './Productos.css';
+
 
 function Productos() {
 
+    const products = useLoaderData();
+
+    console.log('Productos desde el loader: ', products.data[1].imagen);
     return (
         <div className="container mt-5">
             <div className="row">
@@ -88,35 +93,28 @@ function Productos() {
 
                 <div className="col-lg-9">
                     <div className="row">
-                        <div className="col-md-3 mb-4">
-                            <div className="card product-card">
-                                <img src="https://via.placeholder.com/250" className="card-img-top" />
-                                <div className="card-body">
-                                    <h6 className="product-title">Camiseta Naruto</h6>
-                                    <div className="rating">
-                                        ⭐⭐⭐⭐☆
+
+                        {products.data.map((product, index) =>
+                        <Link to={`/Producto/camiseta/${product.path}`} className="col-md-3 mb-4" key={index}>    
+                                <div className="card product-card">
+                                    <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
+                                    <div className="card-body">
+                                        <h6 className="title-product">{product.nombre}</h6>
+                                        <div className="rating">
+                                            ⭐⭐⭐⭐☆
+                                        </div>
+                                        
+                                        <p className="price">{product.precio}</p>
+                                        <button className="btn btn-purple w-100">
+                                            Añadir al carrito
+                                        </button>
                                     </div>
-                                    <p className="price">19.99€</p>
-                                    <button className="btn btn-purple w-100">
-                                        Añadir al carrito
-                                    </button>
                                 </div>
-                            </div>
-                        </div>
+                        </Link>
+                        )
+                        }
 
-                        <div className="col-md-3 mb-4">
-                            <div className="card product-card">
-                                <img src="https://via.placeholder.com/250" className="card-img-top" />
-                                <div className="card-body">
-                                    <h6 className="product-title">Taza Anime</h6>
-                                    <div className="rating">⭐⭐⭐⭐⭐</div>
-                                    <p className="price">12.99€</p>
-                                    <button className="btn btn-purple w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col-md-3 mb-4">
+                        {/* <div className="col-md-3 mb-4">
                             <div className="card product-card">
                                 <img src="https://via.placeholder.com/250" className="card-img-top" />
                                 <div className="card-body">
@@ -126,19 +124,8 @@ function Productos() {
                                     <button className="btn btn-purple w-100">Añadir al carrito</button>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
 
-                        <div className="col-md-3 mb-4">
-                            <div className="card product-card">
-                                <img src="https://via.placeholder.com/250" className="card-img-top" />
-                                <div className="card-body">
-                                    <h6 className="product-title">Llavero Star</h6>
-                                    <div className="rating">⭐⭐⭐⭐☆</div>
-                                    <p className="price">5.99€</p>
-                                    <button className="btn btn-purple w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

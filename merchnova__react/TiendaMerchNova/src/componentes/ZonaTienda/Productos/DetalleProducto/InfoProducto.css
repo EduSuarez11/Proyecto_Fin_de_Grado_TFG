@@ -1,0 +1,153 @@
+.product-page {
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 20px;
+}
+
+.breadcrumb {
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #6a0dad;
+    font-weight: 500;
+}
+
+.breadcrumb span {
+    color: #555;
+}
+
+.product-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.product-image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-title {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #6a0dad;
+}
+
+.product-description {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.product-price {
+    font-size: 30px;
+    font-weight: bold;
+    color: #7b2ff7;
+    margin-bottom: 25px;
+}
+
+.product-sizes p {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.sizes {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.size-btn {
+    padding: 10px 15px;
+    color: black;
+    border: 2px solid #c778fb;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.size-btn:hover {
+    background: #c778fb;
+    color: white;
+}
+
+.product-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-cart {
+    padding: 14px 26px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-buy {
+    padding: 14px 26px;
+    border: none;
+    border-radius: 6px;
+    background: #6a0dad;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cart:hover,
+.btn-buy:hover {
+    opacity: 0.9;
+}
+
+.related-products {
+    margin-top: 90px;
+}
+
+.related-products h2 {
+    color: #6a0dad;
+    margin-bottom: 30px;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.related-card {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.related-card img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.related-card h3 {
+    font-size: 16px;
+    color: #333;
+}
+
+.related-card p {
+    color: #7b2ff7;
+    font-weight: bold;
+}
+
+.related-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
