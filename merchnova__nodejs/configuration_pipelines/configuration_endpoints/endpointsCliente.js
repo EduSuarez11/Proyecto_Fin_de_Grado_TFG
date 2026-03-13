@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const mailjetService = require('../servicios/mailjetService');
 const jwtService = require('../servicios/jwtService');
 
+
 const clientRouter = express.Router();
 
 clientRouter.post('/Registro', async (req, resp, next) => {
@@ -11,7 +12,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
         await mongoose.connect(process.env.URL_MONGODB);
         const existClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': req.body.email });
 
-        if (existClient) throw new Error('Ese cliente ya existe en la base de datos');
+        if (existClient) throw new Error('Ese correo ya existe, prueba con otro correo');
 
         const insertData = await mongoose.connection.collection('clientes').insertOne(
             {
@@ -37,8 +38,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
         const token = jwtService.generateToken({ idCliente: insertData.insertedId, email: req.body.email }, { expiresIn: '10min' });
         mailjetService.sendEmail({ nombre: req.body.nombre, email: req.body.email }, token);
 
-        console.log('Cliente registrado correctamente');
-        resp.status(200).send({ code: 0, message: 'Cliente registrado correctamente' });
+        resp.status(200).send({ code: 0, message: 'Has recibido un correo para activar tu cuenta, revisa tu correo' });
     } catch (error) {
         console.log('Error en el Registro: ', error);
         resp.status(200).send({ code: 1, message: `Error en el Registro: ${error}` });
@@ -52,7 +52,7 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
         const { token, email } = req.query;
         const verifyToken = jwtService.verifyToken(token);
 
-        if (verifyToken.email !== email) throw new Error('El email del token no coincide con el email de la consulta');
+        if (verifyToken.email !== email) throw new Error('El email del token no coincide con el email enviado');
 
         await mongoose.connect(process.env.URL_MONGODB);
         const updateData = await mongoose.connection.collection('clientes').updateOne(
@@ -63,19 +63,40 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
         if (!updateData) throw new Error('No se pudo activar la cuenta');
 
         console.log('Cuenta activada correctamente');
-        resp.status(200).send({ code: 0, message: 'Cuenta activada correctamente' });
+        resp.status(200).send({ code: 0, message: 'Cuenta activada correctamente. Registro con éxito' });
     } catch (error) {
         console.log('Error en la activacion de cuenta: ', error);
         resp.status(200).send({ code: 3, message: `Error en la activacion de cuenta: ${error}` });
     }
 })
 
-clientRouter.post('/Login', (req, resp, next) => {
+clientRouter.post('/Login', async (req, resp, next) => {
     try {
+        const { email, password } = req.body;
+
+        await mongoose.connect(process.env.URL_MONGODB);
+        const existClient = await mongoose.connection.collection('clientes').findOne(
+            {
+                'cuenta.email': email
+            }
+        )
+
+        if (!existClient) throw new Error('Login fallido, el email no existe');
+
+        if (!bcrypt.compareSync(password, existClient.cuenta.email)) throw new Error('Login fallido, la contraseña es incorrecta');
+
+        if (!existClient.cuenta.cuentaActiva) throw new Error('Cuenta no activada, revisa tu email para activar tu cuenta');
+
+        const accessToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2h' });
+        const refreshToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2d' });
+
+        const tokenVerify = jwtService.verifyToken(accessToken);
+        if (tokenVerify.email !== email) throw new Error('Error en el token, el email no coincide');
+
+        resp.status(200).send({ code: 0, message: 'Has hecho login con éxito', data: { datosCliente, accessToken, refreshToken } });
 
     } catch (error) {
-        console.log('Error en el Login: ', error);
-        resp.status(200).send({ code: 2, message: `Error en el Login: ${error}` });
+        resp.status(200).send({ code: 2, message: `${error}` });
     }
 })
 
