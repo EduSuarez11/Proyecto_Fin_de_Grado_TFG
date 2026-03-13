@@ -1,58 +1,66 @@
 body {
-    background-color: #ffffff;
+    background-color: #f8f9fa;
 }
 
 .register-wrapper {
-    min-height: 100vh;
+    min-height: calc(100vh - 120px);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .register-card {
-    background-color: #dfa0f9;
-    border: 2px solid #452254;
-    border-radius: 15px;
-    padding: 35px 35px;
-    /* Ajustado para no hacerlo muy alto */
+    background: white;
+    padding: 40px;
     width: 100%;
-    max-width: 450px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-}
-
-.form-select {
-    border: 1px solid #452254;
-}
-
-.form-select:focus {
-    border-color: #452254;
-    box-shadow: 0 0 0 0.2rem rgba(69, 34, 84, 0.25);
+    max-width: 420px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .register-title {
-    color: #452254;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #6a0dad;
     font-weight: bold;
-    margin-bottom: 25px;
+}
+
+.form-control {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #7b2ff7;
+    box-shadow: none;
 }
 
 .form-select {
-    border: 1px solid #452254;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
 }
 
 .form-select:focus {
-    border-color: #452254;
-    box-shadow: 0 0 0 0.2rem rgba(69, 34, 84, 0.25);
+    border-color: #7b2ff7;
+    box-shadow: none;
 }
 
 .btn-custom {
-    background-color: #452254;
-    color: white;
+    width: 100%;
+    padding: 14px;
     border: none;
-    font-weight: 500;
-    margin-top: 10px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
 .btn-custom:hover {
-    background-color: #34183f;
-    color: white;
+    opacity: 0.9;
 }

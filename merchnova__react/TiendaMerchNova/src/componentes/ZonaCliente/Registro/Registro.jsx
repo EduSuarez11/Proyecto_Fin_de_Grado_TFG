@@ -6,15 +6,50 @@ function Registro() {
 
     const [formRegistro, setFormRegistro] = useState({})
 
+    const [validationRegistro, setValidationRegistro] = useState({
+        lengthPassword: false,
+        email: false,
+        number: false,
+        symbol: false
+    });
+
+    const checkEmail = (password) => {
+        const emailValidation = {
+            email: /^\S+@\S+\.\S+$/.test(password),
+        }
+
+        setValidationRegistro((prev) => ({
+            ...prev,
+            ...emailValidation
+        }));
+    }
+
+    const checkPassword = (password) => {
+        const newValidation = {
+            lengthPassword: password.length >= 9,
+            symbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+
+        setValidationRegistro((prev) => ({
+            ...prev,
+            ...newValidation
+        }));
+    }
+
     function onChangeInput(ev) {
-        setFormRegistro((stateAnt) => {
-            return { ...stateAnt, [ev.target.name]: ev.target.value }
+        console.log('Validation: ', !validationRegistro)
+        setFormRegistro({
+            ...formRegistro,
+            [ev.target.name]: ev.target.value
         })
+
+        if (ev.target.name === 'password') checkPassword(ev.target.value);
+        if (ev.target.name === 'email') checkEmail(ev.target.value);
     }
 
     async function handleSubmit(ev) {
         try {
-            ev.preventDefault();
             console.log('Datos form: ', formRegistro)
 
             const response = await fetch('http://localhost:3000/api/Cliente/Registro', {
@@ -33,9 +68,9 @@ function Registro() {
     }
 
     return (
-        <div className="register-wrapper">
+        <div className="register-wrapper mt-4">
             <div className="register-card">
-                <h2 className="text-center register-title">Creando tu Cuenta</h2>
+                <h2 className="text-center register-title mb-4">Registrate</h2>
                 <form method="POST">
                     {
                         ['nombre', 'email', 'password', 'confirmPassword'].map((value, pos) => (
@@ -47,7 +82,9 @@ function Registro() {
                                 tipo={value === 'email' ? 'email' : (value === 'password' ? 'password' : 'text')}
                                 placeholder={value === 'confirmPassword' ? 'Repite tu contraseña' : `Escribe tu ${value}`}
                                 change={onChangeInput}
-                            />
+                                form={formRegistro}
+                                validation={validationRegistro}
+                                setValidation={setValidationRegistro} />
 
                         ))
                     }
@@ -62,7 +99,12 @@ function Registro() {
                         </select>
                     </div>
                     <div className="d-grid">
-                        <button type="submit" className="btn btn-custom" onClick={handleSubmit}>Registrarse</button>
+                        {
+                            validationRegistro.number && validationRegistro.symbol && validationRegistro.lengthPassword && validationRegistro.email ?
+                                <button type="submit" className="btn btn-custom" onClick={handleSubmit}>Registrarse</button>
+                                :
+                                <button type="submit" className="btn btn-custom" disabled onClick={handleSubmit}>Registrarse</button>
+                        }
                     </div>
                 </form>
             </div>

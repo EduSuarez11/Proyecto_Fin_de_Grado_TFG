@@ -11,7 +11,7 @@ const useGlobalState = create(
                     ...oldData,
                     clientData: {
                         ...oldData.clientData,
-                        ...clientData
+                        ...newData
                     }
                 }))
 

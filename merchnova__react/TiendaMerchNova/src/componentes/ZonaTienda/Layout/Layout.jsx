@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header/Header';
 import Footer from './Footer/Footer';
+import MiniFooter from './Footer/MiniFooter/MiniFooter';
 
 function Layout() {
     const route = useLocation();
@@ -11,8 +12,7 @@ function Layout() {
 
             <Outlet />
 
-            {route.pathname === '/' ? <Footer/> : ""}
-            {/* <Footer /> */}
+            {route.pathname === '/' ? <Footer /> : <MiniFooter/>}
         </div>
     )
 }

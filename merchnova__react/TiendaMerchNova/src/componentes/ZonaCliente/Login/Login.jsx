@@ -1,26 +1,101 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import './Login.css'
+import InputHTMLComponent from "../../global_components/InputComponent/InputHTML";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
 
+    const navigate = useNavigate();
     const [formLogin, setFormLogin] = useState({});
+    const [errorLogin, setErrorLogin] = useState('');
+    const [validationLogin, setValidationLogin] = useState({
+        lengthPassword: false,
+        email: false,
+        number: false,
+        symbol: false
+    });
 
-    function onChangeInput(e) {
-        return setFormLogin({
-            ...formLogin,
-            [e.target.name]: e.target.value
-        })
+    const checkPassword = (password) => {
+        const passwordValidation = {
+            lengthPassword: password.length >= 9,
+            symbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+
+        setValidationLogin((prev) => ({
+            ...prev,
+            ...passwordValidation
+        }));
     }
 
 
-    function handleSubmit(e) {
-        e.preventDefault();
+    function onChangeInput(e) {
+        setFormLogin({
+            ...formLogin,
+            [e.target.name]: e.target.value,
+        });
+
+        if (e.target.name === 'password') checkPassword(e.target.value);
+    }
+
+    async function handleSubmit(e) {
+        const requestLogin = await fetch('http://localhost:3000/api/Cliente/Login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formLogin)
+        });
+
+        const response = await requestLogin.json();
+        if (response.code !== 0) {
+            console.log('Error en el Login: ', response.message);
+            setErrorLogin(`${response.message}`);
+            return;
+        }
+
+        navigate('/');
     }
 
 
     return (
-        <>
-        </>
+        <div className="login-page bg-light">
+            <div className="login-container">
+
+                <h2 className="login-title">Iniciar sesión</h2>
+                <div className="d-flex justify-content-center">
+                    {
+                        errorLogin != '' ? <span className="alert alert-danger">{errorLogin}</span> : null
+                    }
+                </div>
+
+                <form className="login-form" method="POST">
+                    {
+                        ['email', 'password'].map((value, index) =>
+                            <InputHTMLComponent
+                                key={index}
+                                labelInput={value === 'email' ? 'Email' : 'Contraseña'}
+                                tipo={value === 'password' ? 'password' : 'email'}
+                                id={value}
+                                nameInput={value}
+                                placeholder={value === 'email' ? 'Introduce tu email' : 'Introduce tu contraseña'}
+                                change={onChangeInput}
+                                form={formLogin}
+                                validation={validationLogin}
+                                setValidation={setValidationLogin} />
+                        )
+                    }
+                    <button className="login-btn" onClick={handleSubmit}>Iniciar sesión</button>
+                </form>
+
+                <p className="register-link">
+                    ¿Todavía no tienes cuenta?
+                    <Link to="/Cliente/Registro" className="ms-1">
+                        Regístrate aquí
+                    </Link>
+                </p>
+
+            </div>
+
+        </div>
     )
 }
 

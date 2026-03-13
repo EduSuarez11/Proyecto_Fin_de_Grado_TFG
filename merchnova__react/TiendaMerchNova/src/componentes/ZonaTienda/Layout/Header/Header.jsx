@@ -9,7 +9,7 @@ function Header() {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark navbar-merchnova px-4">
             <div className="container-fluid">
-                <Link to="/" className="navbar-brand d-flex align-items-center fw-bold logo-mn" onClick={route.pathname !== '/' ? () => setButtonsSession(false) : ""}>
+                <Link to="/" className="navbar-brand d-flex align-items-center fw-bold logo-mn" onClick={route.pathname !== '/' && (() => setButtonsSession(false))}>
                     <img src="/logo_images/logo_tienda.png" className="logo-navbar rounded-circle rounded-5" alt="MerchNova logo" />
                     <span className="ms-2">MerchNova</span>
                 </Link>
@@ -36,21 +36,24 @@ function Header() {
 
 
                             <Link to="/Cliente/Login">
-                                <button className="btn btn-outline-light btn-sm">
+                                <button className="btn btn-outline-light btn-sm" onClick={route.pathname !== '/Cliente/Login' && (() => setButtonsSession(true))}>
                                     Iniciar sesión
                                 </button>
                             </Link>
 
                             <Link to="/Cliente/Registro">
-                                <button className="btn btn-light btn-sm fw-semibold" onClick={route.pathname !== '/Cliente/Registro' ? () => setButtonsSession(true) : ""   }>
+                                <button className="btn btn-light btn-sm fw-semibold" onClick={route.pathname !== '/Cliente/Registro' && (() => setButtonsSession(true))}>
                                     Registrarse
                                 </button>
                             </Link>
                         </div>
                     </div>
-
                     :
-                    ""
+                    <Link to='/'>
+                        <button className="btn btn-light btn-sm fw-semibold" onClick={route.pathname !== '/' && (() => setButtonsSession(false))}>
+                            Volver
+                        </button>
+                    </Link>
 
                 }
             </div>
