@@ -151,3 +151,29 @@
     transform: translateY(-6px);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
 }
+
+.product-quantity {
+    margin-bottom: 30px;
+}
+
+.product-quantity p {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.quantity-input {
+    width: 80px;
+    padding: 10px 15px;
+    font-size: 16px;
+    color: #333;
+    border: 2px solid #c778fb;
+    background: white;
+    border-radius: 6px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.quantity-input:focus {
+    border-color: #6a0dad;
+    box-shadow: 0 0 5px rgba(106, 13, 173, 0.2);
+}

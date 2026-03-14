@@ -2,7 +2,6 @@ import { useLocation } from 'react-router-dom';
 import './InputHTML.css';
 
 function InputHTMLComponent(props) {
-    console.log('Propiedad de email: ', props.validation)
     return (
         <div className="mb-3">
             <label className="form-label">{props.labelInput}</label>

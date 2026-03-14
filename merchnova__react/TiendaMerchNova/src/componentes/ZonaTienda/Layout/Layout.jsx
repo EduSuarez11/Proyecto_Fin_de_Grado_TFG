@@ -12,7 +12,7 @@ function Layout() {
 
             <Outlet />
 
-            {route.pathname === '/' ? <Footer /> : <MiniFooter/>}
+            {route.pathname !== '/Cliente/Login' && route.pathname !== '/Cliente/Registro' ? <Footer /> : <MiniFooter/>}
         </div>
     )
 }

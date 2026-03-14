@@ -6,6 +6,7 @@ import Registro from "./componentes/ZonaCliente/Registro/Registro";
 import Login from "./componentes/ZonaCliente/Login/Login";
 import Productos from "./componentes/ZonaTienda/Productos/Productos";
 import InfoProducto from "./componentes/ZonaTienda/Productos/DetalleProducto/InfoProducto";
+import Carrito from "./componentes/ZonaTienda/Carrito/Carrito";
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos');
@@ -51,6 +52,12 @@ const applicationRoutes = createBrowserRouter(
                path: 'Producto/camiseta/:path',
                element: <InfoProducto />,
                loader: getChosenProduct
+            },
+
+            {
+               path: 'Cart',
+               element: <Carrito/>,
+               loader: requestHome
             }
          ]
       }
