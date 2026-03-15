@@ -15,6 +15,17 @@ function Login() {
         symbol: false
     });
 
+    const checkEmail = (password) => {
+        const emailValidation = {
+            email: /^\S+@\S+\.\S+$/.test(password),
+        }
+
+        setValidationLogin((prev) => ({
+            ...prev,
+            ...emailValidation
+        }));
+    }
+
     const checkPassword = (password) => {
         const passwordValidation = {
             lengthPassword: password.length >= 9,
@@ -36,23 +47,29 @@ function Login() {
         });
 
         if (e.target.name === 'password') checkPassword(e.target.value);
+        if (e.target.name === 'email') checkEmail(e.target.value);
     }
 
     async function handleSubmit(e) {
-        const requestLogin = await fetch('http://localhost:3000/api/Cliente/Login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formLogin)
-        });
+        try {
+            const requestLogin = await fetch('http://localhost:3000/api/Cliente/Login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formLogin)
+            });
 
-        const response = await requestLogin.json();
-        if (response.code !== 0) {
-            console.log('Error en el Login: ', response.message);
-            setErrorLogin(`${response.message}`);
-            return;
+            const response = await requestLogin.json();
+            if (response.code !== 0) {
+                console.log('Error en el Login: ', response.message);
+                setErrorLogin(`${response.message}`);
+                return;
+            }
+
+            navigate('/', {state: {msg: `${response.message}`}});
+        } catch (error) {
+            console.log('Error: ', error);
         }
 
-        navigate('/');
     }
 
 
@@ -63,7 +80,7 @@ function Login() {
                 <h2 className="login-title">Iniciar sesión</h2>
                 <div className="d-flex justify-content-center">
                     {
-                        errorLogin != '' ? <span className="alert alert-danger">{errorLogin}</span> : null
+                        errorLogin != '' ? <span className="alert alert-danger small">{errorLogin}</span> : null
                     }
                 </div>
 
@@ -83,7 +100,7 @@ function Login() {
                                 setValidation={setValidationLogin} />
                         )
                     }
-                    <button className="login-btn" onClick={handleSubmit}>Iniciar sesión</button>
+                    <button className="login-btn" type="button" onClick={handleSubmit}>Iniciar sesión</button>
                 </form>
 
                 <p className="register-link">

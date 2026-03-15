@@ -11,7 +11,6 @@ const useGlobalState = create(
                 metodoPago: {}, 
                 metodoEnvio: {}, 
                 direccionEnvio: null,
-
                 subtotal: 0,
                 gastosEnvio: 0,
                 total: 0
@@ -28,9 +27,12 @@ const useGlobalState = create(
             },
 
             setOrder: (action, newItem) => {
+                console.log('Funcion setOrder en ejecucion')
                 set(oldData => {
+                    console.log('Propiedades del newItem: ', newItem);
                     let item = [...oldData.order.items]
-                    let index = item.findIndex(i => i.product._id === newItem.product._id);
+                    let index = item.findIndex(i => i.product?._id === newItem.product?._id);
+                    
                     switch (action) {
                         case 'addToCart':
                             if (index >= 0) {
@@ -50,15 +52,12 @@ const useGlobalState = create(
                         default:
                             break;
                     }
-
+                    console.log('Producto que se va a añadir: ', item);
                     return {
                         ...oldData,
                         order: ({
                             ...oldData.order,
-                            items: item,
-                            gastosEnvio,
-                            subtotal,
-                            total
+                            items: item
                         })
                     }
                 })

@@ -16,7 +16,7 @@ const requestHome = async () => {
 }
 
 const getChosenProduct = async ({ params }) => {
-   console.log('parametro url: ', params);
+   //console.log('parametro url: ', params);
    const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/camiseta/${params.path}`);
    const response = await requestProduct.json();
 

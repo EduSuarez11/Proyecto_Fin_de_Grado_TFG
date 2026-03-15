@@ -1,13 +1,18 @@
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData, useLocation } from 'react-router-dom';
 import './Home.css';
 
 
 function Home() {
+    const location = useLocation();
+    const loginSuccess = location.state?.msg;
 
     const products = useLoaderData();
     //console.log('Productos en Home: ', JSON.stringify(products.data[0].imagen));
     return (
         <>
+            {
+                loginSuccess && <div className="alert alert-success text-center m-0 rounded-0">{loginSuccess}</div>
+            }
             <div className="hero text-center text-white d-flex align-items-center">
                 <div className="container">
                     <h1 className="display-4 fw-bold">

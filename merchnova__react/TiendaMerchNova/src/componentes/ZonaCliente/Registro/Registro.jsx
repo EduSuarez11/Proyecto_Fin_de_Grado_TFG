@@ -1,10 +1,12 @@
 import { useState } from "react"
 import './Registro.css';
 import InputHTMLComponent from '../../global_components/InputComponent/InputHTML'
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Registro() {
-
     const [formRegistro, setFormRegistro] = useState({})
+    const [ emailSent, setEmailSent ] = useState();
+    const [ codeResponse, setCodeResponse] = useState();
 
     const [validationRegistro, setValidationRegistro] = useState({
         lengthPassword: false,
@@ -61,7 +63,17 @@ function Registro() {
             });
 
             const data = await response.json();
-            console.log('Respuesta del servidor: ', data.message);
+            if (data.code !== 0) {
+                console.log('Error en el registro: ', data.message);
+                setCodeResponse(`${data.code}`)
+                setEmailSent(`${data.message}`);
+                return;
+            }
+            setCodeResponse(`${data.code}`);
+            setEmailSent(`${data.message}`);
+            //navigate('/Cliente/Registro', {state: {msg: `${data.message}`}})
+            //console.log('Respuesta del servidor: ', data.message);
+            
         } catch (error) {
             console.log('Error en el Registro: ', error);
         }
@@ -71,6 +83,11 @@ function Registro() {
         <div className="register-wrapper mt-4">
             <div className="register-card">
                 <h2 className="text-center register-title mb-4">Registrate</h2>
+                <div className="d-flex justify-content-center">
+                    {
+                        emailSent != null ? <span className={codeResponse != 0 ? 'alert alert-danger small': 'alert alert-success small'}>{emailSent}</span> : null
+                    }
+                </div>
                 <form method="POST">
                     {
                         ['nombre', 'email', 'password', 'confirmPassword'].map((value, pos) => (
@@ -79,13 +96,12 @@ function Registro() {
                                 id={value}
                                 labelInput={value === 'confirmPassword' ? 'Confirmar Contraseña' : value.charAt(0).toUpperCase() + value.slice(1)}
                                 nameInput={value}
-                                tipo={value === 'email' ? 'email' : (value === 'password' ? 'password' : 'text')}
+                                tipo={value === 'email' ? 'email' : (value === 'password' || value === 'confirmPassword' ? 'password' : 'text')}
                                 placeholder={value === 'confirmPassword' ? 'Repite tu contraseña' : `Escribe tu ${value}`}
                                 change={onChangeInput}
                                 form={formRegistro}
                                 validation={validationRegistro}
                                 setValidation={setValidationRegistro} />
-
                         ))
                     }
 
@@ -101,9 +117,9 @@ function Registro() {
                     <div className="d-grid">
                         {
                             validationRegistro.number && validationRegistro.symbol && validationRegistro.lengthPassword && validationRegistro.email ?
-                                <button type="submit" className="btn btn-custom" onClick={handleSubmit}>Registrarse</button>
+                                <button type="button" className="btn btn-custom" onClick={handleSubmit}>Registrarse</button>
                                 :
-                                <button type="submit" className="btn btn-custom" disabled onClick={handleSubmit}>Registrarse</button>
+                                <button type="button" className="btn btn-custom" disabled onClick={handleSubmit}>Registrarse</button>
                         }
                     </div>
                 </form>
