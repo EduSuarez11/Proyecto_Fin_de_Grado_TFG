@@ -3,7 +3,7 @@
 const cors = require('cors');
 const express = require('express');
 const clientRouter = require('./configuration_endpoints/endpointsCliente');
-const shopRouter = require('./configuration_endpoints/endPointsTienda');
+const shopRouter = require('./configuration_endpoints/endpointsTienda');
 const path = require("path");
 const pathImages = path.join(__dirname, "../images");
 
