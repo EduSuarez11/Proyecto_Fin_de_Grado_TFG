@@ -9,12 +9,12 @@ function InfoProducto() {
     const resp = useLoaderData();
     const { setOrder } = useGlobalState();
     const [quantity, setQuantity] = useState(0);
-    //console.log('Producto escogido: ', resp.product);
+    console.log('Producto escogido: ', resp.product);
 
     function handleAddToCart() {
-        console.log('Producto al añadir: ', resp.product);
+        console.log('Producto al añadir: ', resp);
         console.log('Cantidad total add: ', quantity);
-        setOrder('addToCart', { product: resp, quantity: quantity });
+        setOrder('addToCart', { product: resp.product, quantity: quantity });
     }
 
     function onChangeQty(ev) {

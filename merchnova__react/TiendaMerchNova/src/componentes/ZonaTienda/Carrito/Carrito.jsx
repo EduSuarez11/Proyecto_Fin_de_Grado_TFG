@@ -12,7 +12,7 @@ function Carrito() {
                 <div className="cart-content">
                     <div className="cart-items">
                         {
-                            order.items.length === 0 ?
+                            order.items.length == 0 ?
                                 <div className="d-flex justify-conter-center align-items-center content-empty">
                                     <div className="empty-cart-card">
                                         <h2 className="empty-cart-title">Tu carrito está vacío</h2>
@@ -23,50 +23,29 @@ function Carrito() {
                                     </div>
                                 </div>
                                 :
-                                <div className="cart-item">
-                                    <img src="/images/product1.jpg" alt="producto" />
+                                <div className="d-flex flex-column gap-3 justify-conter-center align-items-center">
+                                    {order.items.map((item, index) =>     
+                                        <div className='cart-item' key={index}>
+                                            <img src={`http://localhost:3000${item.product.imagen}`} alt="producto" />
 
-                                    <div className="item-info">
-                                        <h3>Camiseta 1</h3>
-                                        <p>Talla: M</p>
-                                        <p className="item-price">29.99€</p>
-                                    </div>
+                                            <div className="item-info">
+                                                <h3>{item.product.nombre}</h3>
+                                                <p>Talla: M</p>
+                                                <p className="item-price">{item.product.precio}</p>
+                                            </div>
 
-                                    <div className="item-quantity">
-                                        <button>-</button>
-                                        <span>1</span>
-                                        <button>+</button>
-                                    </div>
+                                            <div className="item-quantity">
+                                                <button>-</button>
+                                                <span>1</span>
+                                                <button>+</button>
+                                            </div>
 
-                                    <div className="item-total">
-                                        29.99€
-                                    </div>
+                                            <div className="item-total">{item.product.precio}</div>
 
-                                    <button className="remove-item">
-                                        ✕
-                                    </button>
+                                            <button className="remove-item">✕</button>
+                                        </div>
+                                    )}
 
-                                    <img src="/images/product2.jpg" alt="producto" />
-
-                                    <div className="item-info">
-                                        <h3>Camiseta 2</h3>
-                                        <p>Talla: L</p>
-                                        <p className="item-price">34.99€</p>
-                                    </div>
-
-                                    <div className="item-quantity">
-                                        <button>-</button>
-                                        <span>2</span>
-                                        <button>+</button>
-                                    </div>
-
-                                    <div className="item-total">
-                                        69.98€
-                                    </div>
-
-                                    <button className="remove-item">
-                                        ✕
-                                    </button>
                                 </div>
                         }
                     </div>

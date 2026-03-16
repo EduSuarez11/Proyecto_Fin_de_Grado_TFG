@@ -1,7 +1,6 @@
 import { useState } from "react"
 import './Registro.css';
 import InputHTMLComponent from '../../global_components/InputComponent/InputHTML'
-import { useLocation, useNavigate } from "react-router-dom";
 
 function Registro() {
     const [formRegistro, setFormRegistro] = useState({})

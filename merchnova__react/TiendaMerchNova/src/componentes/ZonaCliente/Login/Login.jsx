@@ -2,10 +2,13 @@ import { useRef, useState } from "react"
 import './Login.css'
 import InputHTMLComponent from "../../global_components/InputComponent/InputHTML";
 import { Link, useNavigate } from "react-router-dom";
+import useGlobalState from "../../../global_state/globalState";
 
 function Login() {
 
     const navigate = useNavigate();
+
+    const {setClientData} = useGlobalState();
     const [formLogin, setFormLogin] = useState({});
     const [errorLogin, setErrorLogin] = useState('');
     const [validationLogin, setValidationLogin] = useState({
@@ -65,6 +68,7 @@ function Login() {
                 return;
             }
 
+            setClientData(response.data.clientData);
             navigate('/', {state: {msg: `${response.message}`}});
         } catch (error) {
             console.log('Error: ', error);

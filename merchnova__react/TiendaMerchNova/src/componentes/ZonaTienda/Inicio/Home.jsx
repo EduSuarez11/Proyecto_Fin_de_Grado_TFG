@@ -1,19 +1,38 @@
 import { Link, useLoaderData, useLocation } from 'react-router-dom';
 import './Home.css';
+import useGlobalState from '../../../global_state/globalState';
+import { useEffect, useState } from 'react';
 
 
 function Home() {
     const location = useLocation();
-    const loginSuccess = location.state?.msg;
+    const [loginSuccess, setLoginSuccess] = useState(location.state?.msg);
 
     const products = useLoaderData();
+    const { clientData } = useGlobalState();
+
+    useEffect(() => {
+        if (loginSuccess) {
+            const timeMsg = setTimeout(() => {
+                setLoginSuccess(null);
+            }, 3000);
+            return () => clearTimeout(timeMsg);
+        }
+
+    }, [loginSuccess]);
+
+    console.log('Cliente: ', clientData)
     //console.log('Productos en Home: ', JSON.stringify(products.data[0].imagen));
     return (
         <>
-            {
-                loginSuccess && <div className="alert alert-success text-center m-0 rounded-0">{loginSuccess}</div>
-            }
             <div className="hero text-center text-white d-flex align-items-center">
+                {
+                    loginSuccess && (
+                        <div className="alert alert-success d-flex align-items-center gap-2 shadow successMsg text-center">
+                            <span className="fw-semibold">{loginSuccess}</span>
+                        </div>
+                    )
+                }
                 <div className="container">
                     <h1 className="display-4 fw-bold">
                         Crea tu Merch Personalizado

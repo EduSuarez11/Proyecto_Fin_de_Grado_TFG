@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const useGlobalState = create(
-    (get, set, store) => {
+    (set, get, store) => {
         return {
             clientData: null,
             order: {
