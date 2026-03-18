@@ -13,7 +13,10 @@ shopRouter.get('/Productos', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener los productos: ', error);
         res.status(200).send({ code: 1, message: `Error al obtener los productos: ${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
+    
 });
 
 shopRouter.get('/Producto/camiseta/:path', async (req, res, next) => {
@@ -30,6 +33,8 @@ shopRouter.get('/Producto/camiseta/:path', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener el producto: ', error);
         res.status(200).send({ code: 2, message: `Error al obtener el producto: ${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 })
 

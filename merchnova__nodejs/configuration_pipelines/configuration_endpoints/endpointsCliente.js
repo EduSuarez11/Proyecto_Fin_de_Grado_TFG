@@ -9,10 +9,15 @@ const clientRouter = express.Router();
 
 clientRouter.post('/Registro', async (req, resp, next) => {
     try {
+        const { nombre, email, password, confirmPassword } = req.body;
+        if (!nombre || !email || !password || !confirmPassword) throw new Error('Falta algún campo obligatorio.');
+
         await mongoose.connect(process.env.URL_MONGODB);
         const existClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': req.body.email });
 
         if (existClient) throw new Error('Ese correo ya existe, prueba con otro correo.');
+
+        if (req.body.password !== req.body.confirmPassword) throw new Error('Las contraseñas no coinciden.');
 
         const insertData = await mongoose.connection.collection('clientes').insertOne(
             {
@@ -32,7 +37,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
         )
 
         console.log('Datos insertados en la base de datos: ', insertData);
-        if (!insertData.insertedId) throw new Error('No se pudo realizar la inserción');
+        if (!insertData.insertedId) throw new Error('No se pudo realizar la inserción.');
 
         // 2º mandar email
         const token = jwtService.generateToken({ idCliente: insertData.insertedId, email: req.body.email }, { expiresIn: '10min' });
@@ -42,6 +47,8 @@ clientRouter.post('/Registro', async (req, resp, next) => {
     } catch (error) {
         console.log('Error en el Registro: ', error);
         resp.status(200).send({ code: 1, message: `${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 
 
@@ -60,19 +67,23 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
             { $set: { 'cuenta.cuentaActiva': true } }
         )
 
-        if (!updateData) throw new Error('No se pudo activar la cuenta');
+        if (!updateData) throw new Error('No se pudo activar la cuenta.');
 
         console.log('Cuenta activada correctamente');
         resp.status(200).send({ code: 0, message: 'Cuenta activada correctamente. Registro con éxito.' });
     } catch (error) {
         console.log('Error en la activacion de cuenta: ', error);
         resp.status(200).send({ code: 3, message: `Error en la activacion de cuenta: ${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 })
 
 clientRouter.post('/Login', async (req, resp, next) => {
     try {
         const { email, password } = req.body;
+
+        if (!email || !password) throw new Error('Los campos no pueden quedar vacíos.');
 
         await mongoose.connect(process.env.URL_MONGODB);
         const existClient = await mongoose.connection.collection('clientes').findOne(
@@ -81,11 +92,11 @@ clientRouter.post('/Login', async (req, resp, next) => {
             }
         )
 
-        if (!existClient) throw new Error('Login fallido, el email no existe');
+        if (!existClient) throw new Error('Login fallido, el email no existe.');
 
-        if (!bcrypt.compareSync(password, existClient.cuenta.password)) throw new Error('Login fallido, la contraseña es incorrecta');
+        if (!bcrypt.compareSync(password, existClient.cuenta.password)) throw new Error('Login fallido, la contraseña es incorrecta.');
 
-        if (!existClient.cuenta.cuentaActiva) throw new Error('Cuenta no activada, revisa tu email para activar tu cuenta');
+        if (!existClient.cuenta.cuentaActiva) throw new Error('Cuenta no activada, revisa tu email para activar tu cuenta.');
 
         const accessToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2h' });
         const refreshToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2d' });
@@ -97,6 +108,8 @@ clientRouter.post('/Login', async (req, resp, next) => {
 
     } catch (error) {
         resp.status(200).send({ code: 2, message: `${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 })
 
