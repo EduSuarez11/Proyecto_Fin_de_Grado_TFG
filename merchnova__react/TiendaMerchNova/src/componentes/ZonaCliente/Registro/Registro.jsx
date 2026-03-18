@@ -79,7 +79,7 @@ function Registro() {
     }
 
     return (
-        <div className="register-wrapper mt-4">
+        <div className="register-wrapper mt-5">
             <div className="register-card">
                 <h2 className="text-center register-title mb-4">Registrate</h2>
                 <div className="d-flex justify-content-center">
@@ -107,10 +107,11 @@ function Registro() {
                     <div className="mb-3">
                         <label className="form-label">Género</label>
                         <select defaultValue='' name="genero" className="form-select" onChange={onChangeInput}>
-                            <option value='' selected>Selecciona tu género</option>
-                            <option>Masculino</option>
-                            <option>Femenino</option>
-                            <option>Otro género</option>
+                            <option value="">Selecciona tu género</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro género</option>
+                            <option value="neutro">Prefiero no decirlo</option>
                         </select>
                     </div>
                     <div className="d-grid">

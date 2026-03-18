@@ -3,8 +3,14 @@ import './Carrito.css';
 import { Link } from 'react-router-dom';
 
 function Carrito() {
-    const { order } = useGlobalState();
+    const { order, setOrder } = useGlobalState();
     console.log('Productos: ', order);
+
+    function deleteOnCart({item}) {
+        console.log('Item a eliminar: ', item.product);
+        setOrder('deleteToCart', { product: item.product, quantity: 0 })
+    }
+
     return (
         <div className="cart-page bg-light">
             <div className="cart-container">
@@ -24,8 +30,8 @@ function Carrito() {
                                 </div>
                                 :
                                 <div className="d-flex flex-column gap-3 justify-conter-center align-items-center">
-                                    {order.items.map((item, index) =>     
-                                        <div className='cart-item' key={index}>
+                                    {order.items.map((item, index) =>
+                                        <div className='cart-item w-100' key={index}>
                                             <img src={`http://localhost:3000${item.product.imagen}`} alt="producto" />
 
                                             <div className="item-info">
@@ -34,15 +40,17 @@ function Carrito() {
                                                 <p className="item-price">{item.product.precio}</p>
                                             </div>
 
-                                            <div className="item-quantity">
-                                                <button>-</button>
-                                                <span>1</span>
-                                                <button>+</button>
+                                            <div className="d-flex align-items-center gap-2">
+                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: "32px", height: "32px" }}>−</button>
+                                                <span className="fw-semibold" style={{ minWidth: "20px", textAlign: "center" }}>
+                                                    {item.quantity}
+                                                </span>
+                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: "32px", height: "32px" }}>+</button>
                                             </div>
 
                                             <div className="item-total">{item.product.precio}</div>
 
-                                            <button className="remove-item">✕</button>
+                                            <button className="remove-item" onClick={ () => deleteOnCart({item}) }>✕</button>
                                         </div>
                                     )}
 

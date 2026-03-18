@@ -21,7 +21,7 @@ function Home() {
 
     }, [loginSuccess]);
 
-    console.log('Cliente: ', clientData)
+    //console.log('Cliente: ', clientData)
     //console.log('Productos en Home: ', JSON.stringify(products.data[0].imagen));
     return (
         <>

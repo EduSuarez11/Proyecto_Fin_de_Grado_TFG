@@ -27,9 +27,8 @@ const useGlobalState = create(
             },
 
             setOrder: (action, newItem) => {
-                console.log('Funcion setOrder en ejecucion')
                 set(oldData => {
-                    console.log('Propiedades del newItem: ', newItem);
+                    console.log('Propiedades del newItem: ', newItem.product);
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
                     
@@ -42,8 +41,9 @@ const useGlobalState = create(
                             }
                             break;
 
-                        case 'delete':
+                        case 'deleteToCart':
                             item = item.filter(i => i.product._id !== newItem.product._id);
+                            //item = item.splice(index, 1);
                             break;
 
                         case 'emptyCart':
@@ -52,7 +52,7 @@ const useGlobalState = create(
                         default:
                             break;
                     }
-                    console.log('Producto que se va a añadir: ', item);
+                    console.log('Item update: ', item);
                     return {
                         ...oldData,
                         order: ({
@@ -64,7 +64,6 @@ const useGlobalState = create(
             }
         }
     }
-
 )
 
 export default useGlobalState;

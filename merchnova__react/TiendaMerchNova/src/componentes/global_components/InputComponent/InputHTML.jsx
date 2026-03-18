@@ -4,7 +4,7 @@ import './InputHTML.css';
 function InputHTMLComponent(props) {
     return (
         <div className="mb-3">
-            <label className="form-label">{props.labelInput}</label>
+            <label className="form-label">{props.labelInput} <span className='text-danger'>*</span></label>
             <input
                 className="form-control"
                 type={props.tipo}
