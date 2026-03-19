@@ -6,7 +6,7 @@ function Carrito() {
     const { order, setOrder } = useGlobalState();
     console.log('Productos: ', order);
 
-    function deleteOnCart({item}) {
+    function deleteOnCart({ item }) {
         console.log('Item a eliminar: ', item.product);
         setOrder('deleteToCart', { product: item.product, quantity: 0 })
     }
@@ -15,7 +15,11 @@ function Carrito() {
         <div className="cart-page bg-light">
             <div className="cart-container">
                 <h1 className="cart-title">Tu carrito</h1>
-                <div className="cart-content">
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: order.items.length !== 0 ? "2fr 1fr" : "1fr",
+                    gap: '30px'
+                }}>
                     <div className="cart-items">
                         {
                             order.items.length == 0 ?
@@ -50,38 +54,40 @@ function Carrito() {
 
                                             <div className="item-total">{item.product.precio}</div>
 
-                                            <button className="remove-item" onClick={ () => deleteOnCart({item}) }>✕</button>
+                                            <button className="remove-item" onClick={() => deleteOnCart({ item })}>✕</button>
                                         </div>
                                     )}
-
                                 </div>
                         }
                     </div>
+                    {
+                        order.items.length != 0 &&
+                        <div className="cart-summary">
+                            <h2>Resumen</h2>
 
-                    <div className="cart-summary">
-                        <h2>Resumen</h2>
+                            <div className="summary-line">
+                                <span>Subtotal</span>
+                                <span>{order.subtotal} €</span>
+                            </div>
 
-                        <div className="summary-line">
-                            <span>Subtotal</span>
-                            <span>99.97€</span>
+                            <div className="summary-line">
+                                <span>Envío</span>
+                                <span>1,03 €</span>
+                            </div>
+
+                            <hr />
+
+                            <div className="summary-total">
+                                <span>Total</span>
+                                <span>{order.subtotal + 1.03} €</span>
+                            </div>
+
+                            <button className="checkout-btn">
+                                Finalizar compra
+                            </button>
                         </div>
+                    }
 
-                        <div className="summary-line">
-                            <span>Envío</span>
-                            <span>Gratis</span>
-                        </div>
-
-                        <hr />
-
-                        <div className="summary-total">
-                            <span>Total</span>
-                            <span>99.97€</span>
-                        </div>
-
-                        <button className="checkout-btn">
-                            Finalizar compra
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

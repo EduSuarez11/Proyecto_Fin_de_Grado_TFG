@@ -9,7 +9,7 @@ import InfoProducto from "./componentes/ZonaTienda/Productos/DetalleProducto/Inf
 import Carrito from "./componentes/ZonaTienda/Carrito/Carrito";
 
 const requestHome = async () => {
-   const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos');
+   const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
    const response = await productsRequest.json();
    //console.log('Productos cargados: ', response.data);
    return response;
@@ -17,11 +17,20 @@ const requestHome = async () => {
 
 const getChosenProduct = async ({ params }) => {
    //console.log('parametro url: ', params);
-   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/camiseta/${params.path}`);
+   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/Camiseta/${params.path}`);
    const response = await requestProduct.json();
 
    return response;
 }
+
+const getAllProducts = async ({ params }) => {
+   //console.log('parametro url: ', params);
+   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Productos`);
+   const response = await requestProduct.json();
+
+   return response;
+}
+
 
 const applicationRoutes = createBrowserRouter(
    [
@@ -45,11 +54,11 @@ const applicationRoutes = createBrowserRouter(
             {
                path: 'Productos',
                element: <Productos />,
-               loader: requestHome
+               loader: getAllProducts
             },
 
             {
-               path: 'Producto/camiseta/:path',
+               path: 'Producto/Camiseta/:path',
                element: <InfoProducto />,
                loader: getChosenProduct
             },
@@ -57,7 +66,7 @@ const applicationRoutes = createBrowserRouter(
             {
                path: 'Cart',
                element: <Carrito/>,
-               loader: requestHome
+               loader: getAllProducts
             }
          ]
       }

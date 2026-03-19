@@ -1,7 +1,7 @@
 import { Link, useLoaderData, useLocation } from 'react-router-dom';
 import './Home.css';
-import useGlobalState from '../../../global_state/globalState';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import MensajeSuccess from '../../global_components/MensajeComponent/MensajeSuccess';
 
 
 function Home() {
@@ -9,29 +9,15 @@ function Home() {
     const [loginSuccess, setLoginSuccess] = useState(location.state?.msg);
 
     const products = useLoaderData();
-    const { clientData } = useGlobalState();
-
-    useEffect(() => {
-        if (loginSuccess) {
-            const timeMsg = setTimeout(() => {
-                setLoginSuccess(null);
-            }, 3000);
-            return () => clearTimeout(timeMsg);
-        }
-
-    }, [loginSuccess]);
 
     //console.log('Cliente: ', clientData)
-    //console.log('Productos en Home: ', JSON.stringify(products.data[0].imagen));
+    console.log('Productos en Home: ', JSON.stringify(products));
     return (
         <>
             <div className="hero text-center text-white d-flex align-items-center">
                 {
-                    loginSuccess && (
-                        <div className="alert alert-success d-flex align-items-center gap-2 shadow successMsg text-center">
-                            <span className="fw-semibold">{loginSuccess}</span>
-                        </div>
-                    )
+                    loginSuccess && 
+                        <MensajeSuccess msg={loginSuccess} setAdd={setLoginSuccess} />
                 }
                 <div className="container">
                     <h1 className="display-4 fw-bold">
@@ -91,9 +77,11 @@ function Home() {
                                     <div className="card-body text-center">
                                         <h5 className="card-title">{product.nombre}</h5>
                                         <p>{product.precio}</p>
+                                        <Link to='/Productos'>
                                         <button className="btn btn-purple">
-                                            Añadir al carrito
+                                            Ver Detalles
                                         </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

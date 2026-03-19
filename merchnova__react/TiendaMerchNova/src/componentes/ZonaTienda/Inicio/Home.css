@@ -40,24 +40,6 @@
     background: #7b2ff7;
 }
 
-.successMsg {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2000;
-    min-width: 320px;
-    max-width: 500px;
-    border-radius: 12px;
-    padding: 12px 18px;
-    animation: slideDown 0.4s ease;
-}
-
-/*
-
-*/
-
-
 @keyframes slideDown {
     from {
         opacity: 0;

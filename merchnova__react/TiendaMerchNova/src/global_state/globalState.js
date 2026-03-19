@@ -5,11 +5,11 @@ const useGlobalState = create(
         return {
             clientData: null,
             order: {
-                items: [], 
+                items: [],
                 estado: '',
-                fechaPago: null, 
-                metodoPago: {}, 
-                metodoEnvio: {}, 
+                fechaPago: null,
+                metodoPago: {},
+                metodoEnvio: {},
                 direccionEnvio: null,
                 subtotal: 0,
                 gastosEnvio: 0,
@@ -31,7 +31,7 @@ const useGlobalState = create(
                     console.log('Propiedades del newItem: ', newItem.product);
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
-                    
+
                     switch (action) {
                         case 'addToCart':
                             if (index >= 0) {
@@ -52,12 +52,16 @@ const useGlobalState = create(
                         default:
                             break;
                     }
-                    console.log('Item update: ', item);
+                    
+                    //item.forEach((i) => subtotalPrice += (i.product.precio * i.quantity))
+                    const subtotalPrice = item.reduce( (total, i) => total + (i.product.precio * i.quantity), 0);
+
                     return {
                         ...oldData,
                         order: ({
                             ...oldData.order,
-                            items: item
+                            items: item,
+                            subtotal: subtotalPrice
                         })
                     }
                 })

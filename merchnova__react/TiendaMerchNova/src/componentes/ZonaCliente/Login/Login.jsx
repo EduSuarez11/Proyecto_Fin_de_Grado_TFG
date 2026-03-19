@@ -8,7 +8,7 @@ function Login() {
 
     const navigate = useNavigate();
 
-    const {setClientData} = useGlobalState();
+    const { setClientData } = useGlobalState();
     const [formLogin, setFormLogin] = useState({});
     const [errorLogin, setErrorLogin] = useState('');
     const [validationLogin, setValidationLogin] = useState({
@@ -69,7 +69,7 @@ function Login() {
             }
 
             setClientData(response.data.clientData);
-            navigate('/', {state: {msg: `${response.message}`}});
+            navigate('/', { state: { msg: `${response.message}` } });
         } catch (error) {
             console.log('Error: ', error);
         }
@@ -103,7 +103,16 @@ function Login() {
                                 validation={validationLogin}
                                 setValidation={setValidationLogin} />
                         )
+
                     }
+                    <div className="text-center mt-1 mb-2">
+                        <Link
+                            to="/recuperar-password"
+                            className="small text-decoration-none text-muted"
+                        >
+                            ¿Te has olvidado de la contraseña?
+                        </Link>
+                    </div>
                     <button className="login-btn" type="button" onClick={handleSubmit}>Iniciar sesión</button>
                 </form>
 

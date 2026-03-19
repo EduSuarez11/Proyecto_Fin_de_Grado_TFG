@@ -3,18 +3,21 @@ import { Link, useLoaderData } from 'react-router-dom';
 import './InfoProducto.css';
 import useGlobalState from '../../../../global_state/globalState';
 import { useState } from 'react';
+import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function InfoProducto() {
 
     const resp = useLoaderData();
     const { setOrder } = useGlobalState();
-    const [quantity, setQuantity] = useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [addSuccess, setAddSuccess] = useState();
     console.log('Producto escogido: ', resp.product);
 
     function handleAddToCart() {
-        console.log('Producto al añadir: ', resp);
-        console.log('Cantidad total add: ', quantity);
+        //console.log('Producto al añadir: ', resp);
+        //console.log('Cantidad total add: ', quantity);
         setOrder('addToCart', { product: resp.product, quantity: quantity });
+        setAddSuccess('Producto añadido al carrito');
     }
 
     function onChangeQty(ev) {
@@ -22,7 +25,12 @@ function InfoProducto() {
     }
 
     return (
+
         <div className="product-page bg-light">
+            {
+                addSuccess &&
+                    <MensajeSuccess msg={addSuccess} setAdd={setAddSuccess} />
+            }
             <nav className="breadcrumb">
                 <Link to='/'>Inicio </Link>
                 <span className="mx-2">/</span>
@@ -58,6 +66,7 @@ function InfoProducto() {
                             <button className="size-btn">M</button>
                             <button className="size-btn">L</button>
                             <button className="size-btn">XL</button>
+                            <button className="size-btn">XXL</button>
                         </div>
                     </div>
 
