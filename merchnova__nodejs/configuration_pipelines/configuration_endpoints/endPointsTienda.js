@@ -20,11 +20,11 @@ shopRouter.get('/Productos', async (req, res, next) => {
     
 });
 
-shopRouter.get('/Producto/Camiseta/:path', async (req, res, next) => {
+shopRouter.get('/Producto/Camiseta/:slug', async (req, res, next) => {
     try {
         await mongoose.connect(process.env.URL_MONGODB);
         const getProduct = await mongoose.connection.collection('productos').findOne({
-            path: req.params.path
+            slug: req.params.slug
         })
 
         if (!getProduct) throw new Error('Producto no encontrado en la base de datos');
