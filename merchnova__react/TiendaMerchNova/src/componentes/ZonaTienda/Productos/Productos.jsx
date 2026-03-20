@@ -7,6 +7,11 @@ function Productos() {
 
     return (
         <div className="container mt-5">
+            <nav className="breadcrumb">
+                <Link to='/'>Inicio </Link>
+                <span className="mx-2">/</span>
+                <span className='current-product'>Tienda</span>                
+            </nav>
             <div className="row">
                 <div className="col-lg-3">
 
@@ -93,7 +98,7 @@ function Productos() {
                     <div className="row">
 
                         {products.data.map((product, index) =>
-                            <Link to={`/Producto/Camiseta/${product.path}`} className="col-md-3 mb-4" key={index}>
+                            <Link to={`/Producto/Camiseta/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
                                     <div className="card-body">

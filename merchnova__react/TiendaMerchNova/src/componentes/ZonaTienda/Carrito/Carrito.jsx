@@ -7,14 +7,24 @@ function Carrito() {
     console.log('Productos: ', order);
 
     function deleteOnCart({ item }) {
-        console.log('Item a eliminar: ', item.product);
-        setOrder('deleteToCart', { product: item.product, quantity: 0 })
+        //console.log('Item a eliminar: ', item.product);
+        setOrder('deleteToCart', { product: item.product, quantity: 0 });
+    }
+
+    function updateOnCart({ item, quantity }) {
+        setOrder('updateToCart', { product: item.product, quantity });
     }
 
     return (
         <div className="cart-page bg-light">
             <div className="cart-container">
+                <nav className="breadcrumb">
+                    <Link to='/'>Inicio </Link>
+                    <span className="mx-2">/</span>
+                    <span className='current-product'>Carrito</span>
+                </nav>
                 <h1 className="cart-title">Tu carrito</h1>
+                <div className="mb-3"><span>Tienes {order.items.length} elementos</span></div>
                 <div style={{
                     display: "grid",
                     gridTemplateColumns: order.items.length !== 0 ? "2fr 1fr" : "1fr",
@@ -45,11 +55,11 @@ function Carrito() {
                                             </div>
 
                                             <div className="d-flex align-items-center gap-2">
-                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: "32px", height: "32px" }}>−</button>
+                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
                                                 <span className="fw-semibold" style={{ minWidth: "20px", textAlign: "center" }}>
                                                     {item.quantity}
                                                 </span>
-                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style={{ width: "32px", height: "32px" }}>+</button>
+                                                <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity + 1 })} style={{ width: "32px", height: "32px" }}>+</button>
                                             </div>
 
                                             <div className="item-total">{item.product.precio}</div>

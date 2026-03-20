@@ -1,5 +1,21 @@
 import { create } from 'zustand';
 
+function methodAddToCart(item, pos, newItem) {
+    console.log('Item: ', item, '; pos: ', pos, '; newItem: ', newItem)
+    if (pos >= 0) {
+        item[pos].quantity += newItem.quantity;
+    } else {
+        item.push(newItem);
+    }
+}
+
+function updateToCart(item, pos, newItem) {
+    if (pos >= 0) {
+        item[pos].quantity = newItem.quantity;
+    }
+}
+
+
 const useGlobalState = create(
     (set, get, store) => {
         return {
@@ -32,29 +48,20 @@ const useGlobalState = create(
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
 
-                    switch (action) {
-                        case 'addToCart':
-                            if (index >= 0) {
-                                item[index].quantity += newItem.quantity;
-                            } else {
-                                item.push(newItem);
-                            }
-                            break;
+                    console.log('Item: ', item)
+                    action === 'addToCart' ?
+                        methodAddToCart(item, index, newItem)
+                        :
+                        (
+                            action === 'deleteToCart' ?
+                                item = item.filter(i => i.product._id !== newItem.product._id)
+                                :
+                                updateToCart(item, index, newItem)
+                        );
 
-                        case 'deleteToCart':
-                            item = item.filter(i => i.product._id !== newItem.product._id);
-                            //item = item.splice(index, 1);
-                            break;
-
-                        case 'emptyCart':
-                            item = []
-                            break;
-                        default:
-                            break;
-                    }
-                    
                     //item.forEach((i) => subtotalPrice += (i.product.precio * i.quantity))
-                    const subtotalPrice = item.reduce( (total, i) => total + (i.product.precio * i.quantity), 0);
+                    const subtotalPrice = item.reduce((total, i) => total + (i.product.precio * i.quantity), 0);
+
 
                     return {
                         ...oldData,

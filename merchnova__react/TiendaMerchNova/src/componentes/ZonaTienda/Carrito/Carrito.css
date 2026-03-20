@@ -166,3 +166,18 @@
     justify-content: center;
     align-items: center;
 }
+
+.breadcrumb {
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #6a0dad;
+    font-weight: 500;
+}
+
+.breadcrumb span {
+    color: #555;
+}

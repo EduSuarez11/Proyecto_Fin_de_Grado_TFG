@@ -5,7 +5,7 @@ import useGlobalState from '../../../../global_state/globalState';
 function Header() {
     const route = useLocation();
     const { clientData } = useGlobalState();
-
+    const { order } = useGlobalState();
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
 
     return (
@@ -35,7 +35,11 @@ function Header() {
                             clientData == null ?
                                 <div className="d-flex align-items-center gap-3">
                                     <Link to='/Cart' className="cart-icon">
-                                        <i className="bi bi-cart3"></i>
+                                        <i className="bi bi-cart3">
+                                            <span className="position-absolute translate-middle badge bg-danger size-qty">
+                                                {order.items.length}
+                                            </span>
+                                        </i>
                                     </Link>
 
                                     <Link to="/Cliente/Login">
@@ -53,7 +57,11 @@ function Header() {
                                 :
                                 <div className="d-flex align-items-center gap-3 user-menu">
                                     <Link to='/Cart' className="cart-icon">
-                                        <i className="bi bi-cart3"></i>
+                                        <i className="bi bi-cart3">
+                                            <span className="position-absolute translate-middle badge bg-danger size-qty">
+                                                {order.items.length}
+                                            </span>
+                                        </i>
                                     </Link>
                                     {/* Avatar */}
                                     <div className="dropdown">

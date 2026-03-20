@@ -17,13 +17,13 @@ const requestHome = async () => {
 
 const getChosenProduct = async ({ params }) => {
    //console.log('parametro url: ', params);
-   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/Camiseta/${params.path}`);
+   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/Camiseta/${params.slug}`);
    const response = await requestProduct.json();
 
    return response;
 }
 
-const getAllProducts = async ({ params }) => {
+const getAllProducts = async () => {
    //console.log('parametro url: ', params);
    const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Productos`);
    const response = await requestProduct.json();
@@ -58,7 +58,7 @@ const applicationRoutes = createBrowserRouter(
             },
 
             {
-               path: 'Producto/Camiseta/:path',
+               path: 'Producto/Camiseta/:slug',
                element: <InfoProducto />,
                loader: getChosenProduct
             },
@@ -67,7 +67,8 @@ const applicationRoutes = createBrowserRouter(
                path: 'Cart',
                element: <Carrito/>,
                loader: getAllProducts
-            }
+            },
+            {path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{width: '800px'}}/></div>}
          ]
       }
    ]);

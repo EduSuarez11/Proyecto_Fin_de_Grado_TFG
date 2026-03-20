@@ -35,3 +35,14 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 30px;
 }
+
+.size-qty {
+    font-size: 12px;
+    padding: 4px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

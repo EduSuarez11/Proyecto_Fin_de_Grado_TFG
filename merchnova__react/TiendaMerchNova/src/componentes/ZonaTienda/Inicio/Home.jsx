@@ -7,17 +7,36 @@ import MensajeSuccess from '../../global_components/MensajeComponent/MensajeSucc
 function Home() {
     const location = useLocation();
     const [loginSuccess, setLoginSuccess] = useState(location.state?.msg);
-
     const products = useLoaderData();
-
-    //console.log('Cliente: ', clientData)
-    console.log('Productos en Home: ', JSON.stringify(products));
+    
+    /** #region  ----------------- Objeto products -------------------------
+        {
+            code: 0/1,
+            message: '...',
+            data: {
+                "nombre": "...",
+                "descripcion": "...",
+                "precio": 0,
+                "rebaja": 0,
+                "imagen": "...",
+                "categoria": "...",
+                "talla": [],
+                "stock": 0,
+                "valoraciones": [4.8],
+                "mediaValoracion": 0,
+                "slug": "...",
+                "path": "0",
+                "createdAt": "2026-03-20"
+            }
+        }
+     #endregion */
+    //console.log('Productos en Home: ', products);
     return (
         <>
             <div className="hero text-center text-white d-flex align-items-center">
                 {
-                    loginSuccess && 
-                        <MensajeSuccess msg={loginSuccess} setAdd={setLoginSuccess} />
+                    loginSuccess &&
+                    <MensajeSuccess msg={loginSuccess} setAdd={setLoginSuccess} />
                 }
                 <div className="container">
                     <h1 className="display-4 fw-bold">
@@ -78,9 +97,9 @@ function Home() {
                                         <h5 className="card-title">{product.nombre}</h5>
                                         <p>{product.precio}</p>
                                         <Link to='/Productos'>
-                                        <button className="btn btn-purple">
-                                            Ver Detalles
-                                        </button>
+                                            <button className="btn btn-purple">
+                                                Ver Detalles
+                                            </button>
                                         </Link>
                                     </div>
                                 </div>
