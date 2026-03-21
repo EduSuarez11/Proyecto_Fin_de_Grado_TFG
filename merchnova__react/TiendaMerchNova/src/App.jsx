@@ -7,27 +7,37 @@ import Login from "./componentes/ZonaCliente/Login/Login";
 import Productos from "./componentes/ZonaTienda/Productos/Productos";
 import InfoProducto from "./componentes/ZonaTienda/Productos/DetalleProducto/InfoProducto";
 import Carrito from "./componentes/ZonaTienda/Carrito/Carrito";
+import PerfilCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/1_Perfil/Perfil";
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
    const response = await productsRequest.json();
    //console.log('Productos cargados: ', response.data);
+   // #region ------------------------ Respuesta node ---------------------
+            /* Objeto response:
+                {
+                    code: 0
+                    message: '...',
+                    data: {
+                        clientData: {nombreCompleto: '...'},
+                    }
+                }
+                    */
+             //#endregion ------------------------------------------------------------
    return response;
 }
 
 const getChosenProduct = async ({ params }) => {
    //console.log('parametro url: ', params);
-   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/Camiseta/${params.slug}`);
+   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/${params.categoria}/${params.slug}`);
    const response = await requestProduct.json();
-
    return response;
 }
 
+
 const getAllProducts = async () => {
-   //console.log('parametro url: ', params);
    const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Productos`);
    const response = await requestProduct.json();
-
    return response;
 }
 
@@ -58,7 +68,7 @@ const applicationRoutes = createBrowserRouter(
             },
 
             {
-               path: 'Producto/Camiseta/:slug',
+               path: 'Producto/:categoria/:slug',
                element: <InfoProducto />,
                loader: getChosenProduct
             },
@@ -68,6 +78,12 @@ const applicationRoutes = createBrowserRouter(
                element: <Carrito/>,
                loader: getAllProducts
             },
+
+            {
+               path: 'Perfil',
+               element: <PerfilCuenta/>
+            },
+
             {path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{width: '800px'}}/></div>}
          ]
       }

@@ -48,7 +48,18 @@ const useGlobalState = create(
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
 
-                    console.log('Item: ', item)
+                    //console.log('Item: ', item)
+                    // #region --------------------------- Item ----------------------------
+                    /**
+                     * Objeto item:
+                        [
+                            {
+                                product: {id: '...', nombre: '...'}
+                                quantity: 0
+                            }
+                        ]
+                    */
+                    //#endregion ------------------------------------------------------------ 
                     action === 'addToCart' ?
                         methodAddToCart(item, index, newItem)
                         :

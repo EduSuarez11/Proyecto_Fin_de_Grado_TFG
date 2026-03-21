@@ -98,7 +98,7 @@ function Productos() {
                     <div className="row">
 
                         {products.data.map((product, index) =>
-                            <Link to={`/Producto/Camiseta/${product.slug}`} className="col-md-3 mb-4" key={index}>
+                            <Link to={`/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
                                     <div className="card-body">

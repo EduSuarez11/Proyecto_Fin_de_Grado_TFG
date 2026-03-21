@@ -11,7 +11,7 @@ function Home() {
     
     /** #region  ----------------- Objeto products -------------------------
         {
-            code: 0/1,
+            code: 0,
             message: '...',
             data: {
                 "nombre": "...",

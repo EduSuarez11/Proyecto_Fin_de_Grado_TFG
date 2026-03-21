@@ -62,6 +62,19 @@ function Login() {
             });
 
             const response = await requestLogin.json();
+            // #region ------------------------ Respuesta node ---------------------
+            /* Objeto response:
+                {
+                    code: 0
+                    message: '...',
+                    data: {
+                        clientData: {nombreCompleto: '...'},
+                        accessToken: '...',
+                        refreshToken: '...'
+                    }
+                }
+                    */
+             //#endregion ------------------------------------------------------------
             if (response.code !== 0) {
                 console.log('Error en el Login: ', response.message);
                 setErrorLogin(`${response.message}`);

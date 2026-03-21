@@ -11,7 +11,7 @@ function InfoProducto() {
     const { setOrder } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
-    console.log('Producto escogido: ', resp.product);
+    console.log('Producto: ', resp);
 
     function handleAddToCart() {
         //console.log('Producto al añadir: ', resp);
@@ -29,7 +29,7 @@ function InfoProducto() {
         <div className="product-page bg-light">
             {
                 addSuccess &&
-                    <MensajeSuccess msg={addSuccess} setAdd={setAddSuccess} />
+                <MensajeSuccess msg={addSuccess} setAdd={setAddSuccess} />
             }
             <nav className="breadcrumb">
                 <Link to='/'>Inicio </Link>
@@ -97,15 +97,20 @@ function InfoProducto() {
 
             <div className="related-products">
                 <h2>Otros productos</h2>
-
                 <div className="related-grid">
-                    <div className="related-card">
-                        <img src="/images/product1.jpg" alt="producto" />
-                        <h3>Camiseta 1</h3>
-                        <p>29.99€</p>
-                    </div>
-
-                    <div className="related-card">
+                    {
+                        resp.moreProducts.map((product, el) =>
+                            <div className="related-card" key={el}>
+                                <Link to={`/Producto/${product.categoria}/${product.slug}`}>
+                                    <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} />
+                                    <h3>{product.nombre}</h3>
+                                    <p>{product.precio}</p>
+                                </Link>
+                            </div>
+                        )
+                    }
+                </div>
+                {/* <div className="related-card">
                         <img src="/images/product2.jpg" alt="producto" />
                         <h3>Camiseta 2</h3>
                         <p>29.99€</p>
@@ -121,8 +126,8 @@ function InfoProducto() {
                         <img src="/images/product4.jpg" alt="producto" />
                         <h3>Camiseta 4</h3>
                         <p>29.99€</p>
-                    </div>
-                </div>
+                    </div> */}
+
             </div>
         </div>
     );
