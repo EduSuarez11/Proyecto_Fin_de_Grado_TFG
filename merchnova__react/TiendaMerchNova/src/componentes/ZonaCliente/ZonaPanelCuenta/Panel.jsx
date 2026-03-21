@@ -37,7 +37,7 @@ function Panel({ order, clientData }) {
                         ["Perfil", "Mis pedidos", "Configuración", "Cerrar Sesión"].map((elemento, index) =>
                             <>
                                 <li key={index}>
-                                    <Link className={`dropdown-item ${elemento === 'Cerrar Sesión' && 'text-danger'}`} to={elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}>
+                                    <Link className={`dropdown-item ${elemento === 'Cerrar Sesión' && 'text-danger'}`} to={`/Cliente/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
                                         {elemento}
                                     </Link>
                                 </li>

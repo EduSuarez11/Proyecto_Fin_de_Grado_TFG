@@ -14,16 +14,16 @@ const requestHome = async () => {
    const response = await productsRequest.json();
    //console.log('Productos cargados: ', response.data);
    // #region ------------------------ Respuesta node ---------------------
-            /* Objeto response:
-                {
-                    code: 0
-                    message: '...',
-                    data: {
-                        clientData: {nombreCompleto: '...'},
-                    }
-                }
-                    */
-             //#endregion ------------------------------------------------------------
+   /* Objeto response:
+       {
+           code: 0
+           message: '...',
+           data: {
+               clientData: {nombreCompleto: '...'},
+           }
+       }
+           */
+   //#endregion ------------------------------------------------------------
    return response;
 }
 
@@ -34,11 +34,22 @@ const getChosenProduct = async ({ params }) => {
    return response;
 }
 
-
 const getAllProducts = async () => {
    const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Productos`);
    const response = await requestProduct.json();
    return response;
+}
+
+const getAllCountries = async () => {
+   const requestCountries = await fetch('https://restcountries.com/v3.1/all?fields=name,flags',
+      {
+         method: 'GET',
+         'Content-Type': 'application/json'
+      }
+   );
+   const responseCountries = await requestCountries.json();
+   console.log ('Paises: ', responseCountries);
+   return responseCountries;
 }
 
 
@@ -57,7 +68,8 @@ const applicationRoutes = createBrowserRouter(
                path: 'Cliente',
                children: [
                   { path: 'Registro', element: <Registro /> },
-                  { path: 'Login', element: <Login /> }
+                  { path: 'Login', element: <Login /> },
+                  { path: 'Perfil', element: <PerfilCuenta />, loader: getAllCountries }
                ]
             },
 
@@ -75,16 +87,11 @@ const applicationRoutes = createBrowserRouter(
 
             {
                path: 'Cart',
-               element: <Carrito/>,
+               element: <Carrito />,
                loader: getAllProducts
             },
 
-            {
-               path: 'Perfil',
-               element: <PerfilCuenta/>
-            },
-
-            {path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{width: '800px'}}/></div>}
+            { path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{ width: '800px' }} /></div> }
          ]
       }
    ]);
