@@ -1,13 +1,17 @@
 import './Perfil.css';
-import { Link, useLoaderData } from "react-router-dom";
+import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../../global_state/globalState";
 import { useState } from "react";
+import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function PerfilCuenta() {
-    const { clientData } = useGlobalState();
+    const { clientData, setClientData } = useGlobalState();
     const countries = useLoaderData();
+    const location = useLocation();
     const [editProfile, setEditProfile] = useState(false);
-    const [formProfile, setFormProfile] = useState({});
+    const [formProfile, setFormProfile] = useState({ email: clientData.cuenta.email });
+    const message = location.state?.msg
+    const navigate = useNavigate();
 
     function onChangeInputProfile(e) {
         setFormProfile(() => ({
@@ -16,31 +20,51 @@ function PerfilCuenta() {
         }));
     }
 
-    function handleSubmitProfile() {
-        console.log('Datos nuevos: ', formProfile);
+    async function handleSubmitProfile() {
+        try {
+            console.log('Datos nuevos: ', formProfile);
+
+            const requestNewData = await fetch('http://localhost:3000/api/Cliente/Perfil/Update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formProfile)
+            });
+
+            const responseNewData = await requestNewData.json();
+            console.log('Respuesta:', responseNewData);
+            setClientData(responseNewData.data.newClientData);
+            navigate('/Cliente/Perfil', { state: { msg: `${responseNewData.message}` } });
+        } catch (error) {
+            console.log('Error al actualizar datos: ', error);
+        }
+
     }
 
-    console.log('Paises obtenidos: ', countries);
-    console.log('Cliente: ', clientData);
+    //console.log('Paises obtenidos: ', countries);
+    //console.log('Cliente: ', clientData);
     return (
-        <div class="container py-5">
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="card p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="mb-0 fw-bold">Mi Perfil</h2>
-                            <div class="text-end">
-                                <span class="badge bg-success mb-1">Cuenta Activa</span>
+        <div className="container py-5">
+            {
+                message &&
+                <MensajeSuccess msg={message} />
+            }
+            <div className="row g-4">
+                <div className="col-lg-8">
+                    <div className="card p-4">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h2 className="mb-0 fw-bold">Mi Perfil</h2>
+                            <div className="text-end">
+                                <span className="badge bg-success mb-1">Cuenta Activa</span>
                             </div>
                         </div>
 
                         <form>
-                            <div class="row">
-                                <div class="col-md-4 text-center mb-4 border-end">
-                                    <div class="profile-img-container mx-auto">
-                                        <img src={clientData.cuenta.imagenCuenta} alt="Previsualización" class="mb-3" />
-                                        <label htmlFor="imageUpload" class="btn btn-purple btn-sm w-100">
-                                            <i class="bi bi-camera me-2"></i>Cambiar Foto
+                            <div className="row">
+                                <div className="col-md-4 text-center mb-4 border-end">
+                                    <div className="profile-img-container mx-auto">
+                                        <img src={clientData.cuenta.imagenCuenta} alt="Previsualización" className="mb-3" />
+                                        <label htmlFor="imageUpload" className="btn btn-purple btn-sm w-100">
+                                            <i className="bi bi-camera me-2"></i>Cambiar Foto
                                         </label>
                                         <input type="file" id="imageUpload" hidden accept="image/*" />
                                     </div>
@@ -69,9 +93,11 @@ function PerfilCuenta() {
                                             <label className="form-label fw-semibold">Correo Electrónico</label>
                                             <input
                                                 type="email"
+                                                name="email"
                                                 className="form-control custom-input"
                                                 value={clientData.cuenta.email}
                                                 disabled
+                                                onChange={onChangeInputProfile}
                                             />
                                             <div className="form-text small text-danger">
                                                 El email no se puede cambiar.
@@ -152,7 +178,7 @@ function PerfilCuenta() {
                                             {
                                                 countries.map((country, index) =>
                                                     <>
-                                                        <img style={{ width: '30px' }} src={country.flags.svg} />
+                                                        {/* <img style={{ width: '30px' }} src={country.flags.svg} /> */}
                                                         <option key={index}>
                                                             {country.name.common}
                                                         </option>

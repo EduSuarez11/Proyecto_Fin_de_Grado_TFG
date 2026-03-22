@@ -44,11 +44,11 @@ const getAllCountries = async () => {
    const requestCountries = await fetch('https://restcountries.com/v3.1/all?fields=name,flags',
       {
          method: 'GET',
-         'Content-Type': 'application/json'
+         headers: { 'Content-Type': 'application/json' }
       }
    );
    const responseCountries = await requestCountries.json();
-   console.log ('Paises: ', responseCountries);
+   console.log('Paises: ', responseCountries);
    return responseCountries;
 }
 
