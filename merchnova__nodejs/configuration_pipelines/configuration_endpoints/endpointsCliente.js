@@ -4,8 +4,15 @@ const bcrypt = require('bcrypt');
 const mailjetService = require('../servicios/mailjetService');
 const jwtService = require('../servicios/jwtService');
 
-
 const clientRouter = express.Router();
+
+/**
+ * Códigos de mensaje de error:
+ *  1º Error Registro
+ *  2º Error Login
+ *  3º Error Activacion de la cuenta
+ *  4º Error Actualizacion de datos
+ */
 
 clientRouter.post('/Registro', async (req, resp, next) => {
     try {
@@ -112,5 +119,47 @@ clientRouter.post('/Login', async (req, resp, next) => {
         await mongoose.connection.close();
     }
 })
+
+
+clientRouter.post('/Perfil/Update', async (req, res, next) => {
+    try {
+        let campos = Object.keys(req.body);
+        let data = {};
+        campos.map((campo) => {
+            if (campo !== undefined && campo !== null) {
+                if (campo === 'nombreCompleto') {
+                    data.nombreCompleto = req.body[campo];
+                } else if (campo === 'pais' || campo === 'municipio' || campo === 'provincia' || campo === 'codigoPostal' || campo === 'calle') {
+                    data["direcciones.0." + campo] = req.body[campo];
+                } else {
+                    data["cuenta." + campo] = req.body[campo];
+                }
+            }
+        });
+
+        console.log('Objeto data: ', data);
+        await mongoose.connect(process.env.URL_MONGODB);
+        const client = await mongoose.connection.collection('clientes').findOne(
+            {
+                'cuenta.email': req.body.email
+            }
+        )
+        console.log('Id cliente: ', client)
+
+        const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(client._id) },
+            {
+                $set: data
+            },
+            { new: true }
+        )
+
+        if (!updateClient) throw new Error("No se pudo actualizar los datos.");
+
+        res.status(200).send({ code: 0, message: 'Los datos han sido actualizados.', data: { newClientData: updateClient } });
+    } catch (error) {
+        res.status(200).send({ code: 4, message: `${error}`, data: req.body });
+    }
+});
 
 module.exports = clientRouter;
