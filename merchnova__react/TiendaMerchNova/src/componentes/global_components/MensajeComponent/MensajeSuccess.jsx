@@ -1,12 +1,17 @@
-import './MensajeSuccess.css'; 
+import { useLocation, useNavigate } from 'react-router-dom';
+import './MensajeSuccess.css';
 import { useEffect } from "react";
 
 function MensajeSuccess(props) {
-    console.log('Propiedades: ', props);
+    const location = useLocation();
+    const navigate = useNavigate()
+    //console.log('Propiedades: ', msg, setLoginSuccess);
     useEffect(() => {
         if (props.msg) {
             const timeMsg = setTimeout(() => {
-            props.setAdd(null);
+                props.setState(null);
+                // limpiar el state para evitar volver mostrar el mensaje cuando se recarga
+                navigate(location.pathname, { replace: true, state: {} });
             }, 3000);
             return () => clearTimeout(timeMsg);
         }

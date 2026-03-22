@@ -36,7 +36,7 @@ function Home() {
             <div className="hero text-center text-white d-flex align-items-center">
                 {
                     loginSuccess &&
-                    <MensajeSuccess msg={loginSuccess} setAdd={setLoginSuccess} />
+                    <MensajeSuccess msg={loginSuccess} setState={setLoginSuccess} />
                 }
                 <div className="container">
                     <h1 className="display-4 fw-bold">

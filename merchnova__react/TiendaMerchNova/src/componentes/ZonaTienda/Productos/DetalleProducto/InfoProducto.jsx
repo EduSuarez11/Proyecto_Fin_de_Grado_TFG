@@ -29,7 +29,7 @@ function InfoProducto() {
         <div className="product-page bg-light">
             {
                 addSuccess &&
-                <MensajeSuccess msg={addSuccess} setAdd={setAddSuccess} />
+                <MensajeSuccess msg={addSuccess} setState={setAddSuccess} />
             }
             <nav className="breadcrumb">
                 <Link to='/'>Inicio </Link>
