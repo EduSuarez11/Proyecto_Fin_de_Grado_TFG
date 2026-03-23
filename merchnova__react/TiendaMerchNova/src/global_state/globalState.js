@@ -33,13 +33,19 @@ const useGlobalState = create(
             },
 
             setClientData: (newData) => {
-                set(oldData => ({
-                    ...oldData,
-                    clientData: {
-                        ...oldData.clientData,
-                        ...newData
+                set(oldData => {
+                    return {
+                        ...oldData,
+                        clientData: {
+                            ...oldData.clientData,
+                            ...newData
+                        }
                     }
-                }))
+                })
+            },
+
+            logOut: () => {
+                set({ clientData: null })
             },
 
             setOrder: (action, newItem) => {

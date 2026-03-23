@@ -1,6 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Panel({ order, clientData }) {
+function Panel({ order, clientData, logOut }) {
+    const navigate = useNavigate();
+
+    console.log('Cliente_ ', clientData);
     return (
         <div className="d-flex align-items-center gap-3 user-menu">
             <Link to='/Cart' className="cart-icon">
@@ -37,9 +40,15 @@ function Panel({ order, clientData }) {
                         ["Perfil", "Mis pedidos", "Configuración", "Cerrar Sesión"].map((elemento, index) =>
                             <>
                                 <li key={index}>
-                                    <Link className={`dropdown-item ${elemento === 'Cerrar Sesión' && 'text-danger'}`} to={`/Cliente/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
-                                        {elemento}
-                                    </Link>
+                                    {elemento !== 'Cerrar Sesión' ?
+                                        <Link className='dropdown-item' to={`/Cliente/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
+                                            {elemento}
+                                        </Link>
+                                        :
+                                        <button className='dropdown-item text-danger' onClick={() => {logOut();localStorage.removeItem("token") ;navigate('/Cliente/Login', {state: {msg: 'Has cerrado sesión'}})}}>
+                                            {elemento}
+                                        </button>
+                                    }
                                 </li>
                                 {
                                     elemento === 'Configuración' && <li><hr className="dropdown-divider" /></li>

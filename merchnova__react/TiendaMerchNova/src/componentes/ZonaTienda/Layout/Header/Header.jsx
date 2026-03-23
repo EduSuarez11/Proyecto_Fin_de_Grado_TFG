@@ -5,8 +5,8 @@ import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel';
 
 function Header() {
     const route = useLocation();
-    const { clientData } = useGlobalState();
-    const { order } = useGlobalState();
+    const { clientData, logOut, order } = useGlobalState();
+    
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
 
     //console.log('Cliente: ', clientData)
@@ -75,7 +75,7 @@ function Header() {
                                     </Link>
                                 </div>
                                 :
-                                <Panel order={order} clientData={clientData}/>
+                                <Panel order={order} clientData={clientData} logOut={logOut} />
                         }
 
                     </div>

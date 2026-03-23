@@ -25,7 +25,6 @@ function InfoProducto() {
     }
 
     return (
-
         <div className="product-page bg-light">
             {
                 addSuccess &&

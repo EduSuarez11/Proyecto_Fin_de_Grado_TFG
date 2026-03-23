@@ -1,8 +1,9 @@
 import { useRef, useState } from "react"
 import './Login.css'
 import InputHTMLComponent from "../../global_components/InputComponent/InputHTML";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../global_state/globalState";
+import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
 
 function Login() {
 
@@ -10,6 +11,7 @@ function Login() {
 
     const { setClientData } = useGlobalState();
     const [formLogin, setFormLogin] = useState({});
+    const [ logoutMessage, setLogoutMessage ] = useState(useLocation().state?.msg);
     const [errorLogin, setErrorLogin] = useState('');
     const [validationLogin, setValidationLogin] = useState({
         lengthPassword: false,
@@ -98,6 +100,9 @@ function Login() {
                 <div className="d-flex justify-content-center">
                     {
                         errorLogin != '' ? <span className="alert alert-danger small">{errorLogin}</span> : null
+                    }
+                    {
+                        logoutMessage && <MensajeSuccess msg={logoutMessage} setState={setLogoutMessage} />
                     }
                 </div>
 
