@@ -108,8 +108,8 @@ clientRouter.post('/Login', async (req, resp, next) => {
         const accessToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2h' });
         const refreshToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2d' });
 
-        const tokenVerify = jwtService.verifyToken(accessToken);
-        if (tokenVerify.email !== email) throw new Error('Error en el token, el email no coincide');
+        // const tokenVerify = jwtService.verifyToken(accessToken);
+        // if (tokenVerify.email !== email) throw new Error('Error en el token, el email no coincide');
 
         resp.status(200).send({ code: 0, message: 'Has hecho login con éxito', data: { clientData: existClient, accessToken, refreshToken } });
 
@@ -118,7 +118,28 @@ clientRouter.post('/Login', async (req, resp, next) => {
     } finally {
         await mongoose.connection.close();
     }
-})
+});
+
+clientRouter.get('/Verify/Token', async(req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+
+        const verifyToken = jwtService.verifyToken(token);
+
+        //console.log('Token v: ', verifyToken)
+        await mongoose.connect(process.env.URL_MONGODB);
+        const user = await mongoose.connection.collection('clientes').findOne({
+            _id: new mongoose.Types.ObjectId(verifyToken.idCliente)
+        })
+        //console.log('Usuario: ', user);
+        
+        res.status(200).send({ code: 0, message: 'Token verificado.', data: { user } });
+    } catch (error) {
+        res.status(200).send({ code: 5, message: `${error}` });
+    }
+
+
+});
 
 
 clientRouter.post('/Perfil/Update', async (req, res, next) => {
@@ -158,7 +179,7 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
 
         res.status(200).send({ code: 0, message: 'Los datos han sido actualizados.', data: { newClientData: updateClient } });
     } catch (error) {
-        res.status(200).send({ code: 4, message: `${error}`, data: req.body });
+        res.status(200).send({ code: 4, message: `${error}` });
     }
 });
 
