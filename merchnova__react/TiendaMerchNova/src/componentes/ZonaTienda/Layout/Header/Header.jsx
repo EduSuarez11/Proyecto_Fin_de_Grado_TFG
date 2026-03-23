@@ -2,12 +2,35 @@ import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel';
+import { useEffect } from 'react';
 
 function Header() {
     const route = useLocation();
-    const { clientData, logOut, order } = useGlobalState();
-    
+    const { clientData, logOut, order, setClientData } = useGlobalState();
+
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
+
+    useEffect(
+        () => {
+            const token = localStorage.getItem("token");
+
+            if (token) {
+                const timeRes = setTimeout(async () => {
+                    const requestVerifyToken = await fetch('http://localhost:3000/api/Cliente/Verify/Token', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const responseVT = await requestVerifyToken.json();
+                    console.log('Respuesta: ', responseVT);
+                    setClientData(responseVT.data.user);
+                }, 10)
+                return () => clearTimeout(timeRes);
+            }
+        }, []
+    );
 
     //console.log('Cliente: ', clientData)
     /** #region ------------------- Datos cliente ---------------------------
