@@ -165,19 +165,20 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
                 'cuenta.email': req.body.email
             }
         )
-        console.log('Id cliente: ', client)
+        //console.log('Id cliente: ', client)
 
         const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(client._id) },
             {
                 $set: data
             },
-            { new: true }
+            { returnDocument: "after" }
         )
 
+        console.log('Nuevo cliente actualizado: ', updateClient);
         if (!updateClient) throw new Error("No se pudo actualizar los datos.");
 
-        res.status(200).send({ code: 0, message: 'Los datos han sido actualizados.', data: { newClientData: updateClient } });
+        res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: updateClient } });
     } catch (error) {
         res.status(200).send({ code: 4, message: `${error}` });
     }

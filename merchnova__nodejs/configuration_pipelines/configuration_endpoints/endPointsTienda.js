@@ -53,7 +53,7 @@ shopRouter.get('/Productos/Home', async (req, res, next) => {
 
         if (!products) throw new Error('Productos no encontrados en la base de datos');
 
-        console.log('Producto encontrado: ', products);
+        //console.log('Producto encontrado: ', products);
         res.status(200).send({ code: 0, message: 'Producto home obtenidos', data: products });
     } catch (error) {
         console.log('Error al obtener el producto: ', error);
