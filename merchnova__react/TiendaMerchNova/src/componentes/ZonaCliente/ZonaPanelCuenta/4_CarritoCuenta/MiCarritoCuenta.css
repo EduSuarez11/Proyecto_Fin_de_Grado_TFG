@@ -1,0 +1,89 @@
+
+.profile-menu {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.menu-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+}
+
+.menu-link.active {
+    color: #7b2ff7;
+    font-weight: bold;
+}
+
+.cart-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* 📦 ITEM */
+.cart-item {
+    border-radius: 10px;
+    background: #fafafa;
+    transition: 0.3s;
+}
+
+.cart-item:hover {
+    background: #f3e8ff;
+}
+
+.cart-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* 🔢 CANTIDAD */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-qty {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    color: white;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-qty:hover {
+    opacity: 0.8;
+}
+
+.cart-summary {
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.btn-purple {
+    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-purple:hover {
+    opacity: 0.9;
+}
+
+.active-link {
+    background-color: rgba(123, 47, 247, 0.1);
+    color: #7b2ff7;
+    font-weight: bold;
+    border-radius: 8px;
+    padding-left: 20px;
+}

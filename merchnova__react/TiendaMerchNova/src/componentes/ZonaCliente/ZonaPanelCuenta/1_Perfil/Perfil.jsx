@@ -5,7 +5,7 @@ import { useState } from "react";
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function PerfilCuenta() {
-    const { clientData, setClientData } = useGlobalState();
+    const { clientData, setClientData, logOut } = useGlobalState();
     const countries = useLoaderData();
     const location = useLocation();
     const [editProfile, setEditProfile] = useState(false);
@@ -31,9 +31,9 @@ function PerfilCuenta() {
             });
 
             const responseNewData = await requestNewData.json();
-            console.log('Respuesta:', responseNewData);
+            console.log('Respuesta node:', responseNewData);
             setClientData(responseNewData.data.newClientData);
-            navigate('/Cliente/Perfil', { state: { msg: `${responseNewData.message}` } });
+            navigate('/', { state: { msg: `${responseNewData.message}` } });
         } catch (error) {
             console.log('Error al actualizar datos: ', error);
         }
@@ -130,6 +130,7 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             placeholder="Calle y número"
                                             disabled={!editProfile}
+                                            defaultValue={clientData.direcciones[0].calle}
                                             onChange={onChangeInputProfile}
                                         />
                                     </div>
@@ -141,6 +142,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="codigoPostal"
                                                 className="form-control custom-input"
+                                                defaultValue={clientData.direcciones[0].codigoPostal}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -152,6 +154,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="municipio"
                                                 className="form-control custom-input"
+                                                defaultValue={clientData.direcciones[0].municipio}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -163,6 +166,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="provincia"
                                                 className="form-control custom-input"
+                                                defaultValue={clientData.direcciones[0].provincia}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -172,7 +176,7 @@ function PerfilCuenta() {
                                     <div className="mb-4">
                                         <label className="form-label fw-semibold">País</label>
                                         <select type="text" name="pais" className="form-control custom-input" disabled={!editProfile}
-                                            onChange={onChangeInputProfile}
+                                            onChange={onChangeInputProfile} defaultValue={clientData.direcciones[0].pais}
                                         >
                                             <option>Selecciona tu país...</option>
                                             {
@@ -198,6 +202,7 @@ function PerfilCuenta() {
                                             name="telefono"
                                             className="form-control custom-input"
                                             placeholder="638 111 222"
+                                            defaultValue={clientData.cuenta.telefono}
                                             disabled={!editProfile}
                                             onChange={onChangeInputProfile} />
                                     </div>
@@ -211,6 +216,7 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             rows="4"
                                             placeholder="Cuéntanos algo sobre ti..."
+                                            defaultValue={clientData.cuenta.sobreMi}
                                             disabled={!editProfile}
                                             onChange={onChangeInputProfile}></textarea>
                                     </div>
@@ -249,28 +255,27 @@ function PerfilCuenta() {
                     </div>
                 </div>
 
-                <div class="col-lg-4">
-                    <div class="card p-3">
-                        <h4 class="px-3 mb-3 fw-bold">Mi Cuenta</h4>
-                        <div class="list-group list-group-flush">
-
-                            <a href="#" class="list-group-item list-group-item-action border-0 py-3 sidebar-link active-link">
-                                <i class="bi bi-person me-2"></i> Perfil
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 py-3 sidebar-link">
-                                <i class="bi bi-box-seam me-2"></i> Mis Pedidos
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 py-3 sidebar-link">
-                                <i class="bi bi-geo-alt me-2"></i> Mis Direcciones
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action border-0 py-3 sidebar-link">
-                                <i class="bi bi-cart3 me-2"></i> Mi Carrito
-                            </a>
-                            <hr class="text-muted my-2" />
-                            <a href="#"
-                                class="list-group-item list-group-item-action border-0 py-3 text-danger fw-bold sidebar-link-danger">
-                                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                            </a>
+                <div className="col-lg-4">
+                    <div className="card p-3">
+                        <h4 className="px-3 mb-3 fw-bold">Mi Cuenta</h4>
+                        <div className="list-group list-group-flush">
+                            {
+                                [
+                                    { name: 'Perfil', route: '/Cliente/Perfil', icon: 'bi bi-person me-2' },
+                                    { name: 'Mis Pedidos', route: '/Cliente/Pedidos', icon: 'bi bi-box-seam me-2' },
+                                    { name: 'Mis Direcciones', route: '/Cliente/Direcciones', icon: 'bi bi-geo-alt me-2' },
+                                    { name: 'Mi Carrito', route: '/Cliente/MiCarrito', icon: 'bi bi-cart3 me-2' },
+                                ].map((element, index) =>
+                                    <Link to={element.route} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active-link' : ''}`}>
+                                        <i className={element.icon}></i> {element.name}
+                                    </Link>
+                                )
+                            }
+                            <hr className="text-muted my-2" />
+                            <button onClick={() => { logOut(); navigate('/', { state: { msg: 'Has cerrado sesión' } }) }}
+                                className="list-group-item list-group-item-action border-0 py-3 text-danger fw-bold sidebar-link-danger">
+                                <i className="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                            </button>
                         </div>
                     </div>
                 </div>

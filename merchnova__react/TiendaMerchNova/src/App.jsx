@@ -8,6 +8,7 @@ import Productos from "./componentes/ZonaTienda/Productos/Productos";
 import InfoProducto from "./componentes/ZonaTienda/Productos/DetalleProducto/InfoProducto";
 import Carrito from "./componentes/ZonaTienda/Carrito/Carrito";
 import PerfilCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/1_Perfil/Perfil";
+import CarritoCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/4_CarritoCuenta/MiCarritoCuenta";
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
@@ -69,7 +70,8 @@ const applicationRoutes = createBrowserRouter(
                children: [
                   { path: 'Registro', element: <Registro /> },
                   { path: 'Login', element: <Login /> },
-                  { path: 'Perfil', element: <PerfilCuenta />, loader: getAllCountries }
+                  { path: 'Perfil', element: <PerfilCuenta />, loader: getAllCountries },
+                  { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
                ]
             },
 
