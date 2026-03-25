@@ -56,23 +56,6 @@ function Panel({ order, clientData, logOut }) {
                             </>
                         )
                     }
-
-                    {/* <li>
-                        <a className="dropdown-item" href="#">Perfil</a>
-                    </li>
-
-                    <li>
-                        <a className="dropdown-item" href="#">Mis pedidos</a>
-                    </li>
-
-                    <li>
-                        <a className="dropdown-item" href="#">Configuración</a>
-                    </li>
-
-                    <li><hr className="dropdown-divider" /></li>
-                    <li>
-                        <button className="dropdown-item text-danger">Cerrar sesión</button>
-                    </li> */}
                 </ul>
             </div>
         </div >

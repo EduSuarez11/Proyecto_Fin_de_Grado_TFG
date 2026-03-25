@@ -8,7 +8,7 @@ function Home() {
     const location = useLocation();
     const [loginSuccess, setLoginSuccess] = useState(location.state?.msg);
     const products = useLoaderData();
-    
+
     /** #region  ----------------- Objeto products -------------------------
         {
             code: 0,
@@ -40,17 +40,15 @@ function Home() {
                 }
                 <div className="container">
                     <h1 className="display-4 fw-bold">
-                        Crea tu Merch Personalizado
+                        Compra y vende tu Merch Personalizado
                     </h1>
 
                     <p className="lead">
-                        Diseña camisetas, tazas y accesorios únicos
+                        Adquiere camisetas, tazas y accesorios únicos
                     </p>
 
                     <Link to='/Productos'>
-                        <button className="btn btn-light btn-lg mt-3">
-                            Explorar productos
-                        </button>
+                        <button className="btn btn-light btn-lg mt-3">Explorar productos</button>
                     </Link>
                 </div>
             </div>
@@ -58,28 +56,21 @@ function Home() {
             <div className="py-5 bg-light text-center">
                 <div className="container">
                     <h2 className="mb-5">Categorías</h2>
-
                     <div className="row g-4">
-                        <div className="col-md-4">
-                            <div className="category-card p-4">
-                                <h1>👕</h1>
-                                <p>Ropa</p>
-                            </div>
-                        </div>
-
-                        <div className="col-md-4">
-                            <div className="category-card p-4">
-                                <h1>☕</h1>
-                                <p>Tazas</p>
-                            </div>
-                        </div>
-
-                        <div className="col-md-4">
-                            <div className="category-card p-4">
-                                <h1>🎒</h1>
-                                <p>Accesorios</p>
-                            </div>
-                        </div>
+                        {
+                            [
+                                { name: "Ropa", icon: '👕' },
+                                { name: "Tazas", icon: '☕' },
+                                { name: "Accesorios", icon: '🎒' },
+                            ].map((element, index) =>
+                                <div className="col-md-4" key={index}>
+                                    <div className="category-card p-4">
+                                        <h1>{element.icon}</h1>
+                                        <p>{element.name}</p>
+                                    </div>
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -126,18 +117,13 @@ function Home() {
             </div>
 
             <div className="promo text-center text-white py-5">
-
                 <div className="container">
-
                     <h2>🔥 20% de descuento en camisetas</h2>
-
-                    <button className="btn btn-light mt-3">
-                        Comprar ahora
-                    </button>
-
+                    <Link to='/Productos'>
+                        <button className='className="btn btn-light mt-3"'>Comprar ahora</button>
+                    </Link>
                 </div>
             </div>
-
         </>
     );
 }

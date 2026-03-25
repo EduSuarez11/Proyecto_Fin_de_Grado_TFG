@@ -61,11 +61,11 @@ function InfoProducto() {
                         <p>Tallas disponibles</p>
 
                         <div className="sizes">
-                            <button className="size-btn">S</button>
-                            <button className="size-btn">M</button>
-                            <button className="size-btn">L</button>
-                            <button className="size-btn">XL</button>
-                            <button className="size-btn">XXL</button>
+                            {
+                                ["S", "M", "L", "XL", "XXL"].map((element, index) =>
+                                    <button className="size-btn" key={index}>{element}</button>
+                                )
+                            }
                         </div>
                     </div>
 

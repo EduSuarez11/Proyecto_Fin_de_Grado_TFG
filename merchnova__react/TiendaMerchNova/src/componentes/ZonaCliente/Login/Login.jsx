@@ -93,7 +93,6 @@ function Login() {
 
     }
 
-
     return (
         <div className="login-page bg-light">
             <div className="login-container">
@@ -126,10 +125,7 @@ function Login() {
 
                     }
                     <div className="text-center mt-1 mb-2">
-                        <Link
-                            to="/recuperar-password"
-                            className="small text-decoration-none text-muted"
-                        >
+                        <Link to="/recuperar-password" className="small text-decoration-none text-muted">
                             ¿Te has olvidado de la contraseña?
                         </Link>
                     </div>
