@@ -88,9 +88,31 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
 
 clientRouter.post('/Login', async (req, resp, next) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, tokenRecaptcha } = req.body;
+        const URL_RECAPTCHA = `https://recaptchaenterprise.googleapis.com/v1/projects/merchnova/assessments?key=${process.env.GOOGLE_APIKEY}`;
 
+        if (!tokenRecaptcha) throw new Error('Debes activar el ReCAPTCHA.')
         if (!email || !password) throw new Error('Los campos no pueden quedar vacíos.');
+
+        const requestVerification = {
+            "event": {
+                "token": tokenRecaptcha,
+                "expectedAction": "LOGIN",
+                "siteKey": process.env.GOOGLE_RECAPTCHA,
+            }
+        }
+
+        const requestRecaptcha = await fetch(URL_RECAPTCHA, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestVerification)
+        });
+
+        const responseRecaptcha = await requestRecaptcha.json();
+
+        if (responseRecaptcha.error) throw new Error('Error en la verificación de reCAPTCHA, intentalo de nuevo.');
+        
+        if (!responseRecaptcha.tokenProperties.valid || responseRecaptcha.riskAnalysis.score < 0.5) throw new Error('Verificación de reCAPTCHA fallida, la petición podría ser fraudulenta.');
 
         await mongoose.connect(process.env.URL_MONGODB);
         const existClient = await mongoose.connection.collection('clientes').findOne(
@@ -120,7 +142,7 @@ clientRouter.post('/Login', async (req, resp, next) => {
     }
 });
 
-clientRouter.get('/Verify/Token', async(req, res, next) => {
+clientRouter.get('/Verify/Token', async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
 
@@ -132,7 +154,7 @@ clientRouter.get('/Verify/Token', async(req, res, next) => {
             _id: new mongoose.Types.ObjectId(verifyToken.idCliente)
         })
         //console.log('Usuario: ', user);
-        
+
         res.status(200).send({ code: 0, message: 'Token verificado.', data: { user } });
     } catch (error) {
         res.status(200).send({ code: 5, message: `${error}` });
