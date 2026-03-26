@@ -25,7 +25,9 @@ function Header() {
 
                     const responseVT = await requestVerifyToken.json();
                     console.log('Respuesta: ', responseVT);
-                    setClientData(responseVT.data.user);
+                    if (responseVT.code === 0) {
+                        setClientData(responseVT.data.user);
+                    }        
                 }, 10)
                 return () => clearTimeout(timeRes);
             }

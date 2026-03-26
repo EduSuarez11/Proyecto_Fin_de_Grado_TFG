@@ -5,6 +5,13 @@
     min-height: 90vh;
 }
 
+.login-wrapper {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .login-container {
     background: white;
     padding: 40px;
