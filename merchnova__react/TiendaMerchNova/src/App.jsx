@@ -10,6 +10,7 @@ import Carrito from "./componentes/ZonaTienda/Carrito/Carrito";
 import PerfilCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/1_Perfil/Perfil";
 import CarritoCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/4_CarritoCuenta/MiCarritoCuenta";
 import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
+import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
@@ -93,6 +94,11 @@ const applicationRoutes = createBrowserRouter(
                path: 'Cart',
                element: <Carrito />,
                loader: getAllProducts
+            },
+
+            {
+               path: 'Proceso-Login-Discord',
+               element: <LoginCallback />
             },
 
             { path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{ width: '800px' }} /></div> }
