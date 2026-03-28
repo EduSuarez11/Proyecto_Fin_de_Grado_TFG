@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const mailjetService = require('../servicios/mailjetService');
 const jwtService = require('../servicios/jwtService');
-
+const crypto = require('crypto');
+const dataCrypto = crypto.randomBytes(20).toString('hex');
 const clientRouter = express.Router();
 
 /**
@@ -142,6 +143,15 @@ clientRouter.post('/Login', async (req, resp, next) => {
     }
 });
 
+
+clientRouter.get('/LoginDiscord', async (req, resp, next) => {
+    const URL_REDIRECT = encodeURIComponent('http://localhost:5173/Proceso-Login-Discord');
+    const URL_DISCORD = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${URL_REDIRECT}&state=${dataCrypto}&scope=identify+email`;
+
+    resp.status(200).send({ code: 0, message: 'URL obtenida', url: URL_DISCORD });
+});
+
+
 clientRouter.post('/DiscordCallback', async (req, resp, next) => {
     try {
         const { code } = req.body;
@@ -150,12 +160,12 @@ clientRouter.post('/DiscordCallback', async (req, resp, next) => {
             client_secret: process.env.DISCORD_CLIENT_SECRET,
             grant_type: 'authorization_code',
             code: code,
-            redirect_uri: 'http://localhost:5173/'
+            redirect_uri: 'http://localhost:5173/Proceso-Login-Discord'
         });
 
         if (!code) throw new Error('Fallo al obtener el código de autorización.');
 
-        const requestApiDiscord = await fetch('https://discord.com/api/oauth2/token', '', {
+        const requestApiDiscord = await fetch('https://discord.com/api/oauth2/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
