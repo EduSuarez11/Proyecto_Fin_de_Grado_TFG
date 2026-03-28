@@ -1,0 +1,98 @@
+.login-tipo-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgb(248 249 250);
+}
+
+.login-tipo-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 350px;
+    text-align: center;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.login-tipo-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #6a0dad;
+}
+
+.login-tipo-subtitle {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.login-tipo-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-tipo-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+
+.login-tipo-btn.google {
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.login-tipo-btn.google:hover {
+    background: #f5f5f5;
+}
+
+.login-tipo-btn.discord {
+    background: #7a83e5;
+    color: white;
+}
+
+.login-tipo-btn.discord:hover {
+    background: #4752c4;
+}
+
+.login-tipo-btn.email {
+    background: linear-gradient(135deg, #6a0dad, #8a2be2);
+    color: white;
+}
+
+.login-tipo-btn.email:hover {
+    opacity: 0.9;
+}
+
+.login-tipo-btn img {
+    width: 20px;
+}
+
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #aaa;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+    margin: 0 10px;
+}

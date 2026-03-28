@@ -87,7 +87,7 @@ function Header() {
                                         </i>
                                     </Link>
 
-                                    <Link to="/Cliente/Login">
+                                    <Link to="/Cliente/TipoLogin">
                                         <button className="btn btn-outline-light btn-sm">
                                             Iniciar sesión
                                         </button>
