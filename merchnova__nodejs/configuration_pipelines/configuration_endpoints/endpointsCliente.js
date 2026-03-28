@@ -111,7 +111,7 @@ clientRouter.post('/Login', async (req, resp, next) => {
         const responseRecaptcha = await requestRecaptcha.json();
 
         if (responseRecaptcha.error) throw new Error('Error en la verificación de reCAPTCHA, intentalo de nuevo.');
-        
+
         if (!responseRecaptcha.tokenProperties.valid || responseRecaptcha.riskAnalysis.score < 0.5) throw new Error('Verificación de reCAPTCHA fallida, la petición podría ser fraudulenta.');
 
         await mongoose.connect(process.env.URL_MONGODB);
@@ -139,6 +139,47 @@ clientRouter.post('/Login', async (req, resp, next) => {
         resp.status(200).send({ code: 2, message: `${error}` });
     } finally {
         await mongoose.connection.close();
+    }
+});
+
+clientRouter.post('/DiscordCallback', async (req, resp, next) => {
+    try {
+        const { code } = req.body;
+        const params = new URLSearchParams({
+            client_id: process.env.DISCORD_CLIENT_ID,
+            client_secret: process.env.DISCORD_CLIENT_SECRET,
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: 'http://localhost:5173/'
+        });
+
+        if (!code) throw new Error('Fallo al obtener el código de autorización.');
+
+        const requestApiDiscord = await fetch('https://discord.com/api/oauth2/token', '', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params
+        });
+
+        const responseApiDiscord = await requestApiDiscord.json();
+        console.log('Respuesta de api discord: ', responseApiDiscord);
+
+        const requestData = await fetch('https://discord.com/api/users/@me', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${responseApiDiscord.access_token}`
+            }
+        });
+
+        const dataUser = await requestData.json();
+        console.log('Datos del usuario: ', dataUser);
+
+        resp.status(200).send({ code: 0, message: 'Datos recibidos correctamente', data: { user: dataUser } });
+    } catch (error) {
+        console.log('Error en login discord: ', error);
+        resp.status(200).send({ code: 6, message: `${error}` });
     }
 });
 
