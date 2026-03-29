@@ -155,6 +155,7 @@ clientRouter.get('/LoginDiscord', async (req, resp, next) => {
 clientRouter.post('/DiscordCallback', async (req, resp, next) => {
     try {
         const { code } = req.body;
+        console.log('Codigo: ', code);
         const params = new URLSearchParams({
             client_id: process.env.DISCORD_CLIENT_ID,
             client_secret: process.env.DISCORD_CLIENT_SECRET,
