@@ -6,9 +6,11 @@ function LoginCallback() {
     useEffect(
         () => {
             const code = param.get('code');
-            //console.log('codigo: ', code, ', datos del padre: ');
-            if (code) {
-                window.opener.postMessage({ tipo: 'DISCORD_GETCODE', code }, window.location.origin);
+            //const canal = new BroadcastChannel('discord');
+
+            console.log('codigo: ', code);
+            if (code && window.opener) {
+                window.opener.postMessage({ code });
                 window.close();
             }
         }, []

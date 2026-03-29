@@ -7,13 +7,23 @@ function Layout() {
     const route = useLocation();
 
     return (
-        <div className='container-fluid p-0'>
-            <Header />
+        <>
+        {
+            route.pathname !== '/Cliente/TipoLogin' ?
+            <div className='container-fluid p-0'>
+                <Header />
 
-            <Outlet />
+                <Outlet />
 
-            {route.pathname !== '/Cliente/Login' && route.pathname !== '/Cliente/Registro' ? <Footer /> : <MiniFooter/>}
-        </div>
+                {route.pathname !== '/Cliente/Login' && route.pathname !== '/Cliente/Registro' ? <Footer /> : <MiniFooter />}
+            </div>
+            : 
+            <div className='container-fluid p-0'>
+                <Outlet/>
+            </div>
+        }
+            
+        </>
     )
 }
 

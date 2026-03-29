@@ -1,47 +1,38 @@
+import { useEffect, useRef } from 'react';
 import './TipoLogin.css';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function TipoLogin() {
-    const [searchParams] = useSearchParams();
-
-    async function handleLoginDiscord() {
-        let popupDiscord;
-
-        const requestURL = await fetch('http://localhost:3000/api/Cliente/LoginDiscord', { method: 'GET' });
-        const response = await requestURL.json();
-
-        console.log('Respuesta: ', response);
-        popupDiscord = window.open(response.url, 'popup', 'width=800px; height=700px');
-        //const code = searchParams.get('code');
-
-        const popupEvent = async (ev) => {
-            const { tipo } = ev.data;
-            if (tipo === 'DISCORD_GETCODE') {
-                const { code } = ev.data;
-
-                if (code) {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const popupEvent = async (event) => {
+            console.log("Mensaje recibido: ", event.data);
+            if (event.data.code) {
+                try {
                     const requestDiscord = await fetch('http://localhost:3000/api/Cliente/DiscordCallback', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: ev.data })
+                        body: JSON.stringify({ code: event.data.code })
                     });
 
                     const responseDiscord = await requestDiscord.json();
                     console.log('Respuesta desde discord: ', responseDiscord);
-                    popupDiscord.postMessage({ responseDC: responseDiscord});
-                    window.removeEventListener('message', popupEvent);
+                    navigate('/');
+                } catch (error) {
+                    console.log('Error al iniciar sesion en DC: ', error);
                 }
             }
+        };
+        window.addEventListener('message', popupEvent);
+        return () => window.removeEventListener('message', popupEvent);
+    }, [])
 
-        }
-        popupDiscord.addEventListener('message', popupEvent);
-        
+    async function handleLoginDiscord() {
+        const requestURL = await fetch('http://localhost:3000/api/Cliente/LoginDiscord', { method: 'GET' });
+        const response = await requestURL.json();
 
-        // window.addEventListener('message', async (ev) => {
-        //     const code = searchParams.get('code');
-        //     
-        // });
-
+        console.log('Respuesta: ', response);
+        window.open(response.url, 'popup', 'width=800px; height=700px');
     }
 
     return (
@@ -69,6 +60,12 @@ function TipoLogin() {
                     <Link to='/Cliente/Login' className="btn login-tipo-btn email">
                         Iniciar sesión con Email
                     </Link>
+
+                    <div className='d-flex justify-content-center'>
+                        <Link to='/' className='btn btn-danger w-50'>
+                            Volver
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
