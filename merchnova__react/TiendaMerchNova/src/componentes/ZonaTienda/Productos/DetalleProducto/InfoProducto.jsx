@@ -1,8 +1,7 @@
-import { Link, useLoaderData } from 'react-router-dom';
-//import useGlobalState from '../../../../global_state/globalState';
+import { Link, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import './InfoProducto.css';
 import useGlobalState from '../../../../global_state/globalState';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function InfoProducto() {
@@ -11,7 +10,19 @@ function InfoProducto() {
     const { setOrder } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
-    console.log('Producto: ', resp);
+    const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
+    //console.log('Producto: ', resp);
+    useEffect(
+        () => {
+            async function randomProducts() {
+                const requestProducts = await fetch(`http://localhost:3000/api/Tienda/Producto/${resp.product.categoria}/${resp.product.slug}`)
+                const response = await requestProducts.json();
+
+                setMoreProducts(response.moreProducts);
+            }
+            randomProducts();
+        }, [resp.product.slug]
+    );
 
     function handleAddToCart() {
         //console.log('Producto al añadir: ', resp);
@@ -98,7 +109,7 @@ function InfoProducto() {
                 <h2>Otros productos</h2>
                 <div className="related-grid">
                     {
-                        resp.moreProducts.map((product, el) =>
+                        moreProducts?.map((product, el) =>
                             <div className="related-card" key={el}>
                                 <Link to={`/Producto/${product.categoria}/${product.slug}`}>
                                     <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} />
