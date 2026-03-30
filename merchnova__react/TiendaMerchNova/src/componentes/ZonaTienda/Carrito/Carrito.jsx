@@ -92,9 +92,11 @@ function Carrito() {
                                 <span>{order.subtotal + 1.03} €</span>
                             </div>
 
-                            <button className="checkout-btn">
-                                Finalizar compra
-                            </button>
+                            <Link to='/Pedido/DetallesEncargo'>
+                                <button className="checkout-btn">
+                                    Finalizar compra
+                                </button>
+                            </Link>
                         </div>
                     }
 
