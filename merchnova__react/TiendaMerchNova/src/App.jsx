@@ -12,6 +12,8 @@ import CarritoCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/4_CarritoCu
 import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
 import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/FinPedido";
+import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
+
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
@@ -44,17 +46,17 @@ const getAllProducts = async () => {
    return response;
 }
 
-const getAllCountries = async () => {
-   const requestCountries = await fetch('https://restcountries.com/v3.1/all?fields=name,flags',
-      {
-         method: 'GET',
-         headers: { 'Content-Type': 'application/json' }
-      }
-   );
-   const responseCountries = await requestCountries.json();
-   console.log('Paises: ', responseCountries);
-   return responseCountries;
-}
+// const getAllCountries = async () => {
+//    const requestCountries = await fetch('https://restcountries.com/v3.1/all?fields=name,flags',
+//       {
+//          method: 'GET',
+//          headers: { 'Content-Type': 'application/json' }
+//       }
+//    );
+//    const responseCountries = await requestCountries.json();
+//    console.log('Paises: ', responseCountries);
+//    return responseCountries;
+// }
 
 
 const applicationRoutes = createBrowserRouter(
@@ -74,7 +76,7 @@ const applicationRoutes = createBrowserRouter(
                   { path: 'Registro', element: <Registro /> },
                   { path: 'Login', element: <Login /> },
                   { path: 'TipoLogin', element: <TipoLogin /> },
-                  { path: 'Perfil', element: <PerfilCuenta />, loader: getAllCountries },
+                  { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
                ]
             },
@@ -100,7 +102,7 @@ const applicationRoutes = createBrowserRouter(
             {
                path: 'Pedido',
                children: [
-                  { path: 'DetallesEncargo', element: <FinPedido /> }
+                  { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries }
                ]
             },
 

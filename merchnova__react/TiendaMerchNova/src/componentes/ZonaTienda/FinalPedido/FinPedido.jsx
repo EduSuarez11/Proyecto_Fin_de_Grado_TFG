@@ -1,22 +1,83 @@
+import { useLoaderData } from 'react-router-dom';
 import useGlobalState from '../../../global_state/globalState';
 import './FinPedido.css';
 import { useState } from "react";
 
 function FinPedido() {
+    const countries = useLoaderData();
     const [paymentMethod, setPaymentMethod] = useState();
+    const [direccionEnvio, setDireccionEnvio] = useState();
+    const [datosTarjeta, setDatosTarjeta] = useState();
+
     const { order } = useGlobalState();
     console.log('Pedidos en el encargo: ', order);
+
+
+    function onChangeAddress(ev) {
+        setDireccionEnvio({
+            ...direccionEnvio,
+            [ev.target.id]: ev.target.value
+        });
+    }
+
+    function onChangeDataCard(ev) {
+        setDatosTarjeta({
+            ...datosTarjeta,
+            [ev.target.id]: ev.target.value
+        });
+    }
+
+    function handleSubmitPurchaseInfo() {
+        console.log(`Datos de envio: Direccion - ${JSON.stringify(direccionEnvio)} | Tarjeta - ${JSON.stringify(datosTarjeta)}`);
+    }
+
     return (
         <div className="checkout-container">
             <div className="checkout-grid">
                 <div className="checkout-left">
-                    <div className='p-2 mb-4'>
-                        <h3>Dirección de envío</h3>
+                    <div className="px-2 py-3 mb-4">
 
-                        <input className="input" id='nombreCompleto' name='nombreCompleto' placeholder="Nombre" />
-                        <input className="input" id='direccion' name='direccion' placeholder="Dirección" />
-                        <input className="input" id='ciudad' name='ciudad' placeholder="Ciudad" />
-                        <input className="input" id='codigoPostal' name='codigoPostal' placeholder="Código postal" />
+                        <h3 className="mb-4">Dirección de envío</h3>
+
+                        <div className="form-group">
+                            <label className="form-label">Nombre completo</label>
+                            <input className="input" id="nombreCompleto" name="nombreCompleto" placeholder="Ej: Juan Pérez" onChange={onChangeAddress} />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Dirección</label>
+                            <input className="input" id="calle" name="calle" placeholder="Calle, número, piso..." onChange={onChangeAddress} />
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Municipio</label>
+                                <input className="input" id="municipio" name="municipio" placeholder="Municipio" onChange={onChangeAddress} />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Provincia</label>
+                                <input className="input" id="provincia" name="provincia" placeholder="Provincia" onChange={onChangeAddress} />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Código Postal</label>
+                                <input className="input" id="codigoPostal" name="codigoPostal" placeholder="Código postal" onChange={onChangeAddress} />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">País</label>
+                            <select id='pais' name="pais" className="input" onChange={onChangeAddress}>
+                                <option value="">Elige tu país</option>
+                                {countries.map((country, index) => (
+                                    <option key={index} value={country.cca2}>
+                                        {country.name.common}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                     </div>
 
                     <div className='p-2'>
@@ -34,9 +95,27 @@ function FinPedido() {
 
                         {paymentMethod === "card" && (
                             <div className="card-form">
-                                <input className="input" placeholder="Número de tarjeta" />
-                                <input className="input" placeholder="MM/AA" />
-                                <input className="input" placeholder="CVV" />
+                                <div className="form-group">
+                                    <label className="form-label mt-4">Número de tarjeta</label>
+                                    <input className="input" id='cardNumber' name='cardNumber' placeholder="1234 5678 9012 3456" onChange={onChangeDataCard}/>
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label className="form-label">Mes</label>
+                                        <input className="input" id='monthExp' name='monthExp' placeholder="MM" maxLength="2" onChange={onChangeDataCard}/>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">Año</label>
+                                        <input className="input" id='yearExp' name='yearExp' placeholder="aaaa" maxLength="4" onChange={onChangeDataCard}/>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label className="form-label">CVC</label>
+                                        <input className="input" id='cvc' name='cvc' placeholder="1234" maxLength="4" onChange={onChangeDataCard}/>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -71,7 +150,7 @@ function FinPedido() {
                         <span>{order.subtotal}</span>
                     </div>
 
-                    <button className="pay-btn">Finalizar compra</button>
+                    <button className="pay-btn" onClick={handleSubmitPurchaseInfo}>Finalizar compra</button>
                 </div>
             </div>
         </div>
