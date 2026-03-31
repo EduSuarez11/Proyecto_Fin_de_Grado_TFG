@@ -61,6 +61,11 @@ shopRouter.get('/Productos/Home', async (req, res, next) => {
     } finally {
         await mongoose.connection.close();
     }
-})
+});
+
+shopRouter.post('/RealizarCompra', async (req, resp, next) => {
+    
+});
+
 
 module.exports = shopRouter;

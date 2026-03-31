@@ -1,37 +1,41 @@
-const URL_STRIPE = 'https://api.stripe.com/v1';
-async function requestToStripe({ bodyStripe }) {
-    const requestClient = await fetch(`${URL_STRIPE}/customers`, {
+const URL = 'https://api.stripe.com/v1';
+
+async function requestToStripe({ body }, URL_STRIPE) {
+    const requestStripe = await fetch(`${URL_STRIPE}`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${process.env.STRIPE_KEY}`
+            'Authorization': `Bearer ${process.env.STRIPE_KEY}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams(bodyStripe)
+        body: new URLSearchParams(body)
     });
 
-    return requestClient;
+    if (!/^(2[0-2][0-9]|226)$/.test(requestStripe.status)) throw new Error('Error al realizar la petición. Vuelve a intentarlo');
+
+    const responseStripe = requestStripe.json();
+
+    return responseStripe;
 }
+
 
 module.exports = {
     //https://api.stripe.com/v1
     // Pasar datos del cliente
     CreateStripeClient_1: async (nombreCompleto, email, direccionEnvio) => {
-
-        let bodyStripe = {
-            name: nombreCompleto,
-            email: email,
-            'address[line1]': direccionEnvio.calle,
-            'address[city]': direccionEnvio.municipio,
-            'address[state]': direccionEnvio.provincia,
-            'address[country]': direccionEnvio.pais,
-            'address[postal_code]': direccionEnvio.codigoPostal
-        }
-
         try {
-            const response = requestToStripe(bodyStripe);
+            let bodyStripe = {
+                name: nombreCompleto,
+                email: email,
+                'address[line1]': direccionEnvio.calle,
+                'address[city]': direccionEnvio.municipio,
+                'address[state]': direccionEnvio.provincia,
+                'address[country]': direccionEnvio.pais,
+                'address[postal_code]': direccionEnvio.codigoPostal
+            }
 
-            if (!/^(2[0-2][0-9]|226)$/.test(response.status)) throw new Error('Error al realizar la petición de crear cliente');
-
-            return responseCustomer.id;
+            const response = requestToStripe(bodyStripe, URL + '/customers');
+            console.log('Respuesta de stripe (client): ', response);
+            return response.id;
         } catch (error) {
             console.log('Error al obtener id cliente: ', error);
             return null;
@@ -40,11 +44,47 @@ module.exports = {
 
     // Pasar el id de cliente que se genera y los datos de la tarjeta
     CreateCard_2: (idClient, cardDetails) => {
+        try {
+            let bodyCard = {
+                'source': 'visa'
+                // 'card[number]': cardDetails.cardNumber,
+                // 'card[exp_year]': cardDetails.yearExp,
+                // 'card[exp_month]': cardDetails.monthExp,
+                // 'card[cvc]': cardDetails.cvc
+            }
+
+            const response = requestToStripe(bodyCard, `${URL}/customers/${idClient}/sources`)
+            console.log('Respuesta de stripe (card): ', response);
+            return response.id;
+        } catch (error) {
+            console.log('Error al realizar la peticion de Crear Card: ', error);
+            return null;
+        }
 
     },
 
     // Cobrar al cliente pasandole el id de cliente, id tarjeta (paso 2), cantidad total y el id de pedido
-    ChargeClient_3: (idClient, idCard, quantity, idOrder) => {
+    ChargeClient_3: (idClient, idCard, totalQty, idOrder) => {
+        try {
+            const bodyCharge = {
+                'amount': totalQty * 100,
+                'currency': 'eur',
+                'customer': idClient,
+                'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${idOrder} y cantidad total ${totalQty}. `,
+                'payment_method': idCard,
+                'confirm': 'true',
+                'automatic_payment_methods[enabled]': true,
+                'automatic_payment_methods[allowed_payment_method_types]': ['card', 'paypal']
+            }
 
+            const response = requestToStripe(bodyCharge, `${URL}/payment_intents`);
+            console.log('Respuesta del cargo: ', response);
+
+            return response.id;
+
+        } catch (error) {
+            console.log('Error al realizar la peticion de cobro: ', error);
+            return null;
+        }
     }
 }
