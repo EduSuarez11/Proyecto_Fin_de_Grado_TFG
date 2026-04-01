@@ -76,6 +76,30 @@ const useGlobalState = create(
                                 updateToCart(item, index, newItem)
                         );
 
+                    switch (action) {
+                        case 'setShippingData':
+                            ({
+                                ...oldData,
+                                order: {
+                                    ...oldData.order,
+                                    direccionEnvio: newItem
+                                }
+                            });
+                            break;
+
+                        case 'setDataCard':
+                            ({
+                                ...oldData,
+                                order: {
+                                    ...oldData.order,
+                                    metodoPago: newItem
+                                }
+                            })
+
+                        default:
+                            break;
+                    }
+
                     //item.forEach((i) => subtotalPrice += (i.product.precio * i.quantity))
                     const subtotalPrice = item.reduce((total, i) => total + (i.product.precio * i.quantity), 0);
 

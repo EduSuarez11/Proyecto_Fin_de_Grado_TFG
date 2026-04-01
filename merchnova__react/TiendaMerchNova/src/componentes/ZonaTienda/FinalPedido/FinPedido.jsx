@@ -5,12 +5,13 @@ import { useState } from "react";
 
 function FinPedido() {
     const countries = useLoaderData();
+    const {setOrder, client} = useGlobalState();
     const [paymentMethod, setPaymentMethod] = useState();
     const [direccionEnvio, setDireccionEnvio] = useState();
     const [datosTarjeta, setDatosTarjeta] = useState();
 
     const { order } = useGlobalState();
-    console.log('Pedidos en el encargo: ', order);
+    //console.log('Pedidos en el encargo: ', order);
 
 
     function onChangeAddress(ev) {
@@ -29,6 +30,9 @@ function FinPedido() {
 
     function handleSubmitPurchaseInfo() {
         console.log(`Datos de envio: Direccion - ${JSON.stringify(direccionEnvio)} | Tarjeta - ${JSON.stringify(datosTarjeta)}`);
+
+        setOrder('setShippingData', direccionEnvio);
+        setOrder('setDataCard', datosTarjeta);
     }
 
     return (
@@ -83,11 +87,11 @@ function FinPedido() {
                     <div className='p-2'>
                         <h3 className="mt">Método de pago</h3>
                         <div className="payment-options">
-                            <div className={`payment-card ${paymentMethod === "card" ? "active" : ""}`} onClick={() => setPaymentMethod("card")}>
+                            <div className={`payment-card ${paymentMethod === "card" ? "active" : ""}`} onClick={() => { setPaymentMethod("card"); setDatosTarjeta({ ...datosTarjeta, tipo: 'tarjeta' }) }}>
                                 Tarjeta
                             </div>
 
-                            <div className={`payment-card ${paymentMethod === "paypal" ? "active" : ""}`} onClick={() => setPaymentMethod("paypal")}>
+                            <div className={`payment-card ${paymentMethod === "paypal" ? "active" : ""}`} onClick={() => { setPaymentMethod("paypal"); setDatosTarjeta({ tipo: 'paypal' }) }}>
                                 PayPal
                             </div>
                         </div>
@@ -97,23 +101,23 @@ function FinPedido() {
                             <div className="card-form">
                                 <div className="form-group">
                                     <label className="form-label mt-4">Número de tarjeta</label>
-                                    <input className="input" id='cardNumber' name='cardNumber' placeholder="1234 5678 9012 3456" onChange={onChangeDataCard}/>
+                                    <input className="input" id='cardNumber' name='cardNumber' placeholder="1234 5678 9012 3456" onChange={onChangeDataCard} />
                                 </div>
 
                                 <div className="form-row">
                                     <div className="form-group">
                                         <label className="form-label">Mes</label>
-                                        <input className="input" id='monthExp' name='monthExp' placeholder="MM" maxLength="2" onChange={onChangeDataCard}/>
+                                        <input className="input" id='monthExp' name='monthExp' placeholder="MM" maxLength="2" onChange={onChangeDataCard} />
                                     </div>
 
                                     <div className="form-group">
                                         <label className="form-label">Año</label>
-                                        <input className="input" id='yearExp' name='yearExp' placeholder="aaaa" maxLength="4" onChange={onChangeDataCard}/>
+                                        <input className="input" id='yearExp' name='yearExp' placeholder="aaaa" maxLength="4" onChange={onChangeDataCard} />
                                     </div>
 
                                     <div className="form-group">
                                         <label className="form-label">CVC</label>
-                                        <input className="input" id='cvc' name='cvc' placeholder="1234" maxLength="4" onChange={onChangeDataCard}/>
+                                        <input className="input" id='cvc' name='cvc' placeholder="1234" maxLength="4" onChange={onChangeDataCard} />
                                     </div>
                                 </div>
                             </div>
