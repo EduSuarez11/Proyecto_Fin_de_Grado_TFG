@@ -76,6 +76,34 @@ shopRouter.get('/Productos/Home', async (req, res, next) => {
     }
 });
 
+
+// MUESTRA LOS PRODUCTOS FILTRADOS SEGÚN SU TIPO. QUEDA POR HACER POR PRECIO Y VALORACIÓN
+shopRouter.post('/FiltrarProductos', async (req, res, next) => {
+    try {
+        const types = Object.keys(req.body);
+
+        console.log('Tipos: ', types);
+        await mongoose.connect(process.env.URL_MONGODB);
+        const filterProducts = await mongoose.connection.collection('productos').find().toArray();
+
+        let filter = [];
+        filterProducts.forEach(el => {
+            if (types.includes(el.categoria)) {
+                filter.push(el);
+            }
+        });
+        console.log('Nuevos productos con filtro: ', filter);
+
+        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
+    } catch (error) {
+        res.status(200).send({ code: 5, message: error });
+    }
+
+
+});
+
+
+
 // MÉTODO PARA REALIZAR LOS PASOS DE STRIPE
 async function useService(client, order, paymethod, existIds) {
     let clientId;
@@ -141,7 +169,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
         await mongoose.connect(process.env.URL_MONGODB);
         if (order.metodoPago.tipo === 'tarjeta') {
             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
-            const existPay = mongoose.connection.collection('clientes').findOne({
+            const existPay = await mongoose.connection.collection('clientes').findOne({
                 'metodoPago': {
                     $elemMatch: {
                         tipo: 'tarjeta'
@@ -154,7 +182,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
                 useService(client, order, null, false);
             } else {
                 // Si existe un pago, recoger id de cliente y tarjeta
-                const getIds = mongoose.connection.collection('clientes').findOne(prop => prop.tipo === 'card');
+                const getIds = await mongoose.connection.collection('clientes').findOne(prop => prop.tipo === 'card');
 
                 useService(client, order, getIds, true);
             }
