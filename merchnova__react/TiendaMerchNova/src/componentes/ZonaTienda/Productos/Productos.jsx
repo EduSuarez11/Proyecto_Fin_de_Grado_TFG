@@ -1,9 +1,68 @@
 import { Link, useLoaderData } from 'react-router-dom';
 import './Productos.css';
+import { useRef, useState } from 'react';
+import requestFetch from '../../Servicios/peticiones_fetch';
 
 
 function Productos() {
     const products = useLoaderData();
+    const [typeProduct, setTypeProduct] = useState({});
+    const [productsFilter, setProductsFilter] = useState(products.data);
+    const [filters, setFilters] = useState({
+        todos: true,
+        camisetas: false,
+        sudaderas: false,
+        tazas: false,
+        llaveros: false
+    });
+
+    const checkFilter = (name) => {
+        const todos = name === 'todos';
+        const camisetas = name === 'camisetas';
+        const sudaderas = name === 'sudaderas';
+        const tazas = name === 'tazas';
+        const llaveros = name === 'llaveros';
+        setFilters({ todos, camisetas, sudaderas, tazas, llaveros })
+    }
+
+
+    function onChangeCheckbox(ev) {
+        //console.log('Evento checked que pasa: ', ev.target.checked);
+        if (ev.target.checked) {
+            setTypeProduct({
+                ...typeProduct,
+                [ev.target.name]: ev.target.value
+            })
+        } else {
+            // Desestructuro para eliminar al instante el checkbox que dejas de seleccionar
+            const { [ev.target.name]:_, ...deleteType } = typeProduct;
+            console.log('Tipo: ', deleteType);
+            setTypeProduct(deleteType);
+        }
+
+
+        // Evita que marque la casilla "todos" y las demas casillas a la vez
+        if (ev.target.name === 'todos' && ev.target.checked) {
+            checkFilter(ev.target.name);
+        } else {
+            setFilters((prev) => ({
+                ...prev,
+                'todos': false,
+                [ev.target.name]: ev.target.checked
+            }));
+        }
+    }
+
+    async function handleFilter() {
+        //console.log('Filtrado de productos: ', JSON.stringify(typeProduct));
+        const response = await requestFetch.requestGetProductsByFilter(typeProduct);
+        //console.log('Respuesta: ', response);
+
+        // Si esta marcado todos, muestra todos los productos
+        const types = Object.keys(typeProduct);
+        types.includes("todos") ? setProductsFilter(products.data) : setProductsFilter(response.products);
+        //console.log('Productos filtrados: ', productsFilter);
+    }
 
     return (
         <div className="container mt-5">
@@ -18,22 +77,12 @@ function Productos() {
 
                     <div className="filter-box">
                         <h6>Categoría</h6>
+                        <input className="form-check-input" type="checkbox" name='todos' value='todos' onChange={onChangeCheckbox} checked={filters.todos} />
+                        <label className='form-check-label ms-2'>Todos</label>
                         {
                             ["Camisetas", "Sudaderas", "Tazas", "Llaveros"].map((element, index) =>
                                 <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="checkbox" />
-                                    <label className="form-check-label">{element}</label>
-                                </div>
-                            )
-                        }
-                    </div>
-
-                    <div className="filter-box">
-                        <h6>Talla</h6>
-                        {
-                            ["S", "M", "L", "XL", "XXL"].map((element, index) =>
-                                <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="checkbox" />
+                                    <input className="form-check-input" type="checkbox" name={element.charAt(0).toLowerCase() + element.slice(1)} value={element.charAt(0).toLowerCase() + element.slice(1)} onChange={onChangeCheckbox} checked={filters[element.toLowerCase()]} />
                                     <label className="form-check-label">{element}</label>
                                 </div>
                             )
@@ -62,13 +111,13 @@ function Productos() {
                             <input type="number" className="form-control" placeholder="Max €" />
                         </div>
 
-                        <button className="btn btn-purple w-100 mt-2">Aplicar</button>
+                        <button className="btn btn-purple w-100 mt-2" onClick={handleFilter} >Aplicar</button>
                     </div>
                 </div>
 
                 <div className="col-lg-9">
                     <div className="row">
-                        {products.data.map((product, index) =>
+                        {productsFilter.map((product, index) =>
                             <Link to={`/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />

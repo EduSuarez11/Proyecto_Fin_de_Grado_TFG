@@ -13,9 +13,20 @@ const requestFetch = {
         const responseCountries = await requestCountries.json();
         console.log('Paises: ', responseCountries);
         return responseCountries;
-    }
+    },
 
-    
+    requestGetProductsByFilter: async(dataFilter) => {
+        const request = await fetch('http://localhost:3000/api/Tienda/FiltrarProductos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataFilter)
+        });
+        const response = await request.json();
+
+        return response;
+    }
 }
 
 export default requestFetch;
