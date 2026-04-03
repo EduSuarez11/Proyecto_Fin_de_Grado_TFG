@@ -45,7 +45,7 @@ function Panel({ order, clientData, logOut }) {
                                             {elemento}
                                         </Link>
                                         :
-                                        <button className='dropdown-item text-danger' onClick={() => {logOut();localStorage.removeItem("token") ;navigate('/Cliente/Login', {state: {msg: 'Has cerrado sesión'}})}}>
+                                        <button className='dropdown-item text-danger' onClick={() => {logOut();sessionStorage.removeItem("token") ;navigate('/Cliente/TipoLogin', {state: {msg: 'Has cerrado sesión'}})}}>
                                             {elemento}
                                         </button>
                                     }

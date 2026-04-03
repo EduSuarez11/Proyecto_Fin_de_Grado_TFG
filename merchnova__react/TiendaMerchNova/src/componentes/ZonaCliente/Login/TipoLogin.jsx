@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import './TipoLogin.css';
 import { Link, useNavigate } from 'react-router-dom';
+import useGlobalState from '../../../global_state/globalState';
 
 function TipoLogin() {
+    const { setClientData } = useGlobalState();
     const navigate = useNavigate();
     useEffect(() => {
         const popupEvent = async (event) => {
@@ -17,7 +19,35 @@ function TipoLogin() {
 
                     const responseDiscord = await requestDiscord.json();
                     console.log('Respuesta desde discord: ', responseDiscord);
+                    const URL_IMAGE = `https://cdn.discordapp.com/avatars/${responseDiscord.user.id}/${responseDiscord.user.avatar}.png`
+                    const dataDiscord = {
+                        nombreCompleto: responseDiscord.user.global_name,
+                        cuenta: {
+                            tipo: 'discord',
+                            email: responseDiscord.user.email,
+                            password: '',
+                            genero: 'Neutro',
+                            cuentaActiva: true,
+                            imagenCuenta: URL_IMAGE,
+                            creacionCuenta: Date.now(),
+                            sobreMi: '',
+                            telefono: ''
+                        },
+                        pedidos: [],
+                        carrito: [],
+                        direcciones: [
+                            {
+                                calle: '',
+                                codigoPostal: '',
+                                municipio: '',
+                                pais: '',
+                                provincia: ''
+                            }
+                        ]
+                    }
+                    setClientData(dataDiscord);
                     navigate('/');
+                    
                 } catch (error) {
                     console.log('Error al iniciar sesion en DC: ', error);
                 }
@@ -26,6 +56,11 @@ function TipoLogin() {
         window.addEventListener('message', popupEvent);
         return () => window.removeEventListener('message', popupEvent);
     }, [])
+
+
+    async function handleLoginGoogle() {
+        
+    }
 
     async function handleLoginDiscord() {
         const requestURL = await fetch('http://localhost:3000/api/Cliente/LoginDiscord', { method: 'GET' });

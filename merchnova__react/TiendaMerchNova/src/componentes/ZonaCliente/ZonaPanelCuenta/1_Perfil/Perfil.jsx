@@ -1,7 +1,7 @@
 import './Perfil.css';
 import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../../global_state/globalState";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function PerfilCuenta() {
@@ -10,7 +10,7 @@ function PerfilCuenta() {
     const location = useLocation();
     const [editProfile, setEditProfile] = useState(false);
     const [formProfile, setFormProfile] = useState({ email: clientData.cuenta.email });
-    const message = location.state?.msg
+
     const navigate = useNavigate();
 
     function onChangeInputProfile(e) {
@@ -44,10 +44,6 @@ function PerfilCuenta() {
     //console.log('Cliente: ', clientData);
     return (
         <div className="container py-5">
-            {
-                message &&
-                <MensajeSuccess msg={message} />
-            }
             <div className="row g-4">
                 <div className="col-lg-8">
                     <div className="card p-4">
@@ -66,7 +62,13 @@ function PerfilCuenta() {
                                         <label htmlFor="imageUpload" className="btn btn-purple btn-sm w-100">
                                             <i className="bi bi-camera me-2"></i>Cambiar Foto
                                         </label>
-                                        <input type="file" id="imageUpload" hidden accept="image/*" />
+                                        <input type="file" id="imageUpload" hidden accept="image/*" disabled={clientData.cuenta.tipo !== 'discord' ? !editProfile : true} />
+                                        {
+                                            clientData.cuenta.tipo === 'discord' &&
+                                            <div className="form-text small text-danger">
+                                                No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google
+                                            </div>
+                                        }
                                     </div>
                                 </div>
 
@@ -82,9 +84,16 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             placeholder="Tu nombre"
                                             defaultValue={clientData.nombreCompleto}
-                                            disabled={!editProfile}
+                                            disabled={clientData.cuenta.tipo !== 'discord' ? !editProfile : true}
                                             onChange={onChangeInputProfile}
                                         />
+                                        {
+                                            clientData.cuenta.tipo === 'discord' &&
+                                            <div className="form-text small text-danger">
+                                                No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google
+                                            </div>
+                                        }
+
                                     </div>
 
                                     {/* Email + Género */}
@@ -203,8 +212,14 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             placeholder="638 111 222"
                                             defaultValue={clientData.cuenta.telefono}
-                                            disabled={!editProfile}
+                                            disabled={clientData.cuenta.tipo !== 'discord' ? !editProfile : true}
                                             onChange={onChangeInputProfile} />
+                                        {
+                                            clientData.cuenta.tipo === 'discord' &&
+                                            <div className="form-text small text-danger">
+                                                No puedes cambiar tu teléfono si has iniciado sesión con Discord o Google
+                                            </div>
+                                        }
                                     </div>
 
                                     {/* Sobre ti */}
@@ -272,7 +287,7 @@ function PerfilCuenta() {
                                 )
                             }
                             <hr className="text-muted my-2" />
-                            <button onClick={() => { logOut(); navigate('/', { state: { msg: 'Has cerrado sesión' } }) }}
+                            <button onClick={() => { logOut(); navigate('/Cliente/TipoLogin', { state: { msg: 'Has cerrado sesión' } }) }}
                                 className="list-group-item list-group-item-action border-0 py-3 text-danger fw-bold sidebar-link-danger">
                                 <i className="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
                             </button>

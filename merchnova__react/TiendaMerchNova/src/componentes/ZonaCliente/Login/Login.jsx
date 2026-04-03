@@ -108,7 +108,7 @@ function Login() {
                 setErrorLogin(`${response.message}`);
                 return;
             }
-            localStorage.setItem("token", response.data.accessToken);
+            sessionStorage.setItem("token", response.data.accessToken);
             setClientData(response.data.clientData);
             navigate('/', { state: { msg: `${response.message}` } });
         } catch (error) {
