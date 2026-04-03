@@ -6,6 +6,14 @@ const jwtService = require('../servicios/jwtService');
 const crypto = require('crypto');
 const dataCrypto = crypto.randomBytes(20).toString('hex');
 const clientRouter = express.Router();
+const { google } = require('googleapis');
+
+
+const OAuth2 = new google.auth.OAuth2(
+    process.env.GOOGLE_OAUTH_ID,
+    process.env.GOOGLE_OAUTH_SECRET,
+    'http://localhost:3000/api/Cliente/CallbackGoogle'
+);
 
 /**
  * Códigos de mensaje de error:
@@ -13,6 +21,10 @@ const clientRouter = express.Router();
  *  2º Error Login
  *  3º Error Activacion de la cuenta
  *  4º Error Actualizacion de datos
+ *  5º Error en la URL Discord
+ *  6º Error de Discord login
+ *  7º Error en Google Login
+ *  8º Error en verificar token
  */
 
 clientRouter.post('/Registro', async (req, resp, next) => {
@@ -145,10 +157,15 @@ clientRouter.post('/Login', async (req, resp, next) => {
 
 
 clientRouter.get('/LoginDiscord', async (req, resp, next) => {
-    const URL_REDIRECT = encodeURIComponent('http://localhost:5173/Proceso-Login-Discord');
-    const URL_DISCORD = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${URL_REDIRECT}&state=${dataCrypto}&scope=identify+email`;
+    try {
+        const URL_REDIRECT = encodeURIComponent('http://localhost:5173/Proceso-Login-Discord');
+        const URL_DISCORD = `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${URL_REDIRECT}&state=${dataCrypto}&scope=identify+email`;
 
-    resp.status(200).send({ code: 0, message: 'URL obtenida', url: URL_DISCORD });
+        resp.status(200).send({ code: 0, message: 'URL obtenida', url: URL_DISCORD });
+    } catch (error) {
+        resp.status(200).send({ code: 5, message: 'URL obtenida', url: URL_DISCORD });
+    }
+
 });
 
 
@@ -187,7 +204,7 @@ clientRouter.post('/DiscordCallback', async (req, resp, next) => {
         const dataUser = await requestData.json();
         console.log('Datos del usuario: ', dataUser);
 
-        resp.status(200).send({ code: 0, message: 'Datos recibidos correctamente', data: { user: dataUser } });
+        resp.status(200).send({ code: 0, message: 'Datos recibidos correctamente', user: dataUser });
     } catch (error) {
         console.log('Error en login discord: ', error);
         resp.status(200).send({ code: 6, message: `${error}` });
@@ -209,12 +226,9 @@ clientRouter.get('/Verify/Token', async (req, res, next) => {
 
         res.status(200).send({ code: 0, message: 'Token verificado.', data: { user } });
     } catch (error) {
-        res.status(200).send({ code: 5, message: `${error}` });
+        res.status(200).send({ code: 8, message: `${error}` });
     }
-
-
 });
-
 
 clientRouter.post('/Perfil/Update', async (req, res, next) => {
     try {
@@ -257,5 +271,61 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
         res.status(200).send({ code: 4, message: `${error}` });
     }
 });
+
+
+
+clientRouter.get('/LoginGoogle', async (req, res, next) => {
+    try {
+        const scopes = [
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/user.addresses.read',
+            'https://www.googleapis.com/auth/user.gender.read'
+            //'https://www.googleapis.com/auth/user.phonenumbers.read'
+        ];
+
+        const url_google = OAuth2.generateAuthUrl({
+            access_type: 'offline',
+            scope: scopes,
+            include_granted_scopes: true,
+            state: crypto.randomBytes(32).toString('hex')
+        });
+
+        res.status(200).send({ code: 0, message: 'URL de Google obtenida', url: url_google });
+    } catch (error) {
+        res.status(200).send({ code: 7, message: error });
+    }
+
+
+});
+
+clientRouter.get('/CallbackGoogle', async (req, res, next) => {
+    try {
+        const { code } = req.body;
+        const { tokens } = await OAuth2.getToken(code);
+
+        if (!tokens) throw new Error('No se pudieron obtener los tokens.');
+
+        OAuth2.setCredentials(tokens);
+
+        const peopleApi = google.people({ version: 'v1', auth: OAuth2 });
+
+        const userInfo = await peopleApi.people.get({
+            resourceName: 'people/me',
+            personFields: 'emailAddresses,genders,names,photos'
+        });
+
+        const emailGoogle = userInfo.data.emailAddresses && userInfo.data.emailAddresses.length > 0 ? userInfo.data.emailAddresses[0].value : null;
+        const nameGoogle = userInfo.data.names && userInfo.data.names.length > 0 ? userInfo.data.names[0].givenName : null;
+        const genderGoogle = userInfo.data.genders && userInfo.data.genders.length > 0 ? userInfo.data.genders[0].value : null;
+        const photoGoogle = userInfo.data.photos && userInfo.data.photos.length > 0 ? userInfo.data.photos[0].url : null;
+
+        res.status(200).send({ codigo: 0, mensaje: "Login con Google ok, info del perfil del usuario obtenida de google mediante la PEOPLE-API", dataUser: { email: emailGoogle, name: nameGoogle, gender: genderGoogle, photo: photoGoogle } });
+    } catch (error) {
+        res.status(200).send({ codigo: 9, mensaje: error });
+    }
+
+});
+
 
 module.exports = clientRouter;
