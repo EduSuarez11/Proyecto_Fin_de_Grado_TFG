@@ -1,16 +1,15 @@
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import useGlobalState from '../../../global_state/globalState';
 import './FinPedido.css';
 import { useState } from "react";
 
 function FinPedido() {
     const countries = useLoaderData();
-    const {setOrder, client} = useGlobalState();
+    const navigate = useNavigate();
+    const { setOrder, client, order } = useGlobalState();
     const [paymentMethod, setPaymentMethod] = useState();
     const [direccionEnvio, setDireccionEnvio] = useState();
     const [datosTarjeta, setDatosTarjeta] = useState();
-
-    const { order } = useGlobalState();
     //console.log('Pedidos en el encargo: ', order);
 
 
@@ -28,11 +27,25 @@ function FinPedido() {
         });
     }
 
-    function handleSubmitPurchaseInfo() {
+    async function handleSubmitPurchaseInfo() {
         console.log(`Datos de envio: Direccion - ${JSON.stringify(direccionEnvio)} | Tarjeta - ${JSON.stringify(datosTarjeta)}`);
 
         setOrder('setShippingData', direccionEnvio);
         setOrder('setDataCard', datosTarjeta);
+
+        const requestPay = await fetch('http://localhost:3000/api/Tienda/RealizarCompra', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ client, order })
+        });
+
+        const response = await requestPay.json();
+
+        if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
+
+        navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
     }
 
     return (
