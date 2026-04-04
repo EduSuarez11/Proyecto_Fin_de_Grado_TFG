@@ -293,15 +293,14 @@ clientRouter.get('/LoginGoogle', async (req, res, next) => {
 
         res.status(200).send({ code: 0, message: 'URL de Google obtenida', url: url_google });
     } catch (error) {
+        console.log('Error en LoginGoogle: ', error);
         res.status(200).send({ code: 7, message: error });
     }
-
-
 });
 
 clientRouter.get('/CallbackGoogle', async (req, res, next) => {
     try {
-        const { code } = req.body;
+        const { code } = req.query;
         const { tokens } = await OAuth2.getToken(code);
 
         if (!tokens) throw new Error('No se pudieron obtener los tokens.');
@@ -320,8 +319,21 @@ clientRouter.get('/CallbackGoogle', async (req, res, next) => {
         const genderGoogle = userInfo.data.genders && userInfo.data.genders.length > 0 ? userInfo.data.genders[0].value : null;
         const photoGoogle = userInfo.data.photos && userInfo.data.photos.length > 0 ? userInfo.data.photos[0].url : null;
 
-        res.status(200).send({ codigo: 0, mensaje: "Login con Google ok, info del perfil del usuario obtenida de google mediante la PEOPLE-API", dataUser: { email: emailGoogle, name: nameGoogle, gender: genderGoogle, photo: photoGoogle } });
+        console.log('Datos obtenidos de Google: ', JSON.stringify({ emailGoogle, nameGoogle, genderGoogle, photoGoogle }));
+
+        // CAMBIAR ESTO PARA REALIZARLO CON MICROSERVICIOS
+        res.status(200).send(`
+            <html>
+                <body>
+                    <script>
+                        window.opener.postMessage(${JSON.stringify({ codigo: 0, mensaje: "Login con Google ok, info del perfil del usuario obtenida de google mediante la PEOPLE-API", dataUser: { email: emailGoogle, name: nameGoogle, gender: genderGoogle, photo: photoGoogle } })}, '*')
+                        window.close();
+                    </script>
+                </body>
+            </html>
+            `)
     } catch (error) {
+        console.log('Error en el callback de Google: ', error);
         res.status(200).send({ codigo: 9, mensaje: error });
     }
 
