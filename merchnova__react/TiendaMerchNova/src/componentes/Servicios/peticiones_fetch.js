@@ -1,6 +1,7 @@
 // Modulo de código que realizará peticiones fetch para evitar repetir código en algunas ocasiones
 
-const URL_TOTAL = 'http://localhost:3000/api/Tienda';
+const URL_TIENDA = 'http://localhost:3000/api/Tienda';
+const URL_CLIENTE = 'http://localhost:3000/api/Cliente';
 
 const requestFetch = {
     // Petición para obtener todos los países del mundo
@@ -17,7 +18,7 @@ const requestFetch = {
     },
 
     requestGetProductsByFilter: async (dataFilter) => {
-        const request = await fetch(`${URL_TOTAL}/FiltrarProductos`, {
+        const request = await fetch(`${URL_TIENDA}/FiltrarProductos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -30,7 +31,7 @@ const requestFetch = {
     },
 
     loginGoogle: async () => {
-        const request = await fetch(`${URL_TOTAL}/LoginGoogle`, {
+        const request = await fetch(`${URL_CLIENTE}/LoginGoogle`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });

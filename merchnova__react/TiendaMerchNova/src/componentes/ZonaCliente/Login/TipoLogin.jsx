@@ -1,11 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './TipoLogin.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useGlobalState from '../../../global_state/globalState';
+import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
+import requestFetch from '../../Servicios/peticiones_fetch';
 
 function TipoLogin() {
     const { setClientData } = useGlobalState();
     const navigate = useNavigate();
+    const [logout, setLogout] = useState(useLocation().state?.msg);
+    let googlePopup = useRef(null);
+
     useEffect(() => {
         const popupEvent = async (event) => {
             console.log("Mensaje recibido: ", event.data);
@@ -47,7 +52,7 @@ function TipoLogin() {
                     }
                     setClientData(dataDiscord);
                     navigate('/');
-                    
+
                 } catch (error) {
                     console.log('Error al iniciar sesion en DC: ', error);
                 }
@@ -58,8 +63,43 @@ function TipoLogin() {
     }, [])
 
 
+    function getDataGoogle(ev) {
+        console.log('Datos de google: ', ev);
+        const dataGoogle = {
+            nombreCompleto: ev.data.dataUser.name,
+            cuenta: {
+                tipo: 'google',
+                email: ev.data.dataUser.email,
+                password: '',
+                genero: ev.data.dataUser.gender === 'male' ? 'Masculino' : 'Femenino',
+                cuentaActiva: true,
+                imagenCuenta: ev.data.dataUser.photo,
+                creacionCuenta: Date.now(),
+                sobreMi: '',
+                telefono: ''
+            },
+            pedidos: [],
+            carrito: [],
+            direcciones: [
+                {
+                    calle: '',
+                    codigoPostal: '',
+                    municipio: '',
+                    pais: '',
+                    provincia: ''
+                }
+            ]
+        }
+        setClientData(dataGoogle);
+        window.removeEventListener('message', getDataGoogle);
+        navigate('/', { state: { msg: 'Has iniciado sesión con Google' } });
+    }
+
     async function handleLoginGoogle() {
-        
+        const response = await requestFetch.loginGoogle();
+        console.log('Respuesta url: ', response);
+        window.addEventListener('message', getDataGoogle);
+        googlePopup = window.open(response.url, 'Google_popup', 'width=800px; height=700px');
     }
 
     async function handleLoginDiscord() {
@@ -72,19 +112,24 @@ function TipoLogin() {
 
     return (
         <div className="login-tipo-container">
+            {
+                logout &&
+                <MensajeSuccess msg={logout} setState={setLogout} />
+            }
+
             <div className="login-tipo-card">
                 <h2 className="login-tipo-title">Bienvenido a MerchNova</h2>
                 <p className="login-tipo-subtitle">Elige cómo quieres iniciar sesión</p>
 
                 <div className="login-tipo-buttons">
 
-                    <button className="btn login-tipo-btn google">
-                        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="" />
+                    <button className="btn login-tipo-btn google" onClick={handleLoginGoogle}>
+                        <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google" />
                         Continuar con Google
                     </button>
 
                     <button className="btn login-tipo-btn discord" onClick={handleLoginDiscord}>
-                        <img src="https://cdn-icons-png.flaticon.com/128/5968/5968756.png" alt="" />
+                        <img src="https://cdn-icons-png.flaticon.com/128/5968/5968756.png" alt="Discord" />
                         Continuar con Discord
                     </button>
 
