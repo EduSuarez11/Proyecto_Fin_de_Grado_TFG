@@ -27,7 +27,7 @@ function Header() {
                     console.log('Respuesta: ', responseVT);
                     if (responseVT.code === 0) {
                         setClientData(responseVT.data.user);
-                    }        
+                    }
                 }, 10)
                 return () => clearTimeout(timeRes);
             }
@@ -75,7 +75,6 @@ function Header() {
                             </button>
                         </form>
 
-
                         {
                             clientData == null ?
                                 <div className="d-flex align-items-center gap-3">
@@ -102,7 +101,6 @@ function Header() {
                                 :
                                 <Panel order={order} clientData={clientData} logOut={logOut} />
                         }
-
                     </div>
                     :
                     <Link to='/'>

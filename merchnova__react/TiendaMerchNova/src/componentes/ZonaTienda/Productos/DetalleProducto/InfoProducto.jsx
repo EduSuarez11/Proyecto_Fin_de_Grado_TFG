@@ -7,7 +7,7 @@ import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeS
 function InfoProducto() {
 
     const resp = useLoaderData();
-    const { setOrder } = useGlobalState();
+    const { setOrder, clientData, setClientData } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
     const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
@@ -24,9 +24,28 @@ function InfoProducto() {
         }, [resp.product.slug]
     );
 
-    function handleAddToCart() {
+    
+    async function handleAddToCart() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
+        if (clientData != null) {
+            const request = await fetch('http://localhost:3000/api/Tienda/Persistencia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ client: clientData, order: resp.product, quantity })
+            });
+
+            const response = await request.json();
+
+            if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
+
+            //console.log(response.data);
+            setClientData(response.data);
+            //console.log('ClientData actualizado: ', clientData);
+        }
+        
         setOrder('addToCart', { product: resp.product, quantity: quantity });
         setAddSuccess('Producto añadido al carrito');
     }

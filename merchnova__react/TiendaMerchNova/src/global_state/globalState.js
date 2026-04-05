@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 function methodAddToCart(item, pos, newItem) {
-    console.log('Item: ', item, '; pos: ', pos, '; newItem: ', newItem)
+    //console.log('Item: ', item, '; pos: ', pos, '; newItem: ', newItem)
     if (pos >= 0) {
         item[pos].quantity += newItem.quantity;
     } else {
@@ -20,6 +20,7 @@ const useGlobalState = create(
     (set, get, store) => {
         return {
             clientData: null,
+
             order: {
                 items: [],
                 estado: '',
@@ -28,7 +29,7 @@ const useGlobalState = create(
                 metodoEnvio: {},
                 direccionEnvio: null,
                 subtotal: 0,
-                gastosEnvio: 0,
+                gastosEnvio: 1.03,
                 total: 0
             },
 
@@ -50,7 +51,7 @@ const useGlobalState = create(
 
             setOrder: (action, newItem) => {
                 set(oldData => {
-                    console.log('Propiedades del newItem: ', newItem.product);
+                    //console.log('Propiedades del newItem: ', newItem.product);
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
 

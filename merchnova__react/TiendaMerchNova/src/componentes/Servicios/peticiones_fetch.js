@@ -30,6 +30,16 @@ const requestFetch = {
         return response;
     },
 
+    getCartAccount: async (clientData) => {
+        const request = await fetch(`${URL_TIENDA}/Carrito/${clientData.cuenta.email}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const response = await request.json();
+        return response;
+    },
+
     loginGoogle: async () => {
         const request = await fetch(`${URL_CLIENTE}/LoginGoogle`, {
             method: 'GET',
