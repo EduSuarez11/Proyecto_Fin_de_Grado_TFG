@@ -165,7 +165,6 @@ clientRouter.get('/LoginDiscord', async (req, resp, next) => {
     } catch (error) {
         resp.status(200).send({ code: 5, message: 'URL obtenida', url: URL_DISCORD });
     }
-
 });
 
 
@@ -227,6 +226,8 @@ clientRouter.get('/Verify/Token', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Token verificado.', data: { user } });
     } catch (error) {
         res.status(200).send({ code: 8, message: `${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 });
 
@@ -269,6 +270,8 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: updateClient } });
     } catch (error) {
         res.status(200).send({ code: 4, message: `${error}` });
+    } finally {
+        await mongoose.connection.close();
     }
 });
 
@@ -295,6 +298,8 @@ clientRouter.get('/LoginGoogle', async (req, res, next) => {
     } catch (error) {
         console.log('Error en LoginGoogle: ', error);
         res.status(200).send({ code: 7, message: error });
+    } finally {
+        await mongoose.connection.close();
     }
 });
 
@@ -335,6 +340,8 @@ clientRouter.get('/CallbackGoogle', async (req, res, next) => {
     } catch (error) {
         console.log('Error en el callback de Google: ', error);
         res.status(200).send({ codigo: 9, mensaje: error });
+    } finally {
+        await mongoose.connection.close();
     }
 
 });
