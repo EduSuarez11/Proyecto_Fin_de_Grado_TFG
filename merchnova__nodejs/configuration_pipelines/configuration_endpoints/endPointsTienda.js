@@ -9,6 +9,9 @@ const shopRouter = express.Router();
  *  2º Error en obtener el producto que eliges para comprar o añadir al carrito
  *  3º Error en obtener los productos de la página principal (Home.jsx)
  *  4º Error en el pago con tarjeta
+ *  5º Persistir en carrito (añadir)
+ *  6º Persistir en carrito (eliminar)
+ *  7º Persistir en carrito (actualizar)
  */
 
 
@@ -198,26 +201,30 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 });
 
 
-shopRouter.post('/Persistencia', async (req, res, next) => {
+async function findProduct(client, order) {
+    const productExists = await mongoose.connection.collection('clientes').findOne({
+        'cuenta.email': client.cuenta.email,
+        'carrito': {
+            $elemMatch: {
+                'producto.nombre': order.nombre
+            }
+        }
+    });
+
+    return productExists;
+}
+
+shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
     try {
         const { client, order, quantity } = req.body;
-
         await mongoose.connect(process.env.URL_MONGODB);
+        const find = findProduct(client, order);
 
-        const productExists = await mongoose.connection.collection('clientes').findOne({
-            'cuenta.email': client.cuenta.email,
-            'carrito': {
-                $elemMatch: {
-                    'producto.nombre': order.nombre
-                }
-            }
-        });
-
-        console.log('Producto existente: ', productExists);
+        console.log('Producto existente: ', find);
 
         let updateData;
-        if (productExists) {
-             updateData = await mongoose.connection.collection('clientes').updateOne(
+        if (find) {
+            updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 {
                     'cuenta.email': client.cuenta.email,
                     'carrito.producto.nombre': order.nombre
@@ -226,11 +233,12 @@ shopRouter.post('/Persistencia', async (req, res, next) => {
                     $inc: {
                         'carrito.$.quantity': quantity
                     }
-                }
+                },
+                { returnDocument: "after" }
             );
             console.log('Cantidad actualizada: ', updateData);
         } else {
-             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 {
                     'cuenta.email': client.cuenta.email,
                 },
@@ -242,7 +250,7 @@ shopRouter.post('/Persistencia', async (req, res, next) => {
                         }
                     }
                 },
-                {returnDocument: "after"}
+                { returnDocument: "after" }
             );
             console.log('Nuevo producto en carrito: ', updateData);
         }
@@ -252,12 +260,75 @@ shopRouter.post('/Persistencia', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Pedido introducido en la BBDD', data: updateData });
     } catch (error) {
         console.log('Error en persistencia: ', error)
-        res.status(200).send({ code: 6, message: error });
+        res.status(200).send({ code: 5, message: error });
     } finally {
         await mongoose.connection.close();
     }
 });
 
 
+shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
+    try {
+        const { client, order, quantity } = req.body;
+        await mongoose.connect(process.env.URL_MONGODB);
+        const find = findProduct(client, order);
+
+        let deleteProductCart;
+        if (find) {
+            deleteProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
+                {
+                    'cuenta.email': client.cuenta.email,
+                },
+                {
+                    $pull: {
+                        carrito: {
+                            'producto.nombre': order.nombre,
+                            quantity
+                        }
+                    }
+                },
+                { returnDocument: "after" }
+            );
+        }
+
+        res.status(200).send({ code: 0, message: 'Producto eliminado del carrito', data: deleteProductCart })
+    } catch (error) {
+        console.log('Error en persistencia: ', error)
+        res.status(200).send({ code: 6, message: error });
+    } finally {
+        await mongoose.connection.close();
+    }
+});
+
+shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
+    try {
+        const { client, order, quantity } = req.body;
+        await mongoose.connect(process.env.URL_MONGODB);
+        const find = findProduct(client, order);
+
+        let updateProductCart;
+        if (find) {
+            updateProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
+                {
+                    'cuenta.email': client.cuenta.email,
+                    'carrito.producto.nombre': order.nombre
+                },
+                {
+                    $set: {
+                        'carrito.$.quantity': quantity
+                    }
+                },
+                { returnDocument: "after" }
+            )
+        }
+
+        res.status(200).send({ code: 0, message: 'Producto acutalizado en el carrito', data: updateProductCart });
+    } catch (error) {
+        console.log('Error en persistencia: ', error)
+        res.status(200).send({ code: 7, message: error });
+    } finally {
+        await mongoose.connection.close();
+    }
+});
 
 module.exports = shopRouter;
