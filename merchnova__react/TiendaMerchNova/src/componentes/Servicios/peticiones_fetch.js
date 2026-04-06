@@ -30,10 +30,11 @@ const requestFetch = {
         return response;
     },
 
-    getCartAccount: async (clientData) => {
-        const request = await fetch(`${URL_TIENDA}/Carrito/${clientData.cuenta.email}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+    cartPersistence: async ({ clientData, order, quantity }, route) => {
+        const request = await fetch(`${URL_TIENDA}/Persistencia${route}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client: clientData, order, quantity })
         });
 
         const response = await request.json();

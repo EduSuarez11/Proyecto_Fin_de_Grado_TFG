@@ -3,6 +3,7 @@ import './InfoProducto.css';
 import useGlobalState from '../../../../global_state/globalState';
 import { useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
+import requestFetch from '../../../Servicios/peticiones_fetch';
 
 function InfoProducto() {
 
@@ -12,6 +13,7 @@ function InfoProducto() {
     const [addSuccess, setAddSuccess] = useState();
     const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
     //console.log('Producto: ', resp);
+
     useEffect(
         () => {
             async function randomProducts() {
@@ -24,29 +26,20 @@ function InfoProducto() {
         }, [resp.product.slug]
     );
 
-    
+
     async function handleAddToCart() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         if (clientData != null) {
-            const request = await fetch('http://localhost:3000/api/Tienda/Persistencia', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ client: clientData, order: resp.product, quantity })
-            });
-
-            const response = await request.json();
+            const response = await requestFetch.cartPersistence({ clientData, order: resp.product, quantity }, '/Agregar');
 
             if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
 
             //console.log(response.data);
             setClientData(response.data);
-            //console.log('ClientData actualizado: ', clientData);
+        } else {
+            setOrder('addToCart', { product: resp.product, quantity: quantity });
         }
-        
-        setOrder('addToCart', { product: resp.product, quantity: quantity });
         setAddSuccess('Producto añadido al carrito');
     }
 

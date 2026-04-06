@@ -110,7 +110,7 @@ const useGlobalState = create(
                         order: ({
                             ...oldData.order,
                             items: item,
-                            subtotal: subtotalPrice
+                            subtotal: Math.round(subtotalPrice * 100) / 100
                         })
                     }
                 })

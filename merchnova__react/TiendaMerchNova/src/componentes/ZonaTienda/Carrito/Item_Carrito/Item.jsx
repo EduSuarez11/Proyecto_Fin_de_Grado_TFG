@@ -1,23 +1,37 @@
 import './Item.css';
 import useGlobalState from '../../../../global_state/globalState';
 import { Link } from 'react-router-dom';
+import requestFetch from '../../../Servicios/peticiones_fetch';
 
 function Item() {
-    const { clientData, order, setOrder } = useGlobalState();
+    const { clientData, setClientData, order, setOrder } = useGlobalState();
 
-    function deleteOnCart({ item }) {
+    async function deleteOnCart({ item }) {
+        if (clientData != null) {
+            const newCartAfter = await requestFetch.cartPersistence({ clientData, order: item.producto, quantity: item.quantity }, '/Eliminar');
+            //console.log('Producto eliminado de cart: ', newCartAfter);
+            setClientData(newCartAfter.data);
+        } else {
+            setOrder('deleteToCart', { product: item.product, quantity: 0 });
+        }
         //console.log('Item a eliminar: ', item.product);
-        setOrder('deleteToCart', { product: item.product, quantity: 0 });
     }
+    const subtotal = clientData === null ? null : clientData.carrito.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
 
-    function updateOnCart({ item, quantity }) {
-        setOrder('updateToCart', { product: item.product, quantity });
+    async function updateOnCart({ item, quantity }) {
+        if (clientData != null) {
+            const updateCart = await requestFetch.cartPersistence({ clientData, order: item.producto, quantity }, '/Actualizar');
+            console.log('Carrito actualizado: ', updateCart);
+            setClientData(updateCart.data);
+        } else {
+            setOrder('updateToCart', { product: item.product, quantity });
+        }
     }
 
     return (
         <div style={{
             display: "grid",
-            gridTemplateColumns: (clientData === null ? order.items.length !== 0 : clientData.carrito.length)  ? "2fr 1fr" : "1fr",
+            gridTemplateColumns: (clientData === null ? order.items.length !== 0 : clientData.carrito.length) ? "2fr 1fr" : "1fr",
             gap: '30px'
         }}>
             <div className="cart-items">
@@ -141,10 +155,7 @@ function Item() {
                             <div className="summary-line">
                                 <span>Subtotal</span>
                                 <span>
-                                    {
-                                        clientData.carrito.reduce((sum, item) =>
-                                            sum + (item.producto.precio * item.quantity), 0)
-                                    } €
+                                    {Math.round(subtotal * 100) / 100} €
                                     {/* <span>{clientData.carrito.producto.precio * clientData.carrito.quantity} €</span> */}
                                 </span>
                             </div>
@@ -158,12 +169,8 @@ function Item() {
 
                             <div className="summary-total">
                                 <span>Total</span>
-                                {
-
-                                }
-                                <span>{
-                                    clientData.carrito.reduce((sum, item) =>
-                                        sum + (item.producto.precio * item.quantity), 0) + order.gastosEnvio} €
+                                <span>
+                                    {Math.round((subtotal + order.gastosEnvio) * 100) / 100} €
                                 </span>
                             </div>
 
