@@ -2,7 +2,6 @@ import './Perfil.css';
 import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../../global_state/globalState";
 import { useEffect, useRef, useState } from "react";
-import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 
 function PerfilCuenta() {
     const { clientData, setClientData, logOut } = useGlobalState();
@@ -10,6 +9,7 @@ function PerfilCuenta() {
     const location = useLocation();
     const [editProfile, setEditProfile] = useState(false);
     const [formProfile, setFormProfile] = useState({ email: clientData.cuenta.email });
+    const imageRef = useRef(null);
 
     const navigate = useNavigate();
 
@@ -20,20 +20,35 @@ function PerfilCuenta() {
         }));
     }
 
+
+    function changeImagePreview(ev) {
+        //console.log('Input de imagen: ', imageRef.current);
+        const archivo = ev.target.files[0];
+        //console.log('Archivo: ', archivo);
+        if (archivo) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                imageRef.current.src = ev.target.result;
+            }
+            reader.readAsDataURL(archivo);
+            return;
+        }
+    }
+
     async function handleSubmitProfile() {
         try {
             console.log('Datos nuevos: ', formProfile);
 
-            const requestNewData = await fetch('http://localhost:3000/api/Cliente/Perfil/Update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formProfile)
-            });
+            // const requestNewData = await fetch('http://localhost:3000/api/Cliente/Perfil/Update', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(formProfile)
+            // });
 
-            const responseNewData = await requestNewData.json();
-            console.log('Respuesta node:', responseNewData);
-            setClientData(responseNewData.data.newClientData);
-            navigate('/', { state: { msg: `${responseNewData.message}` } });
+            //const responseNewData = await requestNewData.json();
+            //console.log('Respuesta node:', responseNewData);
+            //setClientData(responseNewData.data.newClientData);
+            //navigate('/', { state: { msg: `${responseNewData.message}` } });
         } catch (error) {
             console.log('Error al actualizar datos: ', error);
         }
@@ -58,11 +73,11 @@ function PerfilCuenta() {
                             <div className="row">
                                 <div className="col-md-4 text-center mb-4 border-end">
                                     <div className="profile-img-container mx-auto">
-                                        <img src={clientData.cuenta.imagenCuenta} alt="Previsualización" className="mb-3" />
+                                        <img src={clientData.cuenta.imagenCuenta} ref={imageRef} alt="Previsualización" className="mb-3" style={{ width: '120px', height: '120px' }} />
                                         <label htmlFor="imageUpload" className="btn btn-purple btn-sm w-100">
                                             <i className="bi bi-camera me-2"></i>Cambiar Foto
                                         </label>
-                                        <input type="file" id="imageUpload" hidden accept="image/*" disabled={clientData.cuenta.tipo !== 'discord' ? !editProfile : true} />
+                                        <input type="file" id="imageUpload" hidden accept="image/*" disabled={clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo !== 'google' ? !editProfile : true} onChange={changeImagePreview} />
                                         {
                                             clientData.cuenta.tipo === 'discord' &&
                                             <div className="form-text small text-danger">
@@ -139,7 +154,7 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             placeholder="Calle y número"
                                             disabled={!editProfile}
-                                            defaultValue={clientData.direcciones[0].calle}
+                                            defaultValue={clientData.direcciones[0]?.calle || ''}
                                             onChange={onChangeInputProfile}
                                         />
                                     </div>
@@ -151,7 +166,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="codigoPostal"
                                                 className="form-control custom-input"
-                                                defaultValue={clientData.direcciones[0].codigoPostal}
+                                                defaultValue={clientData.direcciones[0]?.codigoPostal || ''}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -163,7 +178,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="municipio"
                                                 className="form-control custom-input"
-                                                defaultValue={clientData.direcciones[0].municipio}
+                                                defaultValue={clientData.direcciones[0]?.municipio || ''}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -175,7 +190,7 @@ function PerfilCuenta() {
                                                 type="text"
                                                 name="provincia"
                                                 className="form-control custom-input"
-                                                defaultValue={clientData.direcciones[0].provincia}
+                                                defaultValue={clientData.direcciones[0]?.provincia || ''}
                                                 disabled={!editProfile}
                                                 onChange={onChangeInputProfile}
                                             />
@@ -185,7 +200,7 @@ function PerfilCuenta() {
                                     <div className="mb-4">
                                         <label className="form-label fw-semibold">País</label>
                                         <select type="text" name="pais" className="form-control custom-input" disabled={!editProfile}
-                                            onChange={onChangeInputProfile} defaultValue={clientData.direcciones[0].pais}
+                                            onChange={onChangeInputProfile} defaultValue={clientData.direcciones[0]?.pais || ''}
                                         >
                                             <option>Selecciona tu país...</option>
                                             {
@@ -211,11 +226,11 @@ function PerfilCuenta() {
                                             name="telefono"
                                             className="form-control custom-input"
                                             placeholder="638 111 222"
-                                            defaultValue={clientData.cuenta.telefono}
-                                            disabled={clientData.cuenta.tipo !== 'discord' ? !editProfile : true}
+                                            defaultValue={clientData.cuenta.telefono != null ? clientData.cuenta.telefono : ''}
+                                            disabled={clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo !== 'google' ? !editProfile : true}
                                             onChange={onChangeInputProfile} />
                                         {
-                                            clientData.cuenta.tipo === 'discord' &&
+                                            clientData.cuenta.tipo === 'discord' || clientData.cuenta.tipo === 'google' &&
                                             <div className="form-text small text-danger">
                                                 No puedes cambiar tu teléfono si has iniciado sesión con Discord o Google
                                             </div>
@@ -231,7 +246,7 @@ function PerfilCuenta() {
                                             className="form-control custom-input"
                                             rows="4"
                                             placeholder="Cuéntanos algo sobre ti..."
-                                            defaultValue={clientData.cuenta.sobreMi}
+                                            defaultValue={clientData.cuenta.sobreMi != null ? clientData.cuenta.sobreMi : ''}
                                             disabled={!editProfile}
                                             onChange={onChangeInputProfile}></textarea>
                                     </div>
