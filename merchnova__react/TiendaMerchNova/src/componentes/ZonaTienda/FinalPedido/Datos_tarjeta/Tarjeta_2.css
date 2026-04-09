@@ -1,0 +1,87 @@
+.checkout-step {
+    max-width: 500px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.step-title {
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #6a0dad;
+}
+
+/* Métodos de pago */
+.payment-methods {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.payment-card {
+    flex: 1;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.payment-card.active {
+    border-color: #7b2ff7;
+    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    color: #fff;
+}
+
+/* Inputs */
+.input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    background: #fff;
+}
+
+.row-card {
+    display: flex;
+    gap: 15px;
+}
+
+.row-exp {
+    display: flex;
+    gap: 10px;
+}
+
+/* Botones */
+.checkout-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-stage {
+  background: linear-gradient(135deg, #7b2ff7, #c778fb);
+  color: white;
+}
+
+
+/* Animación */
+.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

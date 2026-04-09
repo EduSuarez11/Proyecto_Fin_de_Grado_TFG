@@ -11,8 +11,8 @@ import PerfilCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/1_Perfil/Per
 import CarritoCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/4_CarritoCuenta/MiCarritoCuenta";
 import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
 import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
-import FinPedido from "./componentes/ZonaTienda/FinalPedido/FinPedido";
 import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
+import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 
 
 const requestHome = async () => {

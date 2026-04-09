@@ -27,7 +27,7 @@ const useGlobalState = create(
                 fechaPago: null,
                 metodoPago: {},
                 metodoEnvio: {},
-                direccionEnvio: null,
+                direccionEnvio: {},
                 subtotal: 0,
                 gastosEnvio: 1.03,
                 total: 0
@@ -51,7 +51,8 @@ const useGlobalState = create(
 
             setOrder: (action, newItem) => {
                 set(oldData => {
-                    //console.log('Propiedades del newItem: ', newItem.product);
+                    //console.log('Propiedades del newItem: ', newItem);
+                    // Casos para manejar el carrito
                     let item = [...oldData.order.items]
                     let index = item.findIndex(i => i.product?._id === newItem.product?._id);
 
@@ -77,30 +78,6 @@ const useGlobalState = create(
                                 updateToCart(item, index, newItem)
                         );
 
-                    switch (action) {
-                        case 'setShippingData':
-                            ({
-                                ...oldData,
-                                order: {
-                                    ...oldData.order,
-                                    direccionEnvio: newItem
-                                }
-                            });
-                            break;
-
-                        case 'setDataCard':
-                            ({
-                                ...oldData,
-                                order: {
-                                    ...oldData.order,
-                                    metodoPago: newItem
-                                }
-                            })
-
-                        default:
-                            break;
-                    }
-
                     //item.forEach((i) => subtotalPrice += (i.product.precio * i.quantity))
                     const subtotalPrice = item.reduce((total, i) => total + (i.product.precio * i.quantity), 0);
 
@@ -113,6 +90,30 @@ const useGlobalState = create(
                             subtotal: Math.round(subtotalPrice * 100) / 100
                         })
                     }
+                })
+            },
+
+            setPayData: (action, newItem) => {
+                set(oldData => {
+                    if (action === 'setShippingData') {
+                        return {
+                            ...oldData,
+                            order: {
+                                ...oldData.order,
+                                direccionEnvio: newItem
+                            }
+                        };
+                    } else if (action === 'setDataCard') {
+                        return {
+                            ...oldData,
+                            order: {
+                                ...oldData.order,
+                                metodoPago: newItem
+                            }
+                        };
+                    }
+                    // Retornar el estado sin cambios si la acción no coincide
+                    return oldData;
                 })
             }
         }

@@ -112,6 +112,7 @@ async function useService(client, order, paymethod, existIds) {
     let clientId;
     let cardId;
 
+    
     if (!existIds) {
         // 1º Paso: Id cliente
         clientId = await stripeService.CreateStripeClient_1(client.nombreCompleto, client.cuenta.email, order.direccionEnvio);
@@ -136,6 +137,9 @@ async function useService(client, order, paymethod, existIds) {
                 }
             }
         );
+        console.log('Datos actualizados: ', updateData);
+
+        console.log(`Id de cliente ${clientId} y cardId ${cardId}`)
 
         if (!updateData.acknowledged) throw new Error('No se pudo actualizar los identificadores.');
     } else {
@@ -146,6 +150,7 @@ async function useService(client, order, paymethod, existIds) {
     order._id = new mongoose.Types.ObjectId();
     const createCharge = await stripeService.ChargeClient_3(clientId, cardId, order.total, order._id.toString());
 
+    console.log('Cargo pago: ', createCharge)
     if (!createCharge) throw new Error('No se pudo crear el cobro del pedido.');
 
     pedidos.fechaPago = new Date(Date.now());
@@ -159,7 +164,6 @@ async function useService(client, order, paymethod, existIds) {
     );
 
     if (!setOrders) throw new Error('No se pudo actualizar los datos de pedido.');
-
 }
 
 
@@ -179,6 +183,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
                     }
                 }
             });
+            console.log('Existe previo pago: ', JSON.stringify(existPay))
 
             if (!existPay) {
                 // Si no existe el pago, crear un pago de Stripe
@@ -190,7 +195,6 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
                 useService(client, order, getIds, true);
             }
         }
-
         res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
