@@ -41,7 +41,7 @@ function Panel({ order, clientData, logOut }) {
                             <>
                                 <li key={index}>
                                     {elemento !== 'Cerrar Sesión' ?
-                                        <Link className='dropdown-item' to={`/Cliente/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
+                                        <Link className='dropdown-item' to={`/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
                                             {elemento}
                                         </Link>
                                         :

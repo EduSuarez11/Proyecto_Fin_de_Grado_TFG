@@ -85,3 +85,9 @@
         transform: translateY(0);
     }
 }
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}

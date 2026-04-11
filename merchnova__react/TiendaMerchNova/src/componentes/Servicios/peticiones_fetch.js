@@ -17,13 +17,13 @@ const requestFetch = {
         return responseCountries;
     },
 
-    requestGetProductsByFilter: async (dataFilter) => {
+    requestGetProductsByFilter: async (dataFilter, priceFilter) => {
         const request = await fetch(`${URL_TIENDA}/FiltrarProductos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(dataFilter)
+            body: JSON.stringify({ dataFilter, priceFilter })
         });
         const response = await request.json();
 

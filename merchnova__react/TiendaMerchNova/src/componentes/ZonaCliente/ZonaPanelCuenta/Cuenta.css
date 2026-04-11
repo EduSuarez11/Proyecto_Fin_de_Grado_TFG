@@ -1,0 +1,44 @@
+.form-select.custom-input {
+    border: 1px solid #eee;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form-select.custom-input:focus {
+    border-color: #7b2ff7;
+    box-shadow: 0 0 0 0.25rem rgba(123, 47, 247, 0.1);
+}
+
+.active-link {
+    background-color: rgba(123, 47, 247, 0.1);
+    color: #7b2ff7;
+    font-weight: bold;
+    border-radius: 8px;
+    padding-left: 20px;
+}
+
+.sidebar-link-danger {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link-danger:hover {
+    background-color: #fff0f0;
+    padding-left: 25px;
+}
+
+.sticky-top {
+    z-index: 1020;
+}
+
+.menu-link {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+}
+
+.menu-link.active {
+    color: #7b2ff7;
+    font-weight: bold;
+}

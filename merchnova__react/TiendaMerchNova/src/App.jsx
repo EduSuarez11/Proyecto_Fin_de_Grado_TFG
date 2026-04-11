@@ -13,6 +13,8 @@ import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
 import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
 import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
+import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
+import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
 
 
 const requestHome = async () => {
@@ -76,7 +78,13 @@ const applicationRoutes = createBrowserRouter(
                   { path: 'Registro', element: <Registro /> },
                   { path: 'Login', element: <Login /> },
                   { path: 'TipoLogin', element: <TipoLogin /> },
-                  { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
+                  {
+                     path: 'Cuenta', element: <Cuenta />, children: [
+                        { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
+                        { path: 'MisDirecciones', element: <Direcciones /> },
+                        { path: 'MiCarrito', element: <CarritoCuenta /> }
+                     ]
+                  },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
                ]
             },

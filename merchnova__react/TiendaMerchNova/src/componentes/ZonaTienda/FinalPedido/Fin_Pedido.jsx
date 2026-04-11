@@ -1,17 +1,20 @@
 import { useState } from "react";
 import Resumen from "./Resumen/Resumen_3";
 import useGlobalState from "../../../global_state/globalState";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Direcciones from "./Datos_direcciones/Direcciones_1";
 import Tarjeta from "./Datos_tarjeta/Tarjeta_2";
 
 function FinPedido() {
 
     const [stages, setStages] = useState(1);
+    const navigate = useNavigate();
     const { clientData, order, setPayData } = useGlobalState();
     const [direccionEnvio, setDireccionEnvio] = useState();
     const [datosTarjeta, setDatosTarjeta] = useState();
-    const [paymentMethod, setPaymentMethod] = useState();
+    const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
+
+    const subtotal = clientData === null ? null : clientData.carrito.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
     function onChangeAddress(ev) {
         setDireccionEnvio({
@@ -19,6 +22,7 @@ function FinPedido() {
             [ev.target.id]: ev.target.value
         });
     }
+
 
 
     function onChangeDataCard(ev) {
@@ -32,8 +36,11 @@ function FinPedido() {
         setStages(stages + 1);
 
         if (stage === 1) {
+            console.log('Datos direccion (pasa por aqui): ', direccionEnvio);
             setPayData('setShippingData', direccionEnvio);
-        } else if (stage === 2) {
+        }
+        if (stage === 2) {
+            console.log('Datos tarjeta (pasa por aqui): ', datosTarjeta);
             setPayData('setDataCard', datosTarjeta);
         }
     }
@@ -43,21 +50,20 @@ function FinPedido() {
 
         console.log('Datos en global state: ', order);
 
+        const requestPay = await fetch('http://localhost:3000/api/Tienda/RealizarCompra', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ clientData, order })
+        });
 
-        // const requestPay = await fetch('http://localhost:3000/api/Tienda/RealizarCompra', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({ clientData, order })
-        // });
+        const response = await requestPay.json();
+        console.log('Respuesta de stripe: ', response)
 
-        // const response = await requestPay.json();
-        // console.log('Respuesta de stripe: ', response)
+        if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
 
-        // if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
-
-        // navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
+        navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
     }
 
     return (
@@ -70,7 +76,7 @@ function FinPedido() {
                         stages === 1 ? <Direcciones onChangeAddress={onChangeAddress} />
                             :
                             stages === 2 ?
-                                <Tarjeta onChangeDataCard={onChangeDataCard} />
+                                <Tarjeta onChangeDataCard={onChangeDataCard} setDatosTarjeta={setDatosTarjeta} setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} />
                                 :
                                 <Resumen datosTarjeta={datosTarjeta} datosDireccion={direccionEnvio} paymentMethod={paymentMethod} />
                     }
@@ -82,12 +88,12 @@ function FinPedido() {
                                     <Link to='/Cart'>
                                         <button className="btn btn-outline-secondary me-2 px-4">Volver al carrito</button>
                                     </Link>
-                                    <button className="btn btn-stage" onClick={() => { nextStage(stages) }}>Continuar</button>
+                                    <button className="btn btn-stage" onClick={() =>  nextStage(stages) }>Continuar</button>
                                 </div>
                                 : stages !== 3 ?
                                     <div className='d-flex flex-row justify-content-end px-2'>
                                         <button className="btn btn-outline-secondary me-2 px-4" onClick={() => setStages(stages - 1)}>Volver</button>
-                                        <button className="btn btn-stage" onClick={() => setStages(stages + 1)}>Continuar</button>
+                                        <button className="btn btn-stage" onClick={() => nextStage(stages)}>Continuar</button>
                                     </div>
                                     :
                                     <div className="d-flex flex-row justify-content-end px-2 mt-4">
@@ -96,35 +102,7 @@ function FinPedido() {
                         }
                     </div>
 
-                    {/* <div className='p-2'>
-                        <h3 className="mt">Método de pago</h3>
 
-                        {paymentMethod === "tarjeta" && (
-                            <div className="card-form">
-                                <div className="form-group">
-                                    <label className="form-label mt-4">Número de tarjeta</label>
-                                    <input className="input" id='cardNumber' name='cardNumber' placeholder="1234 5678 9012 3456" onChange={onChangeDataCard} />
-                                </div>
-
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label className="form-label">Mes</label>
-                                        <input className="input" id='monthExp' name='monthExp' placeholder="MM" maxLength="2" onChange={onChangeDataCard} />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label className="form-label">Año</label>
-                                        <input className="input" id='yearExp' name='yearExp' placeholder="aaaa" maxLength="4" onChange={onChangeDataCard} />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label className="form-label">CVC</label>
-                                        <input className="input" id='cvc' name='cvc' placeholder="1234" maxLength="4" onChange={onChangeDataCard} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div> */}
                 </div>
 
                 <div className="checkout-right">
@@ -153,7 +131,7 @@ function FinPedido() {
 
                     <div className="total">
                         <span>Total</span>
-                        <span> subtotal</span>
+                        <span>{Math.round((subtotal + order.gastosEnvio) * 100) / 100}</span>
                     </div>
 
                     {

@@ -2,9 +2,10 @@ import './Resumen_3.css';
 import { useState } from "react";
 import useGlobalState from "../../../../global_state/globalState";
 
-function Resumen({datosTarjeta, datosDireccion, paymentMethod}) {
+function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
 
-    const { clientData } = useGlobalState();
+    const { clientData, order } = useGlobalState();
+    const subtotal = clientData === null ? null : clientData.carrito.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
     return (
         <div className="checkout-step fade-in">
@@ -13,8 +14,8 @@ function Resumen({datosTarjeta, datosDireccion, paymentMethod}) {
             <div className="summary-section">
                 <h5>Dirección de envío</h5>
                 <p>{datosDireccion?.nombreCompleto}</p>
-                <p>{datosDireccion?.direccion}</p>
-                <p>{datosDireccion?.ciudad}, {datosDireccion?.codigoPostal}</p>
+                <p>{datosDireccion?.calle}</p>
+                <p>{datosDireccion?.municipio}, {datosDireccion?.provincia} - {datosDireccion?.codigoPostal}</p>
                 <p>{datosDireccion?.pais}</p>
             </div>
 
@@ -27,7 +28,7 @@ function Resumen({datosTarjeta, datosDireccion, paymentMethod}) {
 
                 {paymentMethod === "tarjeta" && (
                     <p className="card-preview">
-                        **** **** **** {datosTarjeta?.numero?.slice(-4)}
+                        **** **** **** {datosTarjeta?.cardNumber.slice(-4)}
                     </p>
                 )}
             </div>
@@ -49,7 +50,7 @@ function Resumen({datosTarjeta, datosDireccion, paymentMethod}) {
 
             <div className="summary-total">
                 <h4>Total</h4>
-                <h4>total</h4>
+                <h4>{Math.round((subtotal + order.gastosEnvio) * 100) / 100}</h4>
             </div>
         </div>
     )

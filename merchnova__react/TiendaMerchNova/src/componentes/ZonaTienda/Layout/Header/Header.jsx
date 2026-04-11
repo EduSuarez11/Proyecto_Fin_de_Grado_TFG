@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
-import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel';
+import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
 import { useEffect } from 'react';
 
 function Header() {

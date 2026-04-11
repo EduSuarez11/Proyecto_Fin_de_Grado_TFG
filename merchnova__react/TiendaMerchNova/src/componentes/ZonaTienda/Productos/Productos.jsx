@@ -7,6 +7,7 @@ import requestFetch from '../../Servicios/peticiones_fetch';
 function Productos() {
     const products = useLoaderData();
     const [typeProduct, setTypeProduct] = useState({});
+    const [priceFilter, setPriceFilter] = useState({});
     const [productsFilter, setProductsFilter] = useState(products.data);
     const [filters, setFilters] = useState({
         todos: true,
@@ -35,7 +36,7 @@ function Productos() {
             })
         } else {
             // Desestructuro para eliminar al instante el checkbox que dejas de seleccionar
-            const { [ev.target.name]:_, ...deleteType } = typeProduct;
+            const { [ev.target.name]: _, ...deleteType } = typeProduct;
             console.log('Tipo: ', deleteType);
             setTypeProduct(deleteType);
         }
@@ -54,8 +55,8 @@ function Productos() {
     }
 
     async function handleFilter() {
-        //console.log('Filtrado de productos: ', JSON.stringify(typeProduct));
-        const response = await requestFetch.requestGetProductsByFilter(typeProduct);
+        console.log('Filtrado de productos: ', JSON.stringify(typeProduct), priceFilter);
+        const response = await requestFetch.requestGetProductsByFilter(typeProduct, priceFilter);
         //console.log('Respuesta: ', response);
 
         // Si esta marcado todos, muestra todos los productos
@@ -106,9 +107,9 @@ function Productos() {
                     <div className="filter-box">
                         <h6>Precio</h6>
                         <div className="price-inputs">
-                            <input type="number" className="form-control" placeholder="Min €" />
+                            <input type="number" className="form-control" name='minimo' placeholder="Min €" onChange={(ev) => setPriceFilter({...priceFilter, [ev.target.name]: ev.target.value})} />
                             <span>-</span>
-                            <input type="number" className="form-control" placeholder="Max €" />
+                            <input type="number" className="form-control" name='maximo' placeholder="Max €" onChange={(ev) => setPriceFilter({...priceFilter, [ev.target.name]: ev.target.value})} />
                         </div>
 
                         <button className="btn btn-purple w-100 mt-2" onClick={handleFilter} >Aplicar</button>

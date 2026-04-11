@@ -95,6 +95,7 @@ const useGlobalState = create(
 
             setPayData: (action, newItem) => {
                 set(oldData => {
+                    //console.log('Item: ', newItem);
                     if (action === 'setShippingData') {
                         return {
                             ...oldData,
@@ -103,7 +104,9 @@ const useGlobalState = create(
                                 direccionEnvio: newItem
                             }
                         };
-                    } else if (action === 'setDataCard') {
+                    }
+
+                    if (action === 'setDataCard') {
                         return {
                             ...oldData,
                             order: {
