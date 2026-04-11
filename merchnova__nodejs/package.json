@@ -17,6 +17,10 @@
     "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.3",
-    "require": "^2.4.20"
+    "require": "^2.4.20",
+    "stripe": "^22.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
