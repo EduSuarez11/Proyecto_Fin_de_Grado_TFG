@@ -249,15 +249,9 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
 
         console.log('Objeto data: ', data);
         await mongoose.connect(process.env.URL_MONGODB);
-        const client = await mongoose.connection.collection('clientes').findOne(
-            {
-                'cuenta.email': req.body.email
-            }
-        )
-        //console.log('Id cliente: ', client)
 
         const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(client._id) },
+            { 'cuenta.email': req.body.email },
             {
                 $set: data
             },

@@ -83,18 +83,24 @@ shopRouter.get('/Productos/Home', async (req, res, next) => {
 // MUESTRA LOS PRODUCTOS FILTRADOS SEGÚN SU TIPO. QUEDA POR HACER POR PRECIO Y VALORACIÓN
 shopRouter.post('/FiltrarProductos', async (req, res, next) => {
     try {
-        const types = Object.keys(req.body);
+        console.log(JSON.stringify(req.body));
+        const types = Object.keys(req.body.dataFilter);
 
         console.log('Tipos: ', types);
         await mongoose.connect(process.env.URL_MONGODB);
         const filterProducts = await mongoose.connection.collection('productos').find().toArray();
 
-        let filter = [];
-        filterProducts.forEach(el => {
-            if (types.includes(el.categoria)) {
-                filter.push(el);
-            }
-        });
+        const filter = filterProducts.filter(el => {
+            const category = types.length === 0 || types.includes(el.categoria);
+            const price =  (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
+
+            return category && price;
+        })
+        // filterProducts.forEach(el => {
+        //     if (types.includes(el.categoria)) {
+        //         filter.push(el);
+        //     }
+        // });
         console.log('Nuevos productos con filtro: ', filter);
 
         res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
@@ -108,22 +114,24 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
 
 
 // MÉTODO PARA REALIZAR LOS PASOS DE STRIPE
-async function useService(client, order, paymethod, existIds) {
+async function useService(clientData, order, paymethod, existIds) {
     let clientId;
     let cardId;
 
     
     if (!existIds) {
         // 1º Paso: Id cliente
-        clientId = await stripeService.CreateStripeClient_1(client.nombreCompleto, client.cuenta.email, order.direccionEnvio);
+        clientId = await stripeService.CreateStripeClient_1(clientData.nombreCompleto, clientData.cuenta.email, order.direccionEnvio);
         if (!clientId) throw new Error('No se ha podido obtener el id de cliente de Stripe.');
+
+        console.log('Cliente id: ', clientId)
 
         // 2º Paso: Id tarjeta
         cardId = await stripeService.CreateCard_2(clientId, order.metodoPago);
         if (!cardId) throw new Error('No se ha podido al obtener el id de tarjeta.');
 
         const updateData = await mongoose.connection.collection('clientes').updateOne({
-            'cuenta.email': client.cuenta.email
+            'cuenta.email': clientData.cuenta.email
         },
             {
                 $push: {
@@ -155,7 +163,7 @@ async function useService(client, order, paymethod, existIds) {
 
     pedidos.fechaPago = new Date(Date.now());
     const setOrders = await mongoose.connection.collection('clientes').updateOne(
-        { 'cuenta.email': client.cuenta.email },
+        { 'cuenta.email': clientData.cuenta.email },
         {
             $push: {
                 pedidos: order
@@ -170,7 +178,7 @@ async function useService(client, order, paymethod, existIds) {
 // EJECUTAR EL PAGO CON TARJETA ...
 shopRouter.post('/RealizarCompra', async (req, res, next) => {
     try {
-        const { client, order } = req.body;
+        const { clientData, order } = req.body;
 
         console.log('Todos los datos: ', req.body);
         await mongoose.connect(process.env.URL_MONGODB);
@@ -187,12 +195,12 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 
             if (!existPay) {
                 // Si no existe el pago, crear un pago de Stripe
-                useService(client, order, null, false);
+                useService(clientData, order, null, false);
             } else {
                 // Si existe un pago, recoger id de cliente y tarjeta
                 const getIds = await mongoose.connection.collection('clientes').findOne(prop => prop.tipo === 'card');
 
-                useService(client, order, getIds, true);
+                useService(clientData, order, getIds, true);
             }
         }
         res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });

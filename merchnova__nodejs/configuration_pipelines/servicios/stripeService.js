@@ -1,4 +1,5 @@
 const URL = 'https://api.stripe.com/v1';
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 async function requestToStripe({ body }, URL_STRIPE) {
     const requestStripe = await fetch(`${URL_STRIPE}`, {
@@ -9,8 +10,9 @@ async function requestToStripe({ body }, URL_STRIPE) {
         },
         body: new URLSearchParams(body)
     });
+    
 
-    if (!/^(2[0-2][0-9]|226)$/.test(requestStripe.status)) throw new Error('Error al realizar la petición. Vuelve a intentarlo');
+    if (!/^(2[0-2][0-9]|226)$/.test(requestStripe.status.toString())) throw new Error(`Error al realizar la petición, codigo: ${requestStripe.status}. Vuelve a intentarlo`);
 
     const responseStripe = requestStripe.json();
 
@@ -33,7 +35,9 @@ module.exports = {
                 'address[postal_code]': direccionEnvio.codigoPostal
             }
 
-            const response = requestToStripe(bodyStripe, URL + '/customers');
+            console.log('BodyStripe: ', bodyStripe);
+
+            const response = await requestToStripe(bodyStripe, URL + '/customers');
             console.log('Respuesta de stripe (client): ', response);
             return response.id;
         } catch (error) {
@@ -43,7 +47,7 @@ module.exports = {
     },
 
     // Pasar el id de cliente que se genera y los datos de la tarjeta
-    CreateCard_2: (idClient, cardDetails) => {
+    CreateCard_2: async (idClient, cardDetails) => {
         try {
             let bodyCard = {
                 'source': 'visa'
@@ -53,7 +57,7 @@ module.exports = {
                 // 'card[cvc]': cardDetails.cvc
             }
 
-            const response = requestToStripe(bodyCard, `${URL}/customers/${idClient}/sources`)
+            const response = await requestToStripe(bodyCard, `${URL}/customers/${idClient}/sources`)
             console.log('Respuesta de stripe (card): ', response);
             return response.id;
         } catch (error) {
@@ -64,7 +68,8 @@ module.exports = {
     },
 
     // Cobrar al cliente pasandole el id de cliente, id tarjeta (paso 2), cantidad total y el id de pedido
-    ChargeClient_3: (idClient, idCard, totalQty, idOrder) => {
+    // payment_intent
+    ChargeClient_3: async (idClient, idCard, totalQty, idOrder) => {
         try {
             const bodyCharge = {
                 'amount': totalQty * 100,
@@ -77,7 +82,7 @@ module.exports = {
                 'automatic_payment_methods[allowed_payment_method_types]': ['card', 'paypal']
             }
 
-            const response = requestToStripe(bodyCharge, `${URL}/payment_intents`);
+            const response = await requestToStripe(bodyCharge, `${URL}/payment_intents`);
             console.log('Respuesta del cargo: ', response);
 
             return response.id;
