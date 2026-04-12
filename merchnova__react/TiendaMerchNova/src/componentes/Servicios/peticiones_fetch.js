@@ -17,6 +17,8 @@ const requestFetch = {
         return responseCountries;
     },
 
+
+    // Peticion para obtener los productos por filtro
     requestGetProductsByFilter: async (dataFilter, priceFilter) => {
         const request = await fetch(`${URL_TIENDA}/FiltrarProductos`, {
             method: 'POST',
@@ -30,6 +32,8 @@ const requestFetch = {
         return response;
     },
 
+
+    // Peticion para carrito con persistencia
     cartPersistence: async ({ clientData, order, quantity }, route) => {
         const request = await fetch(`${URL_TIENDA}/Persistencia${route}`, {
             method: 'POST',
@@ -41,6 +45,7 @@ const requestFetch = {
         return response;
     },
 
+    // Peticion para login con Google
     loginGoogle: async () => {
         const request = await fetch(`${URL_CLIENTE}/LoginGoogle`, {
             method: 'GET',
@@ -48,6 +53,13 @@ const requestFetch = {
         });
 
         const response = await request.json();
+        return response;
+    },
+
+    getCategories: async () => {
+        const request = await fetch(`${URL_TIENDA}/Categorias`);
+        const response = await request.json();
+        console.log(response);
         return response;
     }
 }

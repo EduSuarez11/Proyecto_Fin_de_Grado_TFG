@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom";
 
 import Layout from "./componentes/ZonaTienda/Layout/Layout";
 import Home from "./componentes/ZonaTienda/Inicio/Home";
@@ -15,6 +15,7 @@ import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
 import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
+import requestFetch from "./componentes/Servicios/peticiones_fetch";
 
 
 const requestHome = async () => {
@@ -60,6 +61,11 @@ const getAllProducts = async () => {
 //    return responseCountries;
 // }
 
+const securityApplication = () => {
+   const token = sessionStorage.getItem('token');
+   if (!token) throw redirect('/Cliente/TipoLogin');
+}
+
 
 const applicationRoutes = createBrowserRouter(
    [
@@ -79,7 +85,7 @@ const applicationRoutes = createBrowserRouter(
                   { path: 'Login', element: <Login /> },
                   { path: 'TipoLogin', element: <TipoLogin /> },
                   {
-                     path: 'Cuenta', element: <Cuenta />, children: [
+                     path: 'Cuenta', element: <Cuenta />, loader: securityApplication, children: [
                         { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
                         { path: 'MisDirecciones', element: <Direcciones /> },
                         { path: 'MiCarrito', element: <CarritoCuenta /> }
@@ -108,7 +114,7 @@ const applicationRoutes = createBrowserRouter(
             },
 
             {
-               path: 'Pedido',
+               path: 'Pedido', loader: securityApplication,
                children: [
                   { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries }
                ]
