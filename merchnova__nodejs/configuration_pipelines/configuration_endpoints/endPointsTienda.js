@@ -92,7 +92,7 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
 
         const filter = filterProducts.filter(el => {
             const category = types.length === 0 || types.includes(el.categoria);
-            const price =  (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
+            const price = (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
 
             return category && price;
         })
@@ -118,7 +118,7 @@ async function useService(clientData, order, paymethod, existIds) {
     let clientId;
     let cardId;
 
-    
+
     if (!existIds) {
         // 1º Paso: Id cliente
         clientId = await stripeService.CreateStripeClient_1(clientData.nombreCompleto, clientData.cuenta.email, order.direccionEnvio);
@@ -342,5 +342,22 @@ shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
         await mongoose.connection.close();
     }
 });
+
+shopRouter.get('/Categorias', async (req, res, next) => {
+    try {
+        await mongoose.connect(process.env.URL_MONGODB);
+        const allCategories = await mongoose.connection.collection('categorias').find().toArray();
+
+        if (!allCategories) throw new Error('No se pudieron encontrar las categorias');
+
+        res.status(200).send({ code: 0, message: 'Categorias obtenidas', categories: allCategories });
+    } catch (error) {
+        res.status(200).send({ code: 8, message: error, categories: [] });
+    } finally {
+        await mongoose.connection.close();
+    }
+
+});
+
 
 module.exports = shopRouter;
