@@ -180,6 +180,8 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
     try {
         const { clientData, order } = req.body;
 
+        clientData.carrito._id = new mongoose.Types.ObjectId();
+
         console.log('Todos los datos: ', req.body);
         await mongoose.connect(process.env.URL_MONGODB);
         if (order.metodoPago.tipo === 'tarjeta') {
@@ -202,8 +204,42 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 
                 useService(clientData, order, getIds, true);
             }
+        } else if (order.metodoPago.tipo === 'paypal') {
+            const orderPaypal = await stripeService.CreateOrderOfPaypal_1(clientData, order);
+            console.log('Datos de PayPal: ', orderPaypal);
+            if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
+
+
+            order.metodoPago = {
+                tipo: 'PayPal',
+                info: {
+                    estado: 'PENDIENTE',
+                    idOrderPayPal: orderPaypal.id
+                }
+            };
+            order.fechaPago = null;
+
+            await mongoose.connect(process.env.URL_MONGODB);
+            const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+                { 'cuenta.email': clientData.cuenta.email },
+                {
+                    $push: {
+                        carrito: order
+                    }
+                }
+            );
+
+            const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
+        
+            res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
+
+            if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
+
+            // const capturePayment = await stripeService.CapturePaymentPaypal_2(orderPaypal.id);
+            // console.log('Captura de pago PayPal: ', capturePayment);
+            // if (!capturePayment) throw new Error('No se pudo capturar el pago de PayPal.');
         }
-        res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
+        //res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
         res.status(200).send({ code: 4, message: error });
