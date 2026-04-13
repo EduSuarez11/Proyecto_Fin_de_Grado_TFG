@@ -61,6 +61,21 @@ const requestFetch = {
         const response = await request.json();
         console.log(response);
         return response;
+    },
+
+
+    generateTokenPaypal: async () => {
+        const request = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": "Basic " + Buffer.from(process.env.PAYPAL_CLIENT_ID + ":" + process.env.PAYPAL_CLIENT_SECRET).toString("base64")
+            },
+            body: "grant_type=client_credentials"
+        });
+        //formato de la respuesta de paypal: https://developer.paypal.com/api/rest/#link-sampleresponse
+        const response = await request.json();
+        return response;
     }
 }
 

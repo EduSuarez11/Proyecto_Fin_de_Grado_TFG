@@ -58,8 +58,25 @@ function FinPedido() {
             body: JSON.stringify({ clientData, order })
         });
 
-        const response = await requestPay.json();
-        console.log('Respuesta de stripe: ', response)
+        const responsePay = await requestPay.json();
+        console.log('Respuesta de stripe: ', responsePay);
+
+        if (responsePay.code !== 0) throw new Error('Hubo un fallo en la petición de compra.');
+
+        switch (datosTarjeta.tipo) {
+            case 'tarjeta':
+
+
+
+                break;
+
+            case 'paypal':
+                
+                break;
+            default:
+                break;
+        }
+
 
         if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
 
@@ -88,7 +105,7 @@ function FinPedido() {
                                     <Link to='/Cart'>
                                         <button className="btn btn-outline-secondary me-2 px-4">Volver al carrito</button>
                                     </Link>
-                                    <button className="btn btn-stage" onClick={() =>  nextStage(stages) }>Continuar</button>
+                                    <button className="btn btn-stage" onClick={() => nextStage(stages)}>Continuar</button>
                                 </div>
                                 : stages !== 3 ?
                                     <div className='d-flex flex-row justify-content-end px-2'>
