@@ -9,11 +9,11 @@ async function getToken() {
     try {
         if (tokenAccessPaypal.token && tokenAccessPaypal.expiration) return tokenAccessPaypal.token;
 
-        const { access_token, expiration } = await requestInNode.generateTokenPaypal();
+        const { access_token, expires_in } = await requestInNode.generateTokenPaypal();
         if (!access_token && !expiration) throw new Error('No se pudo crear el token de acceso de PayPal.');
 
         tokenAccessPaypal.token = access_token;
-        tokenAccessPaypal.expiration = Date.now() + (expiration - 100) * 1000;
+        tokenAccessPaypal.expiration = Date.now() + (expires_in - 300) * 1000;
 
         console.log('Token: ', tokenAccessPaypal);
         return tokenAccessPaypal;
@@ -26,28 +26,27 @@ module.exports = {
 
     CreateOrderPaypal_1: async (clientData, order) => {
         try {
-            const accessToken = await getToken();
-            const subtotal = clientData === null ? null : clientData.carrito.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
+            const {token} = await getToken();
+            const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
+
+            console.log('items: ', clientData.carrito.itemsPedido)
             const bodyOrder = {
                 intent: 'CAPTURE',
                 purchase_units: [
                     {
-                        items: clientData.carrito.map(item => (
+                        items: clientData.carrito.itemsPedido.map(item => (
                             {
                                 name: item.producto.nombre,
-                                description: item.producto.descripcion,
                                 quantity: item.quantity.toString(),
-                                category: item.producto.categoria,
                                 unit_amount: {
                                     currency_code: 'EUR',
                                     value: Math.round(item.producto.precio * 100) / 100
                                 }
                             }
-                        )), //<---- array de items de pedidos a desplegar en la pasarela de paypal cuando se procese el pago
-                        //OJO!!! la suma del producto de la cantidad por el valor del precio de cada item debe coincidir con el valor total del order
+                        )), 
                         amount: {
                             currency_code: 'EUR',
-                            value: subtotal + order.gastosEnvio,
+                            value: Math.round((subtotal + order.gastosEnvio) * 100) / 100,
 
                             breakdown: {
                                 item_total: {
@@ -57,7 +56,7 @@ module.exports = {
                                 shipping: {
                                     currency_code: 'EUR',
                                     value: order.gastosEnvio.toFixed(2)
-                                } //<---gastos de envio
+                                } 
                             }
                         }
                     }
@@ -65,7 +64,7 @@ module.exports = {
 
             }
 
-            const responseOrder = await requestInNode.createOrderReq(bodyOrder, accessToken);
+            const responseOrder = await requestInNode.createOrderReq(bodyOrder, token);
             console.log("Datos de la orden de PayPal:", responseOrder);
 
             if (!responseOrder) throw new Error('No se pudo realizar la creacion de orden de pago.');
@@ -79,8 +78,8 @@ module.exports = {
 
     CapturePaymentOfPaypal_2: async (orderId) => {
         try {
-            const accessToken = await getToken();
-            const responsePayment = await requestInNode.capturePaymentWithId(orderId, accessToken);
+            const token = await getToken();
+            const responsePayment = await requestInNode.capturePaymentWithId(orderId, token);
 
             console.log('Captura de pago: ', responsePayment);
             if (!responsePayment) throw new Error('No se pudo crear la captura de pago.');

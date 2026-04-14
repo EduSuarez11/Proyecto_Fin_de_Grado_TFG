@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const stripeService = require('../servicios/stripeService');
+const paypalService = require('../servicios/paypalService');
 const shopRouter = express.Router();
 
 /**
@@ -174,7 +175,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 
         clientData.carrito._id = new mongoose.Types.ObjectId();
 
-        console.log('Todos los datos: ', req.body);
+        //console.log('Todos los datos: ', req.body);
         
         if (order.metodoPago.tipo === 'tarjeta') {
             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
@@ -197,7 +198,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
                 useService(clientData, order, getIds, true);
             }
         } else if (order.metodoPago.tipo === 'paypal') {
-            const orderPaypal = await stripeService.CreateOrderOfPaypal_1(clientData, order);
+            const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
             console.log('Datos de PayPal: ', orderPaypal);
             if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
 
@@ -210,19 +211,21 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
                 }
             };
             order.fechaPago = null;
-
+            order._id = new mongoose.Types.ObjectId();
             
             const updateOrder = await mongoose.connection.collection('clientes').updateOne(
                 { 'cuenta.email': clientData.cuenta.email },
                 {
                     $push: {
-                        carrito: order
+                        pedidos: order
                     }
                 }
             );
 
+            
             const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
 
+            console.log('URL: ', URL_PAYPAL)
             res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
 
             if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
