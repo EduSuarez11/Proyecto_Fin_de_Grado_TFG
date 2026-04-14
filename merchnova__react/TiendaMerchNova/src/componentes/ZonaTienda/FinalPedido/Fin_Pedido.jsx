@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Resumen from "./Resumen/Resumen_3";
 import useGlobalState from "../../../global_state/globalState";
 import { Link, useNavigate } from "react-router";
@@ -13,6 +13,8 @@ function FinPedido() {
     const [direccionEnvio, setDireccionEnvio] = useState();
     const [datosTarjeta, setDatosTarjeta] = useState();
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
+    const paypalWindow = useRef(null);
+
 
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
@@ -66,21 +68,20 @@ function FinPedido() {
         switch (datosTarjeta.tipo) {
             case 'tarjeta':
 
+                if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
 
-
+                navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
                 break;
 
             case 'paypal':
-                
+                paypalWindow.current = window.open(responsePay.approveUrl, 'PayPal', 'width=800px; height=600px');
                 break;
             default:
                 break;
         }
 
 
-        if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
 
-        navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
     }
 
     return (
@@ -129,7 +130,7 @@ function FinPedido() {
                         clientData.carrito.itemsPedido.map((item, pos) =>
                             <div className="product" key={pos}>
                                 <span>{item.producto.nombre}</span>
-                                <span>+ {item.producto.precio}</span>
+                                <span>+ {item.producto.precio * item.quantity}</span>
                             </div>
                         )
                     }
