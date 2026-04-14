@@ -18,7 +18,7 @@ const shopRouter = express.Router();
 // OBTENER TODOS LOS PRODUCTOS PARA MOSTRARLOS EN LA VISTA DE PRODUCTOS.JSX
 shopRouter.get('/Productos', async (req, res, next) => {
     try {
-        await mongoose.connect(process.env.URL_MONGODB);
+        
 
         // Usar limit para obtener solo algunos productos destacados en el Home
         const products = await mongoose.connection.collection('productos').find().toArray();
@@ -27,16 +27,14 @@ shopRouter.get('/Productos', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener los productos: ', error);
         res.status(200).send({ code: 1, message: `Error al obtener los productos: ${error}` });
-    } finally {
-        await mongoose.connection.close();
-    }
+    } 
 
 });
 
 // OBTENER EL PRODUCTO QUE ESCOGES AL VER SU INFO
 shopRouter.get('/Producto/:categoria/:slug', async (req, res, next) => {
     try {
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const getProduct = await mongoose.connection.collection('productos').findOne({
             categoria: req.params.categoria,
             slug: req.params.slug
@@ -55,16 +53,14 @@ shopRouter.get('/Producto/:categoria/:slug', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener el producto: ', error);
         res.status(200).send({ code: 2, message: `Error al obtener el producto: ${error}` });
-    } finally {
-        await mongoose.connection.close();
-    }
+    } 
 })
 
 
 // OBTENER 4 PRODUCTOS PARA MOSTRAR EN EL HOME
 shopRouter.get('/Productos/Home', async (req, res, next) => {
     try {
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const products = await mongoose.connection.collection('productos').find().sort({ precio: -1 }).limit(4).toArray();
 
         if (!products) throw new Error('Productos no encontrados en la base de datos');
@@ -74,8 +70,6 @@ shopRouter.get('/Productos/Home', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener el producto: ', error);
         res.status(200).send({ code: 3, message: `Error al obtener el producto: ${error}` });
-    } finally {
-        await mongoose.connection.close();
     }
 });
 
@@ -87,7 +81,7 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
         const types = Object.keys(req.body.dataFilter);
 
         console.log('Tipos: ', types);
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const filterProducts = await mongoose.connection.collection('productos').find().toArray();
 
         const filter = filterProducts.filter(el => {
@@ -106,9 +100,7 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
     } catch (error) {
         res.status(200).send({ code: 5, message: error });
-    } finally {
-        await mongoose.connection.close();
-    }
+    } 
 });
 
 
@@ -183,7 +175,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
         clientData.carrito._id = new mongoose.Types.ObjectId();
 
         console.log('Todos los datos: ', req.body);
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         if (order.metodoPago.tipo === 'tarjeta') {
             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
             const existPay = await mongoose.connection.collection('clientes').findOne({
@@ -219,7 +211,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
             };
             order.fechaPago = null;
 
-            await mongoose.connect(process.env.URL_MONGODB);
+            
             const updateOrder = await mongoose.connection.collection('clientes').updateOne(
                 { 'cuenta.email': clientData.cuenta.email },
                 {
@@ -230,7 +222,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
             );
 
             const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
-        
+
             res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
 
             if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
@@ -243,16 +235,14 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
         res.status(200).send({ code: 4, message: error });
-    } finally {
-        await mongoose.connection.close();
-    }
+    } 
 });
 
 
 async function findProduct(client, order) {
     const productExists = await mongoose.connection.collection('clientes').findOne({
         'cuenta.email': client.cuenta.email,
-        'carrito': {
+        'carrito.itemsPedido': {
             $elemMatch: {
                 'producto.nombre': order.nombre
             }
@@ -262,24 +252,40 @@ async function findProduct(client, order) {
     return productExists;
 }
 
+
 shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
     try {
-        const { client, order, quantity } = req.body;
-        await mongoose.connect(process.env.URL_MONGODB);
-        const find = findProduct(client, order);
+        const { client, order, quantity, gastosEnvio } = req.body;
+        console.log(order, '--------', gastosEnvio);
+        
+        const find = await findProduct(client, order);
 
         console.log('Producto existente: ', find);
+        let subtotalPrice;
+        if (client.carrito.itemsPedido.length > 0) {
+            subtotalPrice = client.carrito.itemsPedido.reduce((total, item) => total + (item.producto.precio * quantity), 0);
+        } else {
+            subtotalPrice = Math.round((order.price * quantity) * 100) / 100;
+        }
+
+        console.log('Subtotal: ', subtotalPrice);
 
         let updateData;
         if (find) {
             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 {
                     'cuenta.email': client.cuenta.email,
-                    'carrito.producto.nombre': order.nombre
+                    'carrito.itemsPedido.producto.nombre': order.nombre
                 },
                 {
                     $inc: {
-                        'carrito.$.quantity': quantity
+                        'carrito.itemsPedido.$.quantity': quantity
+                    },
+
+                    $set: {
+                        'carrito.gastosEnvio': gastosEnvio,
+                        'carrito.subtotal': subtotalPrice,
+                        'carrito.total': subtotalPrice + gastosEnvio
                     }
                 },
                 { returnDocument: "after" }
@@ -292,10 +298,16 @@ shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
                 },
                 {
                     $push: {
-                        carrito: {
+                        'carrito.itemsPedido': {
                             producto: order,
                             quantity
                         }
+                    },
+                    $set: {
+                        'carrito.cuponDescuento': [],
+                        'carrito.gastosEnvio': gastosEnvio,
+                        'carrito.subtotal': subtotalPrice,
+                        'carrito.total': subtotalPrice + gastosEnvio
                     }
                 },
                 { returnDocument: "after" }
@@ -309,8 +321,6 @@ shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
     } catch (error) {
         console.log('Error en persistencia: ', error)
         res.status(200).send({ code: 5, message: error });
-    } finally {
-        await mongoose.connection.close();
     }
 });
 
@@ -318,7 +328,7 @@ shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
 shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
     try {
         const { client, order, quantity } = req.body;
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const find = findProduct(client, order);
 
         let deleteProductCart;
@@ -329,7 +339,7 @@ shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
                 },
                 {
                     $pull: {
-                        carrito: {
+                        'carrito.itemsPedido': {
                             'producto.nombre': order.nombre,
                             quantity
                         }
@@ -343,15 +353,13 @@ shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
     } catch (error) {
         console.log('Error en persistencia: ', error)
         res.status(200).send({ code: 6, message: error });
-    } finally {
-        await mongoose.connection.close();
     }
 });
 
 shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
     try {
         const { client, order, quantity } = req.body;
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const find = findProduct(client, order);
 
         let updateProductCart;
@@ -359,29 +367,27 @@ shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
             updateProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 {
                     'cuenta.email': client.cuenta.email,
-                    'carrito.producto.nombre': order.nombre
+                    'carrito.itemsPedido.producto.nombre': order.nombre
                 },
                 {
                     $set: {
-                        'carrito.$.quantity': quantity
+                        'carrito.itemsPedido.$.quantity': quantity
                     }
                 },
                 { returnDocument: "after" }
             )
         }
 
-        res.status(200).send({ code: 0, message: 'Producto acutalizado en el carrito', data: updateProductCart });
+        res.status(200).send({ code: 0, message: 'Producto actualizado en el carrito', data: updateProductCart });
     } catch (error) {
         console.log('Error en persistencia: ', error)
         res.status(200).send({ code: 7, message: error });
-    } finally {
-        await mongoose.connection.close();
     }
 });
 
 shopRouter.get('/Categorias', async (req, res, next) => {
     try {
-        await mongoose.connect(process.env.URL_MONGODB);
+        
         const allCategories = await mongoose.connection.collection('categorias').find().toArray();
 
         if (!allCategories) throw new Error('No se pudieron encontrar las categorias');
@@ -389,10 +395,7 @@ shopRouter.get('/Categorias', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Categorias obtenidas', categories: allCategories });
     } catch (error) {
         res.status(200).send({ code: 8, message: error, categories: [] });
-    } finally {
-        await mongoose.connection.close();
     }
-
 });
 
 
