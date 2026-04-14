@@ -5,7 +5,7 @@ import useGlobalState from "../../../../global_state/globalState";
 function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
 
     const { clientData, order } = useGlobalState();
-    const subtotal = clientData === null ? null : clientData.carrito.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
+    const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
     return (
         <div className="checkout-step fade-in">
@@ -36,7 +36,7 @@ function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
             <div className="summary-section">
                 <h5>Productos</h5>
 
-                {clientData.carrito.map((item, index) => (
+                {clientData.carrito.itemsPedido.map((item, index) => (
                     <div className="summary-product" key={index}>
                         <img src={`http://localhost:3000${item.producto.imagen}`} alt="" />
                         <div>

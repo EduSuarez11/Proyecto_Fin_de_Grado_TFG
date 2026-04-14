@@ -8,7 +8,7 @@ import requestFetch from '../../../Servicios/peticiones_fetch';
 function InfoProducto() {
 
     const resp = useLoaderData();
-    const { setOrder, clientData, setClientData } = useGlobalState();
+    const { order, setOrder, clientData, setClientData } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
     const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
@@ -31,7 +31,7 @@ function InfoProducto() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         if (clientData != null) {
-            const response = await requestFetch.cartPersistence({ clientData, order: resp.product, quantity }, '/Agregar');
+            const response = await requestFetch.cartPersistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio }, '/Agregar');
 
             if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
 

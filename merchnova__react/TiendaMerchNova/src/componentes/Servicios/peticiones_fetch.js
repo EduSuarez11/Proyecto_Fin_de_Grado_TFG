@@ -34,11 +34,11 @@ const requestFetch = {
 
 
     // Peticion para carrito con persistencia
-    cartPersistence: async ({ clientData, order, quantity }, route) => {
+    cartPersistence: async ({ clientData, order, quantity, gastosEnvio }, route) => {
         const request = await fetch(`${URL_TIENDA}/Persistencia${route}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ client: clientData, order, quantity })
+            body: JSON.stringify({ client: clientData, order, quantity, gastosEnvio })
         });
 
         const response = await request.json();

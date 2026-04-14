@@ -17,7 +17,7 @@ function Carrito() {
                     <span className='current-product'>Carrito</span>
                 </nav>
                 <h1 className="cart-title">Tu carrito</h1>
-                <div className="mb-3"><span>Tienes {clientData != null ? clientData.carrito.length : order.items.length} productos</span></div>
+                <div className="mb-3"><span>Tienes {clientData != null ? clientData.carrito.itemsPedido.length : order.items.length} productos</span></div>
                 
                     {/* Items del carrito */}
                     <Item />

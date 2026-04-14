@@ -14,7 +14,7 @@ function FinPedido() {
     const [datosTarjeta, setDatosTarjeta] = useState();
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
 
-    const subtotal = clientData === null ? null : clientData.carrito.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
+    const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
     function onChangeAddress(ev) {
         setDireccionEnvio({
@@ -126,7 +126,7 @@ function FinPedido() {
                     <h3>Resumen del pedido</h3>
 
                     {
-                        clientData.carrito.map((item, pos) =>
+                        clientData.carrito.itemsPedido.map((item, pos) =>
                             <div className="product" key={pos}>
                                 <span>{item.producto.nombre}</span>
                                 <span>+ {item.producto.precio}</span>

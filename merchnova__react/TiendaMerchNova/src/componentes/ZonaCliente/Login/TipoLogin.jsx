@@ -39,7 +39,13 @@ function TipoLogin() {
                             telefono: ''
                         },
                         pedidos: [],
-                        carrito: [],
+                        carrito: {
+                            itemsPedido: [],
+                            cuponDescuento: [],
+                            gastosEnvio: 0,
+                            subtotal: 0,
+                            total: 0
+                        },
                         direcciones: [
                             {
                                 calle: '',
@@ -79,7 +85,13 @@ function TipoLogin() {
                 telefono: ''
             },
             pedidos: [],
-            carrito: [],
+            carrito: {
+                itemsPedido: [],
+                cuponDescuento: [],
+                gastosEnvio: 0,
+                subtotal: 0,
+                total: 0
+            },
             direcciones: [
                 {
                     calle: '',

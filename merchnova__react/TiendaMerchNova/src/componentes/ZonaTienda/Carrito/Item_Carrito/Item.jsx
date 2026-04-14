@@ -16,7 +16,7 @@ function Item() {
         }
         //console.log('Item a eliminar: ', item.product);
     }
-    const subtotal = clientData === null ? null : clientData.carrito.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
+    const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
 
     async function updateOnCart({ item, quantity }) {
         if (clientData != null) {
@@ -31,7 +31,7 @@ function Item() {
     return (
         <div style={{
             display: "grid",
-            gridTemplateColumns: (clientData === null ? order.items.length !== 0 : clientData.carrito.length) ? "2fr 1fr" : "1fr",
+            gridTemplateColumns: (clientData === null ? order.items.length !== 0 : clientData.carrito.itemsPedido.length) ? "2fr 1fr" : "1fr",
             gap: '30px'
         }}>
             <div className="cart-items">
@@ -79,8 +79,8 @@ function Item() {
                         )
                         :
                         (
-                            clientData.carrito.length != 0 ?
-                                clientData.carrito.map((item, index) =>
+                            clientData.carrito.itemsPedido.length != 0 ?
+                                clientData.carrito.itemsPedido.map((item, index) =>
                                     <div className='cart-item w-100' key={index}>
                                         <img src={`http://localhost:3000${item.producto.imagen}`} alt="producto" />
 
@@ -148,7 +148,7 @@ function Item() {
                     )
                     :
                     (
-                        clientData.carrito.length != 0 &&
+                        clientData.carrito.itemsPedido.length != 0 &&
                         <div className="cart-summary">
                             <h2>Resumen</h2>
 
