@@ -26,7 +26,7 @@ module.exports = {
 
     CreateOrderPaypal_1: async (clientData, order) => {
         try {
-            const {token} = await getToken();
+            const { token } = await getToken();
             const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
 
             console.log('items: ', clientData.carrito.itemsPedido)
@@ -43,7 +43,7 @@ module.exports = {
                                     value: Math.round(item.producto.precio * 100) / 100
                                 }
                             }
-                        )), 
+                        )),
                         amount: {
                             currency_code: 'EUR',
                             value: Math.round((subtotal + order.gastosEnvio) * 100) / 100,
@@ -56,11 +56,21 @@ module.exports = {
                                 shipping: {
                                     currency_code: 'EUR',
                                     value: order.gastosEnvio.toFixed(2)
-                                } 
+                                }
                             }
                         }
                     }
                 ],
+
+                payment_source: {
+                    paypal: {
+                        experience_context: {
+                            return_url: 'http://localhost:3000/api/checkout/success',
+                            cancel_url: 'http://localhost:3000/api/checkout/success'
+                        }
+                    }
+                }
+
 
             }
 
@@ -79,6 +89,7 @@ module.exports = {
     CapturePaymentOfPaypal_2: async (orderId) => {
         try {
             const token = await getToken();
+            console.log('Id de orden: ', orderId, ' y token: ', token);
             const responsePayment = await requestInNode.capturePaymentWithId(orderId, token);
 
             console.log('Captura de pago: ', responsePayment);

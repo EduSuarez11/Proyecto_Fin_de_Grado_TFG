@@ -19,7 +19,7 @@ const shopRouter = express.Router();
 // OBTENER TODOS LOS PRODUCTOS PARA MOSTRARLOS EN LA VISTA DE PRODUCTOS.JSX
 shopRouter.get('/Productos', async (req, res, next) => {
     try {
-        
+
 
         // Usar limit para obtener solo algunos productos destacados en el Home
         const products = await mongoose.connection.collection('productos').find().toArray();
@@ -28,14 +28,14 @@ shopRouter.get('/Productos', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener los productos: ', error);
         res.status(200).send({ code: 1, message: `Error al obtener los productos: ${error}` });
-    } 
+    }
 
 });
 
 // OBTENER EL PRODUCTO QUE ESCOGES AL VER SU INFO
 shopRouter.get('/Producto/:categoria/:slug', async (req, res, next) => {
     try {
-        
+
         const getProduct = await mongoose.connection.collection('productos').findOne({
             categoria: req.params.categoria,
             slug: req.params.slug
@@ -54,14 +54,14 @@ shopRouter.get('/Producto/:categoria/:slug', async (req, res, next) => {
     } catch (error) {
         console.log('Error al obtener el producto: ', error);
         res.status(200).send({ code: 2, message: `Error al obtener el producto: ${error}` });
-    } 
+    }
 })
 
 
 // OBTENER 4 PRODUCTOS PARA MOSTRAR EN EL HOME
 shopRouter.get('/Productos/Home', async (req, res, next) => {
     try {
-        
+
         const products = await mongoose.connection.collection('productos').find().sort({ precio: -1 }).limit(4).toArray();
 
         if (!products) throw new Error('Productos no encontrados en la base de datos');
@@ -82,7 +82,7 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
         const types = Object.keys(req.body.dataFilter);
 
         console.log('Tipos: ', types);
-        
+
         const filterProducts = await mongoose.connection.collection('productos').find().toArray();
 
         const filter = filterProducts.filter(el => {
@@ -101,7 +101,7 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
     } catch (error) {
         res.status(200).send({ code: 5, message: error });
-    } 
+    }
 });
 
 
@@ -176,7 +176,7 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
         clientData.carrito._id = new mongoose.Types.ObjectId();
 
         //console.log('Todos los datos: ', req.body);
-        
+
         if (order.metodoPago.tipo === 'tarjeta') {
             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
             const existPay = await mongoose.connection.collection('clientes').findOne({
@@ -197,48 +197,48 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 
                 useService(clientData, order, getIds, true);
             }
-        } else if (order.metodoPago.tipo === 'paypal') {
-            const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
-            console.log('Datos de PayPal: ', orderPaypal);
-            if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
+            // } else if (order.metodoPago.tipo === 'paypal') {
+            //     const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
+            //     console.log('Datos de PayPal: ', orderPaypal);
+            //     if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
 
 
-            order.metodoPago = {
-                tipo: 'PayPal',
-                info: {
-                    estado: 'PENDIENTE',
-                    idOrderPayPal: orderPaypal.id
-                }
-            };
-            order.fechaPago = null;
-            order._id = new mongoose.Types.ObjectId();
-            
-            const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-                { 'cuenta.email': clientData.cuenta.email },
-                {
-                    $push: {
-                        pedidos: order
-                    }
-                }
-            );
+            //     order.metodoPago = {
+            //         tipo: 'PayPal',
+            //         info: {
+            //             estado: 'PENDIENTE',
+            //             idOrderPayPal: orderPaypal.id
+            //         }
+            //     };
+            //     order.fechaPago = null;
+            //     order._id = new mongoose.Types.ObjectId();
 
-            
-            const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
+            //     const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+            //         { 'cuenta.email': clientData.cuenta.email },
+            //         {
+            //             $push: {
+            //                 pedidos: order
+            //             }
+            //         }
+            //     );
 
-            console.log('URL: ', URL_PAYPAL)
-            res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
 
-            if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
+            //     const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
 
-            // const capturePayment = await stripeService.CapturePaymentPaypal_2(orderPaypal.id);
-            // console.log('Captura de pago PayPal: ', capturePayment);
-            // if (!capturePayment) throw new Error('No se pudo capturar el pago de PayPal.');
+            //     console.log('URL: ', URL_PAYPAL)
+            //     res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
+
+            //     if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
+
+            //     // const capturePayment = await stripeService.CapturePaymentPaypal_2(orderPaypal.id);
+            //     // console.log('Captura de pago PayPal: ', capturePayment);
+            //     // if (!capturePayment) throw new Error('No se pudo capturar el pago de PayPal.');
         }
         //res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
         res.status(200).send({ code: 4, message: error });
-    } 
+    }
 });
 
 
@@ -256,11 +256,59 @@ async function findProduct(client, order) {
 }
 
 
+shopRouter.post('/Create/Order', async (req, res, next) => {
+    try {
+        const { clientData, order } = req.body;
+        console.log(req.body);
+        const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
+        console.log('Datos de PayPal: ', orderPaypal);
+        if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
+
+        order.metodoPago = {
+            tipo: 'PayPal',
+            info: {
+                estado: 'PENDIENTE',
+                idOrderPayPal: orderPaypal.id
+            }
+        };
+        order.fechaPago = null;
+        order._id = new mongoose.Types.ObjectId();
+
+        // const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+        //     { 'cuenta.email': clientData.cuenta.email },
+        //     {
+        //         $push: {
+        //             pedidos: order
+        //         }
+        //     }
+        // );
+        res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', orderId: orderPaypal.id });
+    } catch (error) {
+        res.status(200).send({ code: 9, message: 'Error en la creacion de orden' });
+    }
+})
+
+
+shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+
+        const capturaPago = await paypalService.CapturePaymentOfPaypal_2(orderId);
+        console.log('Captura de pago: ', capturaPago);
+        res.status(200).send({ code: 0, message: 'Pago correcto', });
+    } catch (error) {
+        res.status(200).send({ code: 10, message: 'Error en la captura de orden' });
+    }
+
+
+
+})
+
 shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
     try {
         const { client, order, quantity, gastosEnvio } = req.body;
         console.log(order, '--------', gastosEnvio);
-        
+
         const find = await findProduct(client, order);
 
         console.log('Producto existente: ', find);
@@ -331,7 +379,7 @@ shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
 shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
     try {
         const { client, order, quantity } = req.body;
-        
+
         const find = findProduct(client, order);
 
         let deleteProductCart;
@@ -362,7 +410,7 @@ shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
 shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
     try {
         const { client, order, quantity } = req.body;
-        
+
         const find = findProduct(client, order);
 
         let updateProductCart;
@@ -390,7 +438,7 @@ shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
 
 shopRouter.get('/Categorias', async (req, res, next) => {
     try {
-        
+
         const allCategories = await mongoose.connection.collection('categorias').find().toArray();
 
         if (!allCategories) throw new Error('No se pudieron encontrar las categorias');

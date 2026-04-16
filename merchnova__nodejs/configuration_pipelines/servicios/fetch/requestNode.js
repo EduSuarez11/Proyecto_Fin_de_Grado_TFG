@@ -33,8 +33,7 @@ const requestInNode = {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(bodyOrder)
+            }
         });
         const response = await request.json();
         return response;
