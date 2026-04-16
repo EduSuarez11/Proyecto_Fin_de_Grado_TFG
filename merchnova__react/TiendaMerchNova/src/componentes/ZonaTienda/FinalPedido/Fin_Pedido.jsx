@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import Resumen from "./Resumen/Resumen_3";
 import useGlobalState from "../../../global_state/globalState";
 import { Link, useNavigate } from "react-router";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 import Direcciones from "./Datos_direcciones/Direcciones_1";
 import Tarjeta from "./Datos_tarjeta/Tarjeta_2";
 
@@ -14,7 +15,7 @@ function FinPedido() {
     const [datosTarjeta, setDatosTarjeta] = useState();
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
     const paypalWindow = useRef(null);
-
+    let orderId;
 
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
@@ -47,12 +48,9 @@ function FinPedido() {
         }
     }
 
-    async function handleSubmitPurchaseInfo() {
-        console.log(`Datos de envio: Direccion - ${JSON.stringify(direccionEnvio)} | Tarjeta - ${JSON.stringify(datosTarjeta)}`);
 
-        console.log('Datos en global state: ', order);
-
-        const requestPay = await fetch('http://localhost:3000/api/Tienda/RealizarCompra', {
+    async function createOrder() {
+        const requestOrder = await fetch('http://localhost:3000/api/Tienda/Create/Order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -60,28 +58,24 @@ function FinPedido() {
             body: JSON.stringify({ clientData, order })
         });
 
-        const responsePay = await requestPay.json();
-        console.log('Respuesta de stripe: ', responsePay);
+        const responseOrder = await requestOrder.json();
+        console.log('Respuesta de la orden: ', responseOrder);
+        orderId = responseOrder.orderId;
+        return responseOrder.orderId;
+    }
 
-        if (responsePay.code !== 0) throw new Error('Hubo un fallo en la petición de compra.');
-
-        switch (datosTarjeta.tipo) {
-            case 'tarjeta':
-
-                if (response.code !== 0) throw new Error('Fallo al realizar el pago.');
-
-                navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
-                break;
-
-            case 'paypal':
-                paypalWindow.current = window.open(responsePay.approveUrl, 'PayPal', 'width=800px; height=600px');
-                break;
-            default:
-                break;
-        }
-
-
-
+    async function onApprove() {
+        console.log('Orden aprobada, procediendo a captura. OrderID: ', orderId);
+        const requestCapture = await fetch(`http://localhost:3000/api/Tienda/Capture/Payment/${orderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const responseCapture = await requestCapture.json();
+        console.log('Respuesta de la captura: ', responseCapture);
+        if (responseCapture.code !== 0) throw new Error('Fallo al capturar el pago.');
+        navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
     }
 
     return (
@@ -154,7 +148,7 @@ function FinPedido() {
 
                     {
                         stages === 3 &&
-                        <button className="pay-btn" onClick={handleSubmitPurchaseInfo}>Finalizar compra</button>
+                        <PayPalButtons createOrder={createOrder} onApprove={onApprove} />
                     }
                 </div>
             </div>

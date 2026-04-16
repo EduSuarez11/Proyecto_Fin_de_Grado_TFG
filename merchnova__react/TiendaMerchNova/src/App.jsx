@@ -1,5 +1,6 @@
 import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom";
 
+import { PayPalScriptProvider } from "@paypal/react-paypal-js"
 import Layout from "./componentes/ZonaTienda/Layout/Layout";
 import Home from "./componentes/ZonaTienda/Inicio/Home";
 import Registro from "./componentes/ZonaCliente/Registro/Registro";
@@ -15,8 +16,13 @@ import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
 import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
-import requestFetch from "./componentes/Servicios/peticiones_fetch";
 
+
+const optionsPayPal = {
+   "client-id": "AeY68Ia4Z3-o5_SywvO07s5-ZH6e8Np7M0zMomQ5RJAHO59ItUDuUBMKQGEqhu2tmZg-hkogNNYHOWV9",
+   currency: "EUR",
+   intent: "capture"
+}
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
@@ -133,9 +139,9 @@ const applicationRoutes = createBrowserRouter(
 function App() {
 
    return (
-      <>
+      <PayPalScriptProvider options={optionsPayPal}>
          <RouterProvider router={applicationRoutes}></RouterProvider>
-      </>
+      </PayPalScriptProvider>
    );
 }
 
