@@ -177,3 +177,35 @@
     border-color: #6a0dad;
     box-shadow: 0 0 5px rgba(106, 13, 173, 0.2);
 }
+
+.star {
+    font-size: 20px;
+    margin-right: 3px;
+}
+
+.star.full {
+    color: #f5c518;
+}
+
+.star.empty {
+    color: #ddd;
+}
+
+
+.star.half {
+    background: linear-gradient(90deg, #f5c518 50%, #ddd 50%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.in-stock {
+    font-weight: 500;
+}
+
+.out-stock {
+    font-weight: 500;
+}
+
+.opacity-price {
+    opacity: 0.5;
+}

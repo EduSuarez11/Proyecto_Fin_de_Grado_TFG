@@ -65,6 +65,23 @@ function Productos() {
         //console.log('Productos filtrados: ', productsFilter);
     }
 
+    // Controla las valoraciones
+    function handleValorations(valoraciones) {
+        const stars = [];
+        const numberStars = Math.trunc(valoraciones);
+        Array.from({ length: 5 }).map((_, pos) => {
+            if (numberStars >= pos + 1) {
+                stars.push(<span key={pos} className="star full">★</span>)
+            } else if (valoraciones >= pos + 1 - 0.5) {
+                stars.push(<span key={pos} className="star half">★</span>)
+            } else {
+                stars.push(<span key={pos} className="star empty">★</span>)
+            }
+        });
+        return stars;
+    }
+
+
     return (
         <div className="container mt-5">
             <nav className="breadcrumb">
@@ -94,12 +111,12 @@ function Productos() {
                         <h6>Valoración</h6>
                         <div className="form-check">
                             <input className="form-check-input" type="radio" name="rating" />
-                            <label className="form-check-label">⭐ 4 o más</label>
+                            <label className="form-check-label">{handleValorations(4.0)} De 4 o más</label>
                         </div>
 
                         <div className="form-check">
                             <input className="form-check-input" type="radio" name="rating" />
-                            <label className="form-check-label">⭐ 3 o más</label>
+                            <label className="form-check-label">{handleValorations(3.0)} De 3 hasta 4</label>
                         </div>
 
                     </div>
@@ -107,9 +124,9 @@ function Productos() {
                     <div className="filter-box">
                         <h6>Precio</h6>
                         <div className="price-inputs">
-                            <input type="number" className="form-control" name='minimo' placeholder="Min €" onChange={(ev) => setPriceFilter({...priceFilter, [ev.target.name]: ev.target.value})} />
+                            <input type="number" className="form-control" name='minimo' placeholder="Min €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.name]: ev.target.value })} />
                             <span>-</span>
-                            <input type="number" className="form-control" name='maximo' placeholder="Max €" onChange={(ev) => setPriceFilter({...priceFilter, [ev.target.name]: ev.target.value})} />
+                            <input type="number" className="form-control" name='maximo' placeholder="Max €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.name]: ev.target.value })} />
                         </div>
 
                         <button className="btn btn-purple w-100 mt-2" onClick={handleFilter} >Aplicar</button>
@@ -121,11 +138,16 @@ function Productos() {
                         {productsFilter.map((product, index) =>
                             <Link to={`/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
+                                    {product.rebaja > 0 && (
+                                        <div className="ribbon">
+                                            -{product.rebaja}%
+                                        </div>
+                                    )}
                                     <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
                                     <div className="card-body">
                                         <h6 className="title-product">{product.nombre}</h6>
                                         <div className="rating">
-                                            ⭐⭐⭐⭐☆
+                                            {handleValorations(product.valoraciones)} {product.valoraciones}
                                         </div>
 
                                         <p className="price">{product.precio}</p>

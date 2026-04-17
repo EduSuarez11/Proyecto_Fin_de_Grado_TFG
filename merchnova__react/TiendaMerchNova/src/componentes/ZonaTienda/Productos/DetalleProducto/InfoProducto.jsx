@@ -1,7 +1,7 @@
 import { Link, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import './InfoProducto.css';
 import useGlobalState from '../../../../global_state/globalState';
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 import requestFetch from '../../../Servicios/peticiones_fetch';
 
@@ -25,6 +25,21 @@ function InfoProducto() {
             randomProducts();
         }, [resp.product.slug]
     );
+
+    function handleValorations() {
+        const stars = [];
+        const numberStars = Math.trunc(resp.product.valoraciones);
+        Array.from({ length: 5 }).map((_, pos) => {
+            if (numberStars >= pos + 1) {
+                stars.push(<span key={pos} className="star full">★</span>)
+            } else if (resp.product.valoraciones >= pos + 1 - 0.5) {
+                stars.push(<span key={pos} className="star half">★</span>)
+            } else {
+                stars.push(<span key={pos} className="star empty">★</span>)
+            }
+        });
+        return stars;
+    }
 
 
     async function handleAddToCart() {
@@ -67,30 +82,45 @@ function InfoProducto() {
 
                 {/* Nombre producto */}
                 <div className="product-info">
-                    <h1 className="product-title">
-                        {resp.product.nombre}
-                    </h1>
+                    <h1 className="product-title">{resp.product.nombre}</h1>
 
-                    <p className="product-description">
-                        {resp.product.descripcion}
-                    </p>
+                    <div className="mb-2 rating">
+                        {handleValorations()}
+                        <span className="rating-number ms-1">({resp.product.valoraciones})</span>
+                    </div>
 
-                    <div className="product-price">
-                        {resp.product.precio}€
+                    <div className="stock mb-2">
+                        {resp.product.stock > 0 ?
+                            <span className="in-stock text-success">En stock: {resp.product.stock} restantes</span>
+                            :
+                            <span className="out-stock text-danger">Sin stock</span>
+                        }
+                    </div>
+
+                    <p className="product-description">{resp.product.descripcion}</p>
+
+                    <div className='d-flex'>
+                        <div className={resp.product.rebaja > 0 ? 'product-price text-decoration-line-through text-secondary opacity-price' : 'product-price'}>{resp.product.precio}€</div>
+                        {
+                            resp.product.rebaja > 0 &&
+                            <div className="product-price ms-4">{(resp.product.precio - (resp.product.precio * resp.product.rebaja / 100)).toFixed(2)} €</div>
+                        }
                     </div>
 
                     {/* Tallas */}
-                    <div className="product-sizes">
-                        <p>Tallas disponibles</p>
-
-                        <div className="sizes">
-                            {
-                                ["S", "M", "L", "XL", "XXL"].map((element, index) =>
-                                    <button className="size-btn" key={index}>{element}</button>
-                                )
-                            }
+                    {
+                        resp.product.talla.length > 0 &&
+                        <div className="product-sizes">
+                            <p>Tallas disponibles</p>
+                            <div className="sizes">
+                                {
+                                    resp.product.talla.map((element, index) =>
+                                        <button className="size-btn" key={index}>{element}</button>
+                                    )
+                                }
+                            </div>
                         </div>
-                    </div>
+                    }
 
                     {/* Cantidad */}
                     <div className="product-quantity">
@@ -109,10 +139,7 @@ function InfoProducto() {
                     {/* Botones */}
                     <div className="product-actions">
                         <button className="btn-cart" onClick={handleAddToCart}>Añadir al carrito</button>
-
-                        <button className="btn-buy">
-                            Comprar ahora
-                        </button>
+                        <button className="btn-buy">Comprar ahora</button>
                     </div>
                 </div>
             </div>
