@@ -1,0 +1,88 @@
+.success-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgb(248 249 250);
+    padding: 20px;
+}
+
+
+.success-card {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+
+    background: linear-gradient(to right, #6a0dad, #8a2be2);
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+
+.success-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+
+.success-text {
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+
+.success-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+
+.btn-primary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.7;
+}
+
+
+.btn-secondary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #6a0dad;
+    border: 1px solid #6a0dad;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #bababa;
+}

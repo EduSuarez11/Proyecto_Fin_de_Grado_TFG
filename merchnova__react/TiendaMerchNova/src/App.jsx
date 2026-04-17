@@ -16,6 +16,7 @@ import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
 import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
+import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/CompraFinalizada";
 
 
 const optionsPayPal = {
@@ -98,6 +99,17 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
+               ]
+            },
+
+            {
+               path: 'Portal', children: [
+                  {
+                     path: 'Pedido', loader: securityApplication, children: [
+                        { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries },
+                        { path: 'CompraExitosa', element: <CompraFinalizada /> }
+                     ]
+                  }
                ]
             },
 

@@ -16,6 +16,7 @@ function FinPedido() {
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
     const paypalWindow = useRef(null);
     let orderId;
+    let orderClient;
 
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
 
@@ -55,27 +56,30 @@ function FinPedido() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ clientData, order })
+            body: JSON.stringify({ clientData, order, direccionEnvio })
         });
 
         const responseOrder = await requestOrder.json();
         console.log('Respuesta de la orden: ', responseOrder);
         orderId = responseOrder.orderId;
+        orderClient = responseOrder.orderClient;
         return responseOrder.orderId;
     }
 
     async function onApprove() {
         console.log('Orden aprobada, procediendo a captura. OrderID: ', orderId);
+        console.log('Id de pedido de cliente: ', orderClient);
         const requestCapture = await fetch(`http://localhost:3000/api/Tienda/Capture/Payment/${orderId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({ clientData, id: orderClient })
         });
         const responseCapture = await requestCapture.json();
         console.log('Respuesta de la captura: ', responseCapture);
         if (responseCapture.code !== 0) throw new Error('Fallo al capturar el pago.');
-        navigate('/', { state: { msg: 'Has realizado tu compra con éxito' } });
+        navigate('/Portal/Pedido/CompraExitosa', { state: { data: { orderId: orderClient, clientId: clientData._id } } });
     }
 
     return (

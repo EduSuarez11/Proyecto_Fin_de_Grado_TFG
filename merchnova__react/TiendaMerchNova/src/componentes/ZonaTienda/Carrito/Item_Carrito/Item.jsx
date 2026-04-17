@@ -174,7 +174,7 @@ function Item() {
                                 </span>
                             </div>
 
-                            <Link to='/Pedido/DetallesEncargo'>
+                            <Link to='/Portal/Pedido/DetallesEncargo'>
                                 <button className="checkout-btn">Finalizar compra</button>
                             </Link>
                         </div>
