@@ -197,44 +197,8 @@ shopRouter.post('/RealizarCompra', async (req, res, next) => {
 
                 useService(clientData, order, getIds, true);
             }
-            // } else if (order.metodoPago.tipo === 'paypal') {
-            //     const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
-            //     console.log('Datos de PayPal: ', orderPaypal);
-            //     if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
-
-
-            //     order.metodoPago = {
-            //         tipo: 'PayPal',
-            //         info: {
-            //             estado: 'PENDIENTE',
-            //             idOrderPayPal: orderPaypal.id
-            //         }
-            //     };
-            //     order.fechaPago = null;
-            //     order._id = new mongoose.Types.ObjectId();
-
-            //     const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-            //         { 'cuenta.email': clientData.cuenta.email },
-            //         {
-            //             $push: {
-            //                 pedidos: order
-            //             }
-            //         }
-            //     );
-
-
-            //     const URL_PAYPAL = orderPaypal.links.find(prop => prop.rel === 'approve');
-
-            //     console.log('URL: ', URL_PAYPAL)
-            //     res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', urlApprove: URL_PAYPAL.href });
-
-            //     if (!updateOrder) throw new Error('No se ha podido actualizar el pedido.');
-
-            //     // const capturePayment = await stripeService.CapturePaymentPaypal_2(orderPaypal.id);
-            //     // console.log('Captura de pago PayPal: ', capturePayment);
-            //     // if (!capturePayment) throw new Error('No se pudo capturar el pago de PayPal.');
         }
-        //res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
+        res.status(200).send({ code: 0, message: 'Pago con tarjeta realizado correctamente' });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
         res.status(200).send({ code: 4, message: error });
@@ -258,8 +222,9 @@ async function findProduct(client, order) {
 
 shopRouter.post('/Create/Order', async (req, res, next) => {
     try {
-        const { clientData, order } = req.body;
+        const { clientData, order, direccionEnvio } = req.body;
         console.log(req.body);
+        order._id = new mongoose.Types.ObjectId();
         const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
         console.log('Datos de PayPal: ', orderPaypal);
         if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
@@ -271,18 +236,35 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
                 idOrderPayPal: orderPaypal.id
             }
         };
+        order.items = clientData.carrito.itemsPedido;
+        order.subtotal = clientData.carrito.subtotal;
+        order.total = clientData.carrito.total;
         order.fechaPago = null;
-        order._id = new mongoose.Types.ObjectId();
+        order.fechaEnvio = null;
+        order.direccionEnvio = {
+            calle: direccionEnvio.direccion,
+            municipio: direccionEnvio.municipio,
+            provincia: direccionEnvio.provincia,
+            codigo_postal: direccionEnvio.codigoPostal,
+            pais: direccionEnvio.pais
+        }
+        order.direccionFacturacion = {
+            calle: clientData.direcciones[0].calle,
+            municipio: clientData.direcciones[0].municipio,
+            provincia: clientData.direcciones[0].provincia,
+            codigo_postal: clientData.direcciones[0].codigoPostal,
+            pais: clientData.direcciones[0].pais
+        }
 
-        // const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-        //     { 'cuenta.email': clientData.cuenta.email },
-        //     {
-        //         $push: {
-        //             pedidos: order
-        //         }
-        //     }
-        // );
-        res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', orderId: orderPaypal.id });
+        const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+            { 'cuenta.email': clientData.cuenta.email },
+            {
+                $push: {
+                    pedidos: order
+                }
+            }
+        );
+        res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', orderId: orderPaypal.id, orderClient: order._id });
     } catch (error) {
         res.status(200).send({ code: 9, message: 'Error en la creacion de orden' });
     }
@@ -292,16 +274,56 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
 shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
     try {
         const orderId = req.params.orderId;
+        const { clientData, id } = req.body;
 
         const capturaPago = await paypalService.CapturePaymentOfPaypal_2(orderId);
         console.log('Captura de pago: ', capturaPago);
-        res.status(200).send({ code: 0, message: 'Pago correcto', });
+
+        if (!capturaPago) throw new Error('No se pudo capturar el pago de PayPal.');
+
+        const fecha = new Date();
+        const fechaPago = `${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`;
+        // Guardar el resto de datos de pago del cliente
+        const updatePayData = await mongoose.connection.collection('clientes').updateOne(
+            { _id: new mongoose.Types.ObjectId(id), 'pedidos.idOrderPaypal': orderId },
+            {
+                $set: {
+                    'pedidos.$.metodoPago.info': {
+                        estado: 'COMPLETADO',
+                        capturaOrden: {
+                            capturaId: capturaPago.id,
+                            estadoCaptura: capturaPago.status,
+                            'payment_source.paypal': {
+                                account_id: capturaPago.payment_source.paypal.account_id,
+                                name: {
+                                    given_name: capturaPago.payment_source.paypal.name.given_name,
+                                    surname: capturaPago.payment_source.paypal.name.surname
+                                },
+                                email_address: capturaPago.payment_source.paypal.email_address
+                            },
+                            payer: {
+                                payer_id: capturaPago.payer.payer_id,
+                                name: {
+                                    given_name: capturaPago.payer.name.given_name,
+                                    surname: capturaPago.payer.name.surname
+                                },
+                                email_address: capturaPago.payer.email_address
+                            }
+                        }
+                    },
+                    'pedidos.$.fechaPago': fechaPago,
+                    'pedidos.$.fechaEnvio': fechaPago + 2,
+                    'carrito.itemsPedido': []
+                }
+            });
+        if (updatePayData.modifiedCount === 0) throw new Error('No se pudo actualizar los datos de pago del cliente.');
+        //console.log('Actualización de datos de pago en cliente: ', updatePayData);
+
+        res.status(200).send({ code: 0, message: 'Pago correcto', orderCapture: capturaPago });
     } catch (error) {
-        res.status(200).send({ code: 10, message: 'Error en la captura de orden' });
+        console.log('Error en la captura de pago: ', error);
+        res.status(200).send({ code: 10, message: 'No se pudo capturar el pago de PayPal' });
     }
-
-
-
 })
 
 shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
@@ -311,13 +333,17 @@ shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
 
         const find = await findProduct(client, order);
 
-        console.log('Producto existente: ', find);
-        let subtotalPrice;
-        if (client.carrito.itemsPedido.length > 0) {
-            subtotalPrice = client.carrito.itemsPedido.reduce((total, item) => total + (item.producto.precio * quantity), 0);
-        } else {
-            subtotalPrice = Math.round((order.price * quantity) * 100) / 100;
-        }
+        let subtotalPrice = client.carrito.itemsPedido.reduce((total, item) => {
+            const precio = item.producto.precio || 0;
+            const cantidad = item.quantity || 0;
+            return total + (precio * cantidad);
+        }, 0);
+
+        const nuevoItemPrecio = (order.price * quantity);
+        subtotalPrice += nuevoItemPrecio;
+
+
+        subtotalPrice = Math.round(subtotalPrice * 100) / 100;
 
         console.log('Subtotal: ', subtotalPrice);
 

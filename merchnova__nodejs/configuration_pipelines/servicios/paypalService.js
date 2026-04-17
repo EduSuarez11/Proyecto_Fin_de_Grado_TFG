@@ -65,20 +65,15 @@ module.exports = {
                 payment_source: {
                     paypal: {
                         experience_context: {
-                            return_url: 'http://localhost:3000/api/checkout/success',
-                            cancel_url: 'http://localhost:3000/api/checkout/success'
+                            return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?clientId=${clientData._id}&orderId=${order._id}`,
+                            cancel_url: `http://localhost:5173/Tienda/CompraFinalizada?clientId=${clientData._id}&paymentCanceled=true`
                         }
                     }
                 }
-
-
             }
 
             const responseOrder = await requestInNode.createOrderReq(bodyOrder, token);
-            console.log("Datos de la orden de PayPal:", responseOrder);
-
-            if (!responseOrder) throw new Error('No se pudo realizar la creacion de orden de pago.');
-
+            //console.log("Datos de la orden de PayPal:", responseOrder);
             return responseOrder;
         } catch (error) {
             console.log('Error al crear la orden de pago: ', error);

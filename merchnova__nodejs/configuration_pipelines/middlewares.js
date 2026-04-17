@@ -10,7 +10,7 @@ const pathImages = path.join(__dirname, "../images");
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.URL_MONGODB);
-        console.log('Conexion a mongoDB exitosa')
+        //console.log('Conexion a mongoDB exitosa')
     } catch (err) {
         process.exit(1);
     }
