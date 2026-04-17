@@ -239,8 +239,7 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
         order.items = clientData.carrito.itemsPedido;
         order.subtotal = clientData.carrito.subtotal;
         order.total = clientData.carrito.total;
-        order.fechaPago = null;
-        order.fechaEnvio = null;
+        order.estado = 'EN_CURSO';
         order.direccionEnvio = {
             calle: direccionEnvio.direccion,
             municipio: direccionEnvio.municipio,
@@ -276,16 +275,25 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
         const orderId = req.params.orderId;
         const { clientData, id } = req.body;
 
+        console.log('Id de pedido: ', orderId, ' y Id de pedido: ', id);
+
         const capturaPago = await paypalService.CapturePaymentOfPaypal_2(orderId);
         console.log('Captura de pago: ', capturaPago);
 
         if (!capturaPago) throw new Error('No se pudo capturar el pago de PayPal.');
 
+        // Verificar que el pago se completó correctamente
+        if (capturaPago.status !== 'COMPLETED') {
+            throw new Error(`El pago no se completó. Estado: ${capturaPago.status}`);
+        }
+
         const fecha = new Date();
-        const fechaPago = `${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`;
+        const fechaPago = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+
         // Guardar el resto de datos de pago del cliente
         const updatePayData = await mongoose.connection.collection('clientes').updateOne(
-            { _id: new mongoose.Types.ObjectId(id), 'pedidos.idOrderPaypal': orderId },
+            { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(id) },
             {
                 $set: {
                     'pedidos.$.metodoPago.info': {
@@ -293,13 +301,15 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
                         capturaOrden: {
                             capturaId: capturaPago.id,
                             estadoCaptura: capturaPago.status,
-                            'payment_source.paypal': {
-                                account_id: capturaPago.payment_source.paypal.account_id,
-                                name: {
-                                    given_name: capturaPago.payment_source.paypal.name.given_name,
-                                    surname: capturaPago.payment_source.paypal.name.surname
-                                },
-                                email_address: capturaPago.payment_source.paypal.email_address
+                            payment_source: {
+                                paypal: {
+                                    account_id: capturaPago.payment_source.paypal.account_id,
+                                    name: {
+                                        given_name: capturaPago.payment_source.paypal.name.given_name,
+                                        surname: capturaPago.payment_source.paypal.name.surname
+                                    },
+                                    email_address: capturaPago.payment_source.paypal.email_address
+                                }
                             },
                             payer: {
                                 payer_id: capturaPago.payer.payer_id,
@@ -308,16 +318,20 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
                                     surname: capturaPago.payer.name.surname
                                 },
                                 email_address: capturaPago.payer.email_address
-                            }
+                            },
                         }
                     },
                     'pedidos.$.fechaPago': fechaPago,
-                    'pedidos.$.fechaEnvio': fechaPago + 2,
-                    'carrito.itemsPedido': []
+                    'pedidos.$.fechaEnvio': fechaEnvio,
+                    'carrito.itemsPedido': [],
+                    'carrito.subtotal': 0,
+                    'carrito.gastosEnvio': 0,
+                    'carrito.total': 0,
                 }
             });
+
+        console.log('Actualización de datos de pago en cliente: ', updatePayData);
         if (updatePayData.modifiedCount === 0) throw new Error('No se pudo actualizar los datos de pago del cliente.');
-        //console.log('Actualización de datos de pago en cliente: ', updatePayData);
 
         res.status(200).send({ code: 0, message: 'Pago correcto', orderCapture: capturaPago });
     } catch (error) {

@@ -87,7 +87,7 @@ module.exports = {
             console.log('Id de orden: ', orderId, ' y token: ', token);
             const responsePayment = await requestInNode.capturePaymentWithId(orderId, token);
 
-            console.log('Captura de pago: ', responsePayment);
+            //console.log('Captura de pago: ', responsePayment);
             if (!responsePayment) throw new Error('No se pudo crear la captura de pago.');
 
             return responsePayment;
