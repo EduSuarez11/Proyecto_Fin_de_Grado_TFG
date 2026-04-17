@@ -31,3 +31,7 @@
 .sticky-top {
     z-index: 1020;
 }
+
+.opacity {
+    opacity: 0.5;
+}

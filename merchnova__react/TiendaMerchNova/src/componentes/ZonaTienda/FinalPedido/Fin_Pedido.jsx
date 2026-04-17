@@ -74,7 +74,7 @@ function FinPedido() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ clientData, id: orderClient })
+            body: JSON.stringify({ clientData, id: orderClient.toString() })
         });
         const responseCapture = await requestCapture.json();
         console.log('Respuesta de la captura: ', responseCapture);

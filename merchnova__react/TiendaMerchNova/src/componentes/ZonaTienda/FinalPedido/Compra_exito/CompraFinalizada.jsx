@@ -1,4 +1,5 @@
-import { useLocation } from "react-router"
+import './CompraFinalizada.css'
+import { Link, useLocation } from "react-router"
 
 function CompraFinalizada() {
 

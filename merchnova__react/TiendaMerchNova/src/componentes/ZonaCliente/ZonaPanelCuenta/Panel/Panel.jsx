@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 function Panel({ order, clientData, logOut }) {
     const navigate = useNavigate();
 
-    console.log('Cliente_ ', clientData);
+    //console.log('Cliente_ ', clientData);
     return (
         <div className="d-flex align-items-center gap-3 user-menu">
             <Link to='/Cart' className="cart-icon">

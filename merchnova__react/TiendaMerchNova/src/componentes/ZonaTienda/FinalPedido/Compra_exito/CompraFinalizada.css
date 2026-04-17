@@ -86,3 +86,25 @@
 .btn-secondary:hover {
     background: #bababa;
 }
+
+.success-info {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9f5ff;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.info-row span {
+    color: #666;
+}
+
+.info-row strong {
+    color: #6a0dad;
+}
