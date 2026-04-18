@@ -105,14 +105,14 @@ function PerfilCuenta() {
                     <div className="col-md-4 text-center mb-4 border-end">
                         <div className="profile-img-container mx-auto">
                             <img src={clientData.cuenta.imagenCuenta} ref={imageRef} alt="Previsualización" className="mb-3" style={{ width: '120px', height: '120px' }} />
-                            <label htmlFor="imageUpload" className={!editProfile ? `btn btn-purple btn-sm w-100 opacity` : `btn btn-purple btn-sm w-100`} >
+                            <label htmlFor="imageUpload" className={(!editProfile || clientData.cuenta.tipo === 'discord') ? `btn btn-purple btn-sm w-100 opacity` : `btn btn-purple btn-sm w-100`} >
                                 <i className="bi bi-camera me-2"></i>Cambiar Foto
                             </label>
-                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo !== 'google' ? !editProfile : true} onChange={changeImagePreview} />
+                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo === 'google' ) ? !editProfile : true} onChange={changeImagePreview} />
                             {
-                                clientData.cuenta.tipo === 'discord' || clientData.cuenta.tipo === 'google' &&
+                                (clientData.cuenta.tipo === 'discord' || clientData.cuenta.tipo === 'google') &&
                                 <div className="form-text small text-danger">
-                                    No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google
+                                    No puedes cambiar tu foto de perfil con inicio de sesión de Discord o Google.
                                 </div>
                             }
                         </div>
@@ -146,7 +146,7 @@ function PerfilCuenta() {
                             }
 
                             {
-                                clientData.cuenta.tipo === 'discord' &&
+                                (clientData.cuenta.tipo === 'discord' || clientData.cuenta.tipo === 'google') &&
                                 <div className="form-text small text-danger">No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google</div>
                             }
                         </div>

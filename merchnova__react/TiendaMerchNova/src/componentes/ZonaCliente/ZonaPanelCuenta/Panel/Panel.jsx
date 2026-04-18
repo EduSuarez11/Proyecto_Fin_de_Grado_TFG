@@ -6,7 +6,7 @@ function Panel({ order, clientData, logOut }) {
     //console.log('Cliente_ ', clientData);
     return (
         <div className="d-flex align-items-center gap-3 user-menu">
-            <Link to='/Cart' className="cart-icon">
+            <Link to='/Portal/Cart' className="cart-icon">
                 <i className="bi bi-cart3">
                     <span className="position-absolute translate-middle badge bg-danger size-qty">
                         {clientData.carrito.itemsPedido.length}

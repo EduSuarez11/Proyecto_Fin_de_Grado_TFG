@@ -109,32 +109,25 @@ const applicationRoutes = createBrowserRouter(
                         { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries },
                         { path: 'CompraExitosa', element: <CompraFinalizada /> }
                      ]
-                  }
-               ]
-            },
+                  },
 
-            {
-               path: 'Productos',
-               element: <Productos />,
-               loader: getAllProducts
-            },
+                  {
+                     path: 'Productos',
+                     element: <Productos />,
+                     loader: getAllProducts
+                  },
 
-            {
-               path: 'Producto/:categoria/:slug',
-               element: <InfoProducto />,
-               loader: getChosenProduct
-            },
+                  {
+                     path: 'Producto/:categoria/:slug',
+                     element: <InfoProducto />,
+                     loader: getChosenProduct
+                  },
 
-            {
-               path: 'Cart',
-               element: <Carrito />,
-               loader: getAllProducts
-            },
-
-            {
-               path: 'Pedido', loader: securityApplication,
-               children: [
-                  { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries }
+                  {
+                     path: 'Cart',
+                     element: <Carrito />,
+                     loader: getAllProducts
+                  },
                ]
             },
 

@@ -48,7 +48,7 @@
     font-size: 30px;
     font-weight: bold;
     color: #7b2ff7;
-    margin-bottom: 25px;
+    margin-bottom: 5px;
 }
 
 .product-sizes p {
@@ -208,4 +208,8 @@
 
 .opacity-price {
     opacity: 0.5;
+}
+
+.text-ofert {
+    font-size: 25px;
 }

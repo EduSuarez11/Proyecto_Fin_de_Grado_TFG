@@ -47,7 +47,7 @@ function Home() {
                         Adquiere camisetas, tazas y accesorios únicos
                     </p>
 
-                    <Link to='/Productos'>
+                    <Link to='/Portal/Productos'>
                         <button className="btn btn-light btn-lg mt-3">Explorar productos</button>
                     </Link>
                 </div>
@@ -87,7 +87,7 @@ function Home() {
                                     <div className="card-body text-center">
                                         <h5 className="card-title">{product.nombre}</h5>
                                         <p>{product.precio}</p>
-                                        <Link to='/Productos'>
+                                        <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>
                                             <button className="btn btn-purple">
                                                 Ver Detalles
                                             </button>
@@ -118,8 +118,8 @@ function Home() {
 
             <div className="promo text-center text-white py-5">
                 <div className="container">
-                    <h2>🔥 20% de descuento en camisetas</h2>
-                    <Link to='/Productos'>
+                    <h2>🔥 Descuento en todo tipo de productos</h2>
+                    <Link to='/Portal/Productos'>
                         <button className='className="btn btn-light mt-3"'>Comprar ahora</button>
                     </Link>
                 </div>

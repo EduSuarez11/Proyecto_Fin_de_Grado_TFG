@@ -136,7 +136,7 @@ function Productos() {
                 <div className="col-lg-9">
                     <div className="row">
                         {productsFilter.map((product, index) =>
-                            <Link to={`/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
+                            <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     {product.rebaja > 0 && (
                                         <div className="ribbon">

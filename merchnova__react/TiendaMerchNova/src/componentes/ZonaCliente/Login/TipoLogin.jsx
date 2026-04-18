@@ -4,63 +4,33 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useGlobalState from '../../../global_state/globalState';
 import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
 import requestFetch from '../../Servicios/peticiones_fetch';
+import request_login_discord from '../../Servicios/peticiones_login/peticiones_login';
 
 function TipoLogin() {
-    const { setClientData } = useGlobalState();
     const navigate = useNavigate();
+    const { setClientData } = useGlobalState();
     const [logout, setLogout] = useState(useLocation().state?.msg);
+    let doubleRequest = useRef(false);
     let googlePopup = useRef(null);
+
 
     useEffect(() => {
         const popupEvent = async (event) => {
             console.log("Mensaje recibido: ", event.data);
-            if (event.data.code) {
+            if (event.data.code && !doubleRequest.current) {
                 try {
-                    const requestDiscord = await fetch('http://localhost:3000/api/Cliente/DiscordCallback', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: event.data.code })
-                    });
+                    doubleRequest.current = true;
+                    const responseDiscord = await request_login_discord.RequestCallbackDiscord(event.data.code);
+                    //console.log('Respuesta desde discord: ', responseDiscord);
+                    
+                    const response = await request_login_discord.RequestLoginDiscord(responseDiscord.user);
 
-                    const responseDiscord = await requestDiscord.json();
-                    console.log('Respuesta desde discord: ', responseDiscord);
-                    const URL_IMAGE = `https://cdn.discordapp.com/avatars/${responseDiscord.user.id}/${responseDiscord.user.avatar}.png`
-                    const dataDiscord = {
-                        nombreCompleto: responseDiscord.user.global_name,
-                        cuenta: {
-                            tipo: 'discord',
-                            email: responseDiscord.user.email,
-                            password: '',
-                            genero: 'Neutro',
-                            cuentaActiva: true,
-                            imagenCuenta: URL_IMAGE,
-                            creacionCuenta: Date.now(),
-                            sobreMi: '',
-                            telefono: ''
-                        },
-                        pedidos: [],
-                        carrito: {
-                            itemsPedido: [],
-                            cuponDescuento: [],
-                            gastosEnvio: 0,
-                            subtotal: 0,
-                            total: 0
-                        },
-                        direcciones: [
-                            {
-                                calle: '',
-                                codigoPostal: '',
-                                municipio: '',
-                                pais: '',
-                                provincia: ''
-                            }
-                        ]
-                    }
-                    setClientData(dataDiscord);
+                    sessionStorage.setItem("token", response.data.access_token);
+                    setClientData(response.data.user);
                     navigate('/');
-
                 } catch (error) {
                     console.log('Error al iniciar sesion en DC: ', error);
+                    doubleRequest.current = false;
                 }
             }
         };
@@ -92,15 +62,7 @@ function TipoLogin() {
                 subtotal: 0,
                 total: 0
             },
-            direcciones: [
-                {
-                    calle: '',
-                    codigoPostal: '',
-                    municipio: '',
-                    pais: '',
-                    provincia: ''
-                }
-            ]
+            direcciones: []
         }
         setClientData(dataGoogle);
         window.removeEventListener('message', getDataGoogle);

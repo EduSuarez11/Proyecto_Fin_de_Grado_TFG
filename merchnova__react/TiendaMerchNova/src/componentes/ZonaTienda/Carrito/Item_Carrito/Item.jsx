@@ -45,7 +45,7 @@ function Item() {
 
                                         <p className="empty-cart-text">Parece que todavía no has añadido ningún producto.</p>
 
-                                        <Link to='/Productos' className="empty-cart-btn">Ver productos</Link>
+                                        <Link to='/Portal/Productos' className="empty-cart-btn">Ver productos</Link>
                                     </div>
                                 </div>
                                 :
@@ -110,7 +110,7 @@ function Item() {
 
                                         <p className="empty-cart-text">Parece que todavía no has añadido ningún producto.</p>
 
-                                        <Link to='/Productos' className="empty-cart-btn">Ver productos</Link>
+                                        <Link to='/Portal/Productos' className="empty-cart-btn">Ver productos</Link>
                                     </div>
                                 </div>
                         )

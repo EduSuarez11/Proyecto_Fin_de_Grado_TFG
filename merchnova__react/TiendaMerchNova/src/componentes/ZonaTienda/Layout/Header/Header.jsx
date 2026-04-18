@@ -115,7 +115,7 @@ function Header() {
                             {
                                 clientData == null ?
                                     <div className="d-flex align-items-center gap-3">
-                                        <Link to='/Cart' className="cart-icon">
+                                        <Link to='/Portal/Cart' className="cart-icon">
                                             <i className="bi bi-cart3">
                                                 <span className="position-absolute translate-middle badge bg-danger size-qty">
                                                     {order.items.length}

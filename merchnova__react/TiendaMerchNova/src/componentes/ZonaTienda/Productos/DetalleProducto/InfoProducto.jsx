@@ -71,7 +71,7 @@ function InfoProducto() {
             <nav className="breadcrumb">
                 <Link to='/'>Inicio </Link>
                 <span className="mx-2">/</span>
-                <Link to='/Productos'>Tienda</Link>
+                <Link to='/Portal/Productos'>Tienda</Link>
                 <span className="mx-2">/</span>
                 <span className="current-product">{resp.product.nombre}</span>
             </nav>
@@ -99,13 +99,20 @@ function InfoProducto() {
 
                     <p className="product-description">{resp.product.descripcion}</p>
 
-                    <div className='d-flex'>
-                        <div className={resp.product.rebaja > 0 ? 'product-price text-decoration-line-through text-secondary opacity-price' : 'product-price'}>{resp.product.precio}€</div>
+                    <div className='d-flex flex-column'>
                         {
                             resp.product.rebaja > 0 &&
-                            <div className="product-price ms-4">{(resp.product.precio - (resp.product.precio * resp.product.rebaja / 100)).toFixed(2)} €</div>
+                            <div className="product-price">
+                                <span className="text-danger text-ofert me-2"> - {resp.product.rebaja}%</span>
+                                {(resp.product.precio - (resp.product.precio * resp.product.rebaja / 100)).toFixed(2)} € <span className='small'>(Por unidad)</span>
+                            </div>
                         }
+                        <div className={resp.product.rebaja > 0 ? 'product-price text-decoration-line-through text-secondary opacity-price' : 'product-price mb-4'}>
+                            <span className='text-black'>{resp.product.rebaja === 0 && 'Por unidad: ' }</span>
+                            {resp.product.precio}€
+                            </div>
                     </div>
+
 
                     {/* Tallas */}
                     {
@@ -150,7 +157,7 @@ function InfoProducto() {
                     {
                         moreProducts?.map((product, el) =>
                             <div className="related-card" key={el}>
-                                <Link to={`/Producto/${product.categoria}/${product.slug}`}>
+                                <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>
                                     <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} />
                                     <h3>{product.nombre}</h3>
                                     <p>{product.precio}</p>

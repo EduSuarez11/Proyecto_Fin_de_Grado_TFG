@@ -1,5 +1,6 @@
 import './MiCarritoCuenta.css';
 import useGlobalState from "../../../../global_state/globalState";
+import { Link } from 'react-router';
 
 function CarritoCuenta() {
     const { order, setOrder } = useGlobalState();
@@ -11,9 +12,9 @@ function CarritoCuenta() {
                 order.items.length === 0 ? (
                     <div className="text-center py-5">
                         <h5 className="text-muted">Tu carrito está vacío</h5>
-                        <button className="btn btn-purple mt-3">
-                            Explorar productos
-                        </button>
+                        <Link to='/Portal/Productos'>
+                            <button className="btn btn-purple mt-3">Explorar productos</button>
+                        </Link>
                     </div>
                 ) : (
                     <div className="row">
@@ -69,12 +70,13 @@ function CarritoCuenta() {
 
                                 <div className="d-flex justify-content-between fw-bold mb-3">
                                     <span>Total</span>
-                                    <span>{order.subtotal + order.gastosEnvio}€</span>
+                                    <span>{order.subtotal + order.gastosEnvio} €</span>
                                 </div>
 
-                                <button className="btn btn-purple w-100">
-                                    Finalizar compra
-                                </button>
+                                <Link to='/Portal/Pedido/DetallesEncargo'>
+                                    <button className="btn btn-purple w-100">Finalizar compra</button>
+                                </Link>
+
                             </div>
                         </div>
 
