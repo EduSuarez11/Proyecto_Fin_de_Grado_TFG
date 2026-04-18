@@ -32,7 +32,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
         const { nombre, email, password, confirmPassword } = req.body;
         if (!nombre || !email || !password || !confirmPassword) throw new Error('Falta algún campo obligatorio.');
 
-        
+
         const existClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': req.body.email });
 
         if (existClient) throw new Error('Ese correo ya existe, prueba con otro correo.');
@@ -73,7 +73,7 @@ clientRouter.post('/Registro', async (req, resp, next) => {
     } catch (error) {
         console.log('Error en el Registro: ', error);
         resp.status(200).send({ code: 1, message: `${error}` });
-    } 
+    }
 
 
 })
@@ -85,7 +85,7 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
 
         if (verifyToken.email !== email) throw new Error('El email del token no coincide con el email enviado.');
 
-        
+
         const updateData = await mongoose.connection.collection('clientes').updateOne(
             { _id: new mongoose.Types.ObjectId(verifyToken.idCliente) },
             { $set: { 'cuenta.cuentaActiva': true } }
@@ -98,7 +98,7 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
     } catch (error) {
         console.log('Error en la activacion de cuenta: ', error);
         resp.status(200).send({ code: 3, message: `Error en la activacion de cuenta: ${error}` });
-    } 
+    }
 })
 
 clientRouter.post('/Login', async (req, resp, next) => {
@@ -129,7 +129,7 @@ clientRouter.post('/Login', async (req, resp, next) => {
 
         if (!responseRecaptcha.tokenProperties.valid || responseRecaptcha.riskAnalysis.score < 0.5) throw new Error('Verificación de reCAPTCHA fallida, la petición podría ser fraudulenta.');
 
-        
+
         const existClient = await mongoose.connection.collection('clientes').findOne(
             {
                 'cuenta.email': email
@@ -152,7 +152,7 @@ clientRouter.post('/Login', async (req, resp, next) => {
 
     } catch (error) {
         resp.status(200).send({ code: 2, message: `${error}` });
-    } 
+    }
 });
 
 
@@ -210,10 +210,53 @@ clientRouter.post('/DiscordCallback', async (req, resp, next) => {
     }
 });
 
+
+clientRouter.post('/DataDiscord', async (req, res, next) => {
+    const data = req.body;
+    //console.log('Datos de discord: ', data);
+
+    const URL_IMAGE = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+    let dataClient;
+    dataClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': data.email });
+
+    if (!dataClient) {
+        const newClient = await mongoose.connection.collection('clientes').insertOne(
+            {
+                nombreCompleto: data.global_name,
+                cuenta: {
+                    email: data.email,
+                    password: '',
+                    genero: 'Neutro',
+                    cuentaActiva: true,
+                    imagenCuenta: URL_IMAGE,
+                    creacionCuenta: Date.now(),
+                    telefono: '',
+                    tipo: 'discord'
+                },
+                pedidos: [],
+                carrito: {
+                    itemsPedido: [],
+                    cuponDescuento: [],
+                    gastosEnvio: 0,
+                    subtotal: 0,
+                    total: 0
+                },
+                direcciones: []
+            }
+        )
+        dataClient = await mongoose.connection.collection('clientes').findOne({ _id: newClient.insertedId });
+    }
+
+    const accessToken = jwtService.generateToken({ idCliente: dataClient._id, email: dataClient.cuenta.email }, { expiresIn: '2h' });
+
+    res.status(200).send({ code: 0, message: 'Datos de discord introducidos.', data: { user: dataClient, access_token: accessToken } });
+});
+
+
 clientRouter.get('/Verify/Token', async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
-        
+
 
         const verifyToken = jwtService.verifyToken(token);
 
@@ -221,7 +264,7 @@ clientRouter.get('/Verify/Token', async (req, res, next) => {
         const user = await mongoose.connection.collection('clientes').findOne({
             _id: new mongoose.Types.ObjectId(verifyToken.idCliente)
         })
-        console.log('Usuario: ', user);
+        //console.log('Usuario: ', user);
 
         res.status(200).send({ code: 0, message: 'Token verificado.', data: { user } });
     } catch (error) {
@@ -246,7 +289,7 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
         });
 
         console.log('Objeto data: ', data);
-        
+
 
         const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { 'cuenta.email': req.body.email },
@@ -262,7 +305,7 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: updateClient } });
     } catch (error) {
         res.status(200).send({ code: 4, message: `${error}` });
-    } 
+    }
 });
 
 
@@ -288,7 +331,7 @@ clientRouter.get('/LoginGoogle', async (req, res, next) => {
     } catch (error) {
         console.log('Error en LoginGoogle: ', error);
         res.status(200).send({ code: 7, message: error });
-    } 
+    }
 });
 
 clientRouter.get('/CallbackGoogle', async (req, res, next) => {
@@ -328,7 +371,7 @@ clientRouter.get('/CallbackGoogle', async (req, res, next) => {
     } catch (error) {
         console.log('Error en el callback de Google: ', error);
         res.status(200).send({ codigo: 9, mensaje: error });
-    } 
+    }
 
 });
 
