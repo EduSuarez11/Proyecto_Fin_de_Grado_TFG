@@ -17,6 +17,9 @@ import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
 import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
 import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/CompraFinalizada";
+import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos";
+import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
+import requestFetch from "./componentes/Servicios/peticiones_fetch";
 
 
 const optionsPayPal = {
@@ -56,17 +59,6 @@ const getAllProducts = async () => {
    return response;
 }
 
-// const getAllCountries = async () => {
-//    const requestCountries = await fetch('https://restcountries.com/v3.1/all?fields=name,flags',
-//       {
-//          method: 'GET',
-//          headers: { 'Content-Type': 'application/json' }
-//       }
-//    );
-//    const responseCountries = await requestCountries.json();
-//    console.log('Paises: ', responseCountries);
-//    return responseCountries;
-// }
 
 const securityApplication = () => {
    const token = sessionStorage.getItem('token');
@@ -94,7 +86,8 @@ const applicationRoutes = createBrowserRouter(
                   {
                      path: 'Cuenta', element: <Cuenta />, loader: securityApplication, children: [
                         { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
-                        { path: 'MisDirecciones', element: <Direcciones /> },
+                        { path: 'Pedidos', element: <Pedidos /> },
+                        { path: 'MisDirecciones', element: <MisDirecciones />, loader: peticiones_fetch.requestGetCountries },
                         { path: 'MiCarrito', element: <CarritoCuenta /> }
                      ]
                   },
