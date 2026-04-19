@@ -24,7 +24,7 @@ function Direcciones({onChangeAddress}) {
 
             <div className="form-group">
                 <label className="form-label">Dirección</label>
-                <input className="input" id="calle" name="calle" placeholder="Calle, número, piso..." onChange={onChangeAddress} />
+                <input className="input" id="domicilio" name="domicilio" placeholder="Calle, número, piso..." onChange={onChangeAddress} />
             </div>
 
             <div className="form-row">

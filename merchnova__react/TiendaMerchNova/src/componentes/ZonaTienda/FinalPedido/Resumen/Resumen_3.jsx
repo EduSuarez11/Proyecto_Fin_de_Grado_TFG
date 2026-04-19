@@ -14,7 +14,7 @@ function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
             <div className="summary-section">
                 <h5>Dirección de envío</h5>
                 <p>{datosDireccion?.nombreCompleto}</p>
-                <p>{datosDireccion?.calle}</p>
+                <p>{datosDireccion?.domicilio}</p>
                 <p>{datosDireccion?.municipio}, {datosDireccion?.provincia} - {datosDireccion?.codigoPostal}</p>
                 <p>{datosDireccion?.pais}</p>
             </div>
