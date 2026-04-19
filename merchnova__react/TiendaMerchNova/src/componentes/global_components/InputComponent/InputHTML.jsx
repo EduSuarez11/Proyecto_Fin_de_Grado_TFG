@@ -1,17 +1,32 @@
 import { useLocation } from 'react-router-dom';
 import './InputHTML.css';
+import { useState } from 'react';
 
 function InputHTMLComponent(props) {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPasswordInput = props.nameInput === 'password' || props.nameInput === 'confirmPassword';
+    const inputType = isPasswordInput && showPassword ? 'text' : props.tipo;
+
     return (
         <div className="mb-3">
             <label className="form-label">{props.labelInput} <span className='text-danger'>*</span></label>
-            <input
-                className="form-control"
-                type={props.tipo}
-                id={props.id}
-                name={props.nameInput}
-                placeholder={props.placeholder}
-                onChange={props.change} />
+            <div className={isPasswordInput ? 'input-password' : ''}>
+                <input
+                    className="form-control"
+                    type={inputType}
+                    id={props.id}
+                    name={props.nameInput}
+                    placeholder={props.placeholder}
+                    onChange={props.change} />
+                {
+                    isPasswordInput && (
+                        showPassword ? 
+                        <i className='fa-solid fa-eye-slash eye-icon' onClick={() => setShowPassword(false)}></i>
+                        :
+                        <i className="fa-solid fa-eye eye-icon" onClick={() => setShowPassword(true)}></i>
+                    )
+                }
+            </div>
 
             {/* Validacion de email */}
             {props.nameInput === 'email' && props.form.email && (
@@ -38,9 +53,6 @@ function InputHTMLComponent(props) {
                     </li>
                 </ul>
             )}
-
-
-
         </div>
     )
 }

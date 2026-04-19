@@ -11,3 +11,31 @@
     border-color: #452254;
     box-shadow: 0 0 0 0.2rem rgba(69, 34, 84, 0.25);
 }
+
+.input-password {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-password input {
+    padding-right: 40px;
+    width: 100%;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.eye-icon:hover {
+    color: #6a0dad;
+}

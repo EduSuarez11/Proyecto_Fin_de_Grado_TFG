@@ -1,0 +1,81 @@
+
+.modal-error {
+    background-color: rgb(255, 204, 204);
+}
+
+/* MODAL */
+.error-modal {
+    border-radius: 16px;
+    padding: 10px;
+}
+
+/* ICONO */
+.error-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+
+    background: #c778fb;
+    color: rgb(255, 204, 204);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* TEXTO */
+.error-text {
+    color: #555;
+    font-size: 14px;
+}
+
+/* BOTÓN MORADO */
+.btn-purple {
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+.btn-purple:hover {
+    opacity: 0.9;
+}
+
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+
+    background: #c778fb;
+    color: rgb(159, 250, 169);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.success-text {
+    color: #555;
+    font-size: 14px;
+}
+
+
+.modal-success {
+    background-color: rgb(204, 255, 210);
+}
+
+/* MODAL */
+.success-modal {
+    border-radius: 16px;
+    padding: 10px;
+}
