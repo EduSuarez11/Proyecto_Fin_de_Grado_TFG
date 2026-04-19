@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import './Login.css'
 import InputHTMLComponent from "../../global_components/InputComponent/InputHTML";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useGlobalState from "../../../global_state/globalState";
 import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
 
@@ -11,8 +11,9 @@ function Login() {
 
     const { setClientData } = useGlobalState();
     const [formLogin, setFormLogin] = useState({});
+    const [params] = useSearchParams();
     const [logoutMessage, setLogoutMessage] = useState(useLocation().state?.msg);
-    const [errorLogin, setErrorLogin] = useState('');
+    const [errorLogin, setErrorLogin] = useState();
     const [validationLogin, setValidationLogin] = useState({
         lengthPassword: false,
         email: false,
@@ -22,6 +23,15 @@ function Login() {
 
     const recaptchaReference = useRef(null);
     const recaptchaElement = useRef(null);
+
+     useEffect(() => {
+        if (params.get('activada') === 'true') {
+            setLogoutMessage('Cuenta activada con éxito')
+        } else if (params.get('activada') === 'false') {
+            setErrorLogin('No se pudo activar la cuenta')
+        }
+
+    }, [params]);
 
     useEffect(
         () => {
@@ -106,11 +116,12 @@ function Login() {
             if (response.code !== 0) {
                 console.log('Error en el Login: ', response.message);
                 setErrorLogin(`${response.message}`);
-                return;
+            } else {
+                sessionStorage.setItem("token", response.data.accessToken);
+                setClientData(response.data.clientData);
+                navigate('/', { state: { msg: `${response.message}` } });
             }
-            sessionStorage.setItem("token", response.data.accessToken);
-            setClientData(response.data.clientData);
-            navigate('/', { state: { msg: `${response.message}` } });
+
         } catch (error) {
             console.log('Error: ', error);
         }
@@ -123,12 +134,9 @@ function Login() {
 
                 <h2 className="login-title">Iniciar sesión</h2>
                 <div className="d-flex justify-content-center">
-                    {
-                        errorLogin != '' ? <span className="alert alert-danger small">{errorLogin}</span> : null
-                    }
-                    {
-                        logoutMessage && <MensajeSuccess msg={logoutMessage} setState={setLogoutMessage} />
-                    }
+                    {errorLogin != null && <span className="alert alert-danger small">{errorLogin}</span>}
+
+                    {logoutMessage && <MensajeSuccess msg={logoutMessage} setState={setLogoutMessage} />}
                 </div>
 
                 <form className="login-form" method="POST">

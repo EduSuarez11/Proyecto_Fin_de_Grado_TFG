@@ -4,8 +4,9 @@ import InputHTMLComponent from '../../global_components/InputComponent/InputHTML
 
 function Registro() {
     const [formRegistro, setFormRegistro] = useState({})
-    const [ emailSent, setEmailSent ] = useState();
-    const [ codeResponse, setCodeResponse] = useState();
+    const [emailSent, setEmailSent] = useState();
+    const [messages, setMessages] = useState();
+    const [codeResponse, setCodeResponse] = useState();
 
     const [validationRegistro, setValidationRegistro] = useState({
         lengthPassword: false,
@@ -63,16 +64,14 @@ function Registro() {
 
             const data = await response.json();
             if (data.code !== 0) {
-                console.log('Error en el registro: ', data.message);
+                //console.log('Error en el registro: ', data.message);
                 setCodeResponse(`${data.code}`)
-                setEmailSent(`${data.message}`);
-                return;
+                setMessages(`${data.message}`);
+            } else {
+                setCodeResponse(`${data.code}`);
+                setMessages(`${data.message}`);
+                //console.log('Respuesta del servidor: ', data.message);
             }
-            setCodeResponse(`${data.code}`);
-            setEmailSent(`${data.message}`);
-            //navigate('/Cliente/Registro', {state: {msg: `${data.message}`}})
-            //console.log('Respuesta del servidor: ', data.message);
-            
         } catch (error) {
             console.log('Error en el Registro: ', error);
         }
@@ -83,9 +82,8 @@ function Registro() {
             <div className="register-card">
                 <h2 className="text-center register-title mb-4">Registrate</h2>
                 <div className="d-flex justify-content-center">
-                    {
-                        emailSent != null ? <span className={codeResponse != 0 ? 'alert alert-danger small': 'alert alert-success small'}>{emailSent}</span> : null
-                    }
+                    {messages != null ? <span className={codeResponse != 0 ? 'alert alert-danger small' : 'alert alert-success small'}>{messages}</span> : null}
+
                 </div>
                 <form method="POST">
                     {
