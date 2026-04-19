@@ -11,7 +11,7 @@ function Cuenta() {
         <div className="container my-5">
             <div className="row">
                 <div className="col-lg-8">
-                    <Outlet/>
+                    <Outlet />
                 </div>
 
                 <div className="col-lg-4">
@@ -22,7 +22,7 @@ function Cuenta() {
                                 [
                                     { name: 'Perfil', route: '/Cliente/Cuenta/Perfil', icon: 'bi bi-person me-2' },
                                     { name: 'Mis Pedidos', route: '/Cliente/Cuenta/Pedidos', icon: 'bi bi-box-seam me-2' },
-                                    { name: 'Mis Direcciones', route: '/Cliente/Cuenta/Direcciones', icon: 'bi bi-geo-alt me-2' },
+                                    { name: 'Mis Direcciones', route: '/Cliente/Cuenta/MisDirecciones', icon: 'bi bi-geo-alt me-2' },
                                     { name: 'Mi Carrito', route: '/Cliente/Cuenta/MiCarrito', icon: 'bi bi-cart3 me-2' },
                                 ].map((element, index) =>
                                     <Link to={element.route} key={index} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active-link' : ''}`}>

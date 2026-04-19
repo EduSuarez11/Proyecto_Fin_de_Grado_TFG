@@ -28,7 +28,7 @@ function PerfilCuenta() {
         nombre: (value) => value.length >= 6 && value.length <= 50,
         telefono: (value) => /^\d{9}$/.test(value),
         codigoPostal: (value) => /^[a-zA-Z0-9\s-]{3,12}$/.test(value),
-        calle: (value) => /^[a-zA-Z0-9.,\s\-#°ª]{8,60}$/i.test(value),
+        domicilio: (value) => /^[a-zA-Z0-9.,\s\-#°ª]{8,60}$/i.test(value),
         municipio: (value) => value.length >= 2 && value.length <= 20,
         provincia: (value) => value.length >= 2 && value.length <= 20,
         sobreMi: (value) => value.length <= 200
@@ -188,20 +188,20 @@ function PerfilCuenta() {
                             <label className="form-label fw-semibold">Domicilio</label>
                             <input
                                 type="text"
-                                name="calle"
+                                name="domicilio"
                                 className="form-control custom-input"
                                 placeholder="Calle / Avenida ..., portal y número"
                                 disabled={!editProfile}
-                                defaultValue={clientData.direcciones[0]?.calle || ''}
+                                defaultValue={clientData.direcciones[0]?.domicilio || ''}
                                 onChange={(ev) => {
                                     onChangeInputProfile(ev);
                                     validateField('domicilio', ev.target.value);
                                 }}
                             />
                             {
-                                formProfile.calle != null && (
-                                    formProfile.calle.length > 0 ?
-                                        <span className={validateProfile.calle ? "text-success small" : "text-danger small"}>{validateProfile.calle ? '✅ Domicilio válido' : '❌ Domicilio inválido'}</span>
+                                formProfile.domicilio != null && (
+                                    formProfile.domicilio.length > 0 ?
+                                        <span className={validateProfile.domicilio ? "text-success small" : "text-danger small"}>{validateProfile.domicilio ? '✅ Domicilio válido' : '❌ Domicilio inválido'}</span>
                                         :
                                         <span className="small text-danger">* Domicilio obligatorio</span>
                                 )

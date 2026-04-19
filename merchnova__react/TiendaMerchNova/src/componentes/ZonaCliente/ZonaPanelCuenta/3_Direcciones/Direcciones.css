@@ -1,0 +1,131 @@
+.addresses-container {
+    padding: 20px;
+}
+
+.addresses-title {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+
+.addresses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+
+.address-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.address-card:hover {
+    transform: translateY(-4px);
+}
+
+
+.address-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.address-line {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.address-phone {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #888;
+}
+
+
+.add-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    border: 2px dashed #d6c2ff;
+    background: #faf7ff;
+}
+
+.add-content {
+    text-align: center;
+    color: #6a0dad;
+}
+
+.plus {
+    font-size: 30px;
+    display: block;
+}
+
+.add-card:hover {
+    background: #f3e8ff;
+}
+
+
+
+
+.custom-modal {
+    border-radius: 16px;
+    padding: 10px;
+}
+
+.custom-input {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.custom-input:focus {
+    border-color: #7b2ff7;
+    box-shadow: 0 0 0 2px rgba(123, 47, 247, 0.1);
+}
+
+
+.address-form label {
+    font-size: 13px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.btn-purple {
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: 0.2s;
+}
+
+.btn-purple:hover {
+    opacity: 0.9;
+}
+
+
+.btn-cancel {
+    border: 1px solid #6a0dad;
+    color: #6a0dad;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #dfc1fe;
+}
+
+
+
+
+
+

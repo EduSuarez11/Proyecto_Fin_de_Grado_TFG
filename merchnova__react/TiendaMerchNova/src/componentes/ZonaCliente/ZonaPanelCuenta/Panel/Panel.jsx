@@ -37,11 +37,11 @@ function Panel({ order, clientData, logOut }) {
                         <small className="text-muted">Mi cuenta</small>
                     </li>
                     {
-                        ["Perfil", "Mis pedidos", "Configuración", "Cerrar Sesión"].map((elemento, index) =>
+                        ["Perfil", "Mis Pedidos", "Configuración", "Cerrar Sesión"].map((elemento, index) =>
                             <>
                                 <li key={index}>
                                     {elemento !== 'Cerrar Sesión' ?
-                                        <Link className='dropdown-item' to={`/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`}>
+                                        <Link className='dropdown-item' to={elemento === 'Mis Pedidos' ? '/Cliente/Cuenta/Pedidos' : (`/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`)}>
                                             {elemento}
                                         </Link>
                                         :

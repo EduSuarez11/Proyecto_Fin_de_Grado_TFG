@@ -1,0 +1,106 @@
+.orders-container {
+    padding: 20px;
+}
+
+.orders-title {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+
+.order-card {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    padding: 15px 20px;
+    background: #f9f5ff;
+    border-bottom: 1px solid #eee;
+}
+
+.label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+}
+
+
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.status.completed {
+    background: #e6f7ed;
+    color: #28a745;
+}
+
+
+.order-body {
+    padding: 15px 20px;
+}
+
+
+.order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+.order-item img {
+    width: 60px;
+    border-radius: 8px;
+}
+
+.item-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.item-name {
+    margin: 0;
+    font-weight: 500;
+}
+
+.item-qty {
+    font-size: 13px;
+    color: #666;
+}
+
+
+.item-price {
+    font-weight: 500;
+}
+
+
+.order-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+
+.btn-outline-purple {
+    border: 1px solid #6a0dad;
+    color: #6a0dad;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: 0.2s;
+}
+
+.btn-outline-purple:hover {
+    background: #f3e8ff;
+}
