@@ -71,8 +71,8 @@ clientRouter.post('/Registro', async (req, resp, next) => {
 
         resp.status(200).send({ code: 0, message: 'Has recibido un correo para activar tu cuenta, revisa tu correo.' });
     } catch (error) {
-        console.log('Error en el Registro: ', error);
-        resp.status(200).send({ code: 1, message: `${error}` });
+        //console.log('Error en el Registro: ', error);
+        resp.status(200).send({ code: 1, message: error.message });
     }
 
 
@@ -93,11 +93,11 @@ clientRouter.get('/ActivacionCuenta', async (req, resp, next) => {
 
         if (!updateData) throw new Error('No se pudo activar la cuenta.');
 
-        console.log('Cuenta activada correctamente');
-        resp.status(200).send({ code: 0, message: 'Cuenta activada correctamente. Registro con éxito.' });
+        //console.log('Cuenta activada correctamente');
+        resp.redirect(`${process.env.URL_FRONTEND_LOGIN}Cliente/Login?activada=true`);
     } catch (error) {
-        console.log('Error en la activacion de cuenta: ', error);
-        resp.status(200).send({ code: 3, message: `Error en la activacion de cuenta: ${error}` });
+        //console.log('Error en la activacion de cuenta: ', error);
+        resp.redirect(`${process.env.URL_FRONTEND_LOGIN}Cliente/Login?activada=false`);
     }
 })
 
@@ -145,13 +145,9 @@ clientRouter.post('/Login', async (req, resp, next) => {
         const accessToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2h' });
         const refreshToken = jwtService.generateToken({ idCliente: existClient._id.toString(), email: existClient.cuenta.email }, { expiresIn: '2d' });
 
-        // const tokenVerify = jwtService.verifyToken(accessToken);
-        // if (tokenVerify.email !== email) throw new Error('Error en el token, el email no coincide');
-
         resp.status(200).send({ code: 0, message: 'Has hecho login con éxito', data: { clientData: existClient, accessToken, refreshToken } });
-
     } catch (error) {
-        resp.status(200).send({ code: 2, message: `${error}` });
+        resp.status(200).send({ code: 2, message: error.message });
     }
 });
 
@@ -212,44 +208,49 @@ clientRouter.post('/DiscordCallback', async (req, resp, next) => {
 
 
 clientRouter.post('/DataDiscord', async (req, res, next) => {
-    const data = req.body;
-    //console.log('Datos de discord: ', data);
+    try {
+        const data = req.body;
+        //console.log('Datos de discord: ', data);
 
-    const URL_IMAGE = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
-    let dataClient;
-    dataClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': data.email });
+        const URL_IMAGE = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+        let dataClient;
+        dataClient = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': data.email });
 
-    if (!dataClient) {
-        const newClient = await mongoose.connection.collection('clientes').insertOne(
-            {
-                nombreCompleto: data.global_name,
-                cuenta: {
-                    email: data.email,
-                    password: '',
-                    genero: 'Neutro',
-                    cuentaActiva: true,
-                    imagenCuenta: URL_IMAGE,
-                    creacionCuenta: Date.now(),
-                    telefono: '',
-                    tipo: 'discord'
-                },
-                pedidos: [],
-                carrito: {
-                    itemsPedido: [],
-                    cuponDescuento: [],
-                    gastosEnvio: 0,
-                    subtotal: 0,
-                    total: 0
-                },
-                direcciones: []
-            }
-        )
-        dataClient = await mongoose.connection.collection('clientes').findOne({ _id: newClient.insertedId });
+        if (!dataClient) {
+            const newClient = await mongoose.connection.collection('clientes').insertOne(
+                {
+                    nombreCompleto: data.global_name,
+                    cuenta: {
+                        email: data.email,
+                        password: '',
+                        genero: 'Neutro',
+                        cuentaActiva: true,
+                        imagenCuenta: URL_IMAGE,
+                        creacionCuenta: Date.now(),
+                        telefono: '',
+                        tipo: 'discord'
+                    },
+                    pedidos: [],
+                    carrito: {
+                        itemsPedido: [],
+                        cuponDescuento: [],
+                        gastosEnvio: 0,
+                        subtotal: 0,
+                        total: 0
+                    },
+                    direcciones: []
+                }
+            )
+            dataClient = await mongoose.connection.collection('clientes').findOne({ _id: newClient.insertedId });
+        }
+
+        const accessToken = jwtService.generateToken({ idCliente: dataClient._id, email: dataClient.cuenta.email }, { expiresIn: '2h' });
+
+        res.status(200).send({ code: 0, message: 'Datos de discord introducidos.', data: { user: dataClient, access_token: accessToken } });
+    } catch (error) {
+        res.status(200).send({ code: 10, message: 'Error al incluir los datos en BBDD' });
     }
 
-    const accessToken = jwtService.generateToken({ idCliente: dataClient._id, email: dataClient.cuenta.email }, { expiresIn: '2h' });
-
-    res.status(200).send({ code: 0, message: 'Datos de discord introducidos.', data: { user: dataClient, access_token: accessToken } });
 });
 
 
@@ -280,7 +281,7 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
             if (campo !== undefined && campo !== null) {
                 if (campo === 'nombreCompleto') {
                     data.nombreCompleto = req.body[campo];
-                } else if (campo === 'pais' || campo === 'municipio' || campo === 'provincia' || campo === 'codigoPostal' || campo === 'calle') {
+                } else if (campo === 'pais' || campo === 'municipio' || campo === 'provincia' || campo === 'codigoPostal' || campo === 'domicilio') {
                     data["direcciones.0." + campo] = req.body[campo];
                 } else {
                     data["cuenta." + campo] = req.body[campo];
@@ -305,6 +306,27 @@ clientRouter.post('/Perfil/Update', async (req, res, next) => {
         res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: updateClient } });
     } catch (error) {
         res.status(200).send({ code: 4, message: `${error}` });
+    }
+});
+
+
+clientRouter.post('/NewDirection', async (req, res, next) => {
+    try {
+        const { clientData, data } = req.body;
+        // console.log('Direccion nueva a agregar: ', data);
+        // console.log('Cliente a actualizar: ', clientData);
+
+        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { 'cuenta.email': clientData.cuenta.email },
+            { $push: { direcciones: data } },
+            { returnDocument: "after" }
+        );
+
+        if (updateData.modifiedCount === 0) throw new Error('No se pudo añadir la nueva dirección.');
+
+        res.status(200).send({ code: 0, message: 'Nueva dirección añadida con éxito', dataUpdate: updateData });
+    } catch (error) {
+        res.status(200).send({ code: 11, message: `${error.message}` });
     }
 });
 
