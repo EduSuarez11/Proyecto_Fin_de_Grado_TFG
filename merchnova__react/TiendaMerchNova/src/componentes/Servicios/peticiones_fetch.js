@@ -13,7 +13,7 @@ const requestFetch = {
             }
         );
         const responseCountries = await requestCountries.json();
-        console.log('Paises: ', responseCountries);
+        //console.log('Paises: ', responseCountries);
         return responseCountries;
     },
 
@@ -64,5 +64,20 @@ const requestFetch = {
     },
 
 }
+
+
+export const requestData = {
+    AddNewDirection: async ({clientData, data}) => {
+        const request = await fetch(`${URL_CLIENTE}/NewDirection`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({clientData, data})
+        });
+
+        const response = await request.json();
+        return response;
+    }
+}
+
 
 export default requestFetch;
