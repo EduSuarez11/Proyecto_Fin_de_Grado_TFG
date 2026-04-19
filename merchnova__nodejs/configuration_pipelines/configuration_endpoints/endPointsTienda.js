@@ -241,14 +241,14 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
         order.total = clientData.carrito.total;
         order.estado = 'EN_CURSO';
         order.direccionEnvio = {
-            calle: direccionEnvio.direccion,
+            domicilio: direccionEnvio.direccion,
             municipio: direccionEnvio.municipio,
             provincia: direccionEnvio.provincia,
             codigo_postal: direccionEnvio.codigoPostal,
             pais: direccionEnvio.pais
         }
         order.direccionFacturacion = {
-            calle: clientData.direcciones[0].calle,
+            domicilio: clientData.direcciones[0].domicilio,
             municipio: clientData.direcciones[0].municipio,
             provincia: clientData.direcciones[0].provincia,
             codigo_postal: clientData.direcciones[0].codigoPostal,
