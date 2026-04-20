@@ -148,7 +148,7 @@ function MisDirecciones() {
                     </div>
                 </div>
 
-                <Error errorRef={errorRef} message={message} />
+                <SuccessOrError errorRef={errorRef} message={message} />
 
             </div>
 

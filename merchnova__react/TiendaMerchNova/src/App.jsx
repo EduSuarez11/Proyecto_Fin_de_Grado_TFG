@@ -20,6 +20,7 @@ import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/
 import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos";
 import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
 import requestFetch from "./componentes/Servicios/peticiones_fetch";
+import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
 
 
 const optionsPayPal = {
@@ -92,6 +93,7 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
+                  { path: 'CambiarClave', element: <RestablecerClave /> }
                ]
             },
 

@@ -63,15 +63,27 @@ const requestFetch = {
         return response;
     },
 
+    tokenVerify: async (token) => {
+        const request = await fetch(`${URL_CLIENTE}/Verify/Token`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const response = await request.json();
+        return response;
+    }
+
 }
 
 
 export const requestData = {
-    AddNewDirection: async ({clientData, data}) => {
+    AddNewDirection: async ({ clientData, data }) => {
         const request = await fetch(`${URL_CLIENTE}/NewDirection`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({clientData, data})
+            body: JSON.stringify({ clientData, data })
         });
 
         const response = await request.json();

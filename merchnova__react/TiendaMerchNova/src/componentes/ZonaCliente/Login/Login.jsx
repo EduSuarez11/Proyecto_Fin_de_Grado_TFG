@@ -4,6 +4,7 @@ import InputHTMLComponent from "../../global_components/InputComponent/InputHTML
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useGlobalState from "../../../global_state/globalState";
 import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
+import { request_set_password } from "../../Servicios/peticiones_login/peticiones_login";
 
 function Login() {
 
@@ -11,6 +12,7 @@ function Login() {
 
     const { setClientData } = useGlobalState();
     const [formLogin, setFormLogin] = useState({});
+    const [email, setEmail] = useState({});
     const [params] = useSearchParams();
     const [logoutMessage, setLogoutMessage] = useState(useLocation().state?.msg);
     const [errorLogin, setErrorLogin] = useState();
@@ -24,7 +26,7 @@ function Login() {
     const recaptchaReference = useRef(null);
     const recaptchaElement = useRef(null);
 
-     useEffect(() => {
+    useEffect(() => {
         if (params.get('activada') === 'true') {
             setLogoutMessage('Cuenta activada con éxito')
         } else if (params.get('activada') === 'false') {
@@ -81,6 +83,17 @@ function Login() {
         if (e.target.name === 'email') checkEmail(e.target.value);
     }
 
+    async function handleSetPassword() {
+        console.log('Email: ', email);
+        const response = await request_set_password.SetDataProfile(email);
+        console.log('Respuesta del envio del email: ', response);
+        if (response.code !== 0) {
+            setErrorLogin(response.message);
+            return;
+        }
+        setLogoutMessage(response.message);
+    }
+
     async function handleSubmit(e) {
         try {
             let form;
@@ -125,7 +138,6 @@ function Login() {
         } catch (error) {
             console.log('Error: ', error);
         }
-
     }
 
     return (
@@ -159,10 +171,33 @@ function Login() {
                     {/* Recaptcha */}
                     <div ref={recaptchaElement} id="recaptcha" className="my-3 d-flex justify-content-center" name="tokenRecaptcha" onChange={onChangeInput}></div>
 
-                    <div className="text-center mt-1 mb-2">
-                        <Link to="/recuperar-password" className="small text-decoration-none text-muted">
-                            ¿Te has olvidado de la contraseña?
-                        </Link>
+
+                    <div className="text-center mt-1 mb-2 small text-muted passwd" data-bs-toggle="modal" data-bs-target="#infoModal">
+                        ¿Te has olvidado de la contraseña?
+                    </div>
+
+                    <div className="modal fade" id="infoModal" tabIndex="-1" aria-labelledby="label" aria-hidden="true">
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h1 className="modal-title fs-5 fw-bold text-danger" id="label">¡Atención!</h1>
+                                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div className="modal-body">
+                                    <p className="mb-2 fw-semibold">Escribe el email donde quieres recibir el correo para cambiar tu contraseña</p>
+
+                                    <div className="mb-3 text-start">
+                                        <label htmlFor="recipient-name" className="form-label">Email</label>
+                                        <input type="text" name="email" className="form-control" id="email" onChange={(ev) => setEmail({ ...email, [ev.target.name]: ev.target.value })} />
+                                    </div>
+
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleSetPassword}>Confirmar</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <button className="login-btn" type="button" onClick={handleSubmit}>Iniciar sesión</button>

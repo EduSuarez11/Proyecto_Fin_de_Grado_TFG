@@ -79,3 +79,21 @@
     font-weight: 500;
     text-decoration: none;
 }
+
+.passwd:hover {
+    cursor: pointer;
+    background-color: aliceblue;
+}
+
+.btn-secondary {
+    border: 1px solid #6a0dad;
+    color: #6a0dad;
+    background: aliceblue;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #dcbbff;
+}
