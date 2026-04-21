@@ -26,9 +26,9 @@ module.exports = {
     CreateStripeClient_1: async (nombreCompleto, email, direccionEnvio) => {
         try {
             let bodyStripe = {
-                name: nombreCompleto,
+                name: direccionEnvio.nombreCompleto,
                 email: email,
-                'address[line1]': direccionEnvio.calle,
+                'address[line1]': direccionEnvio.domicilio,
                 'address[city]': direccionEnvio.municipio,
                 'address[state]': direccionEnvio.provincia,
                 'address[country]': direccionEnvio.pais,
