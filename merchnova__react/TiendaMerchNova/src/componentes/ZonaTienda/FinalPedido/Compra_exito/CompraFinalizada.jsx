@@ -21,19 +21,19 @@ function CompraFinalizada() {
 
                     <div className="info-row">
                         <span>ID Pedido:</span>
-                        <strong>{orderId}</strong>
+                        <strong>{orderId || ''}</strong>
                     </div>
 
                     <div className="info-row">
                         <span>ID Cliente:</span>
-                        <strong>{clientId}</strong>
+                        <strong>{clientId || ''}</strong>
                     </div>
 
                 </div>
 
                 <div className="success-actions">
-                    <Link to="/Productos" className="btn-primary">Seguir comprando</Link>
-                    <Link to="/Perfil" className="btn-secondary">Ver mis pedidos</Link>
+                    <Link to="/Portal/Productos" className="btn-primary">Seguir comprando</Link>
+                    <Link to="/Cliente/Pedidos" className="btn-secondary">Ver mis pedidos</Link>
                 </div>
 
             </div>

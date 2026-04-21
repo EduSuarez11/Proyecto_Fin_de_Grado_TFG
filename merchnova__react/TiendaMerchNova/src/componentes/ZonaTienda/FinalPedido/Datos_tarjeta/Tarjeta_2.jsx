@@ -1,5 +1,32 @@
+import { useEffect, useState } from "react";
+import requestFetch from "../../../Servicios/peticiones_fetch";
+import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { stripePromise } from "../../../configurations/config";
+import FormTarjeta from "./FormTarjeta";
 
-function Tarjeta({ onChangeDataCard, setDatosTarjeta, setPaymentMethod, paymentMethod }) {
+function Tarjeta({ setDatosTarjeta, setPaymentMethod, paymentMethod, clientData, direccionEnvio }) {
+
+    const [clientSecret, setClientSecret] = useState();
+
+    useEffect(
+        () => {
+            const chargeClientSecret = async () => {
+                if (paymentMethod !== 'tarjeta') return;
+
+                const responseStripe = await requestFetch.getClientStripe(clientData, paymentMethod, direccionEnvio);
+                console.log('Respuesta client secret: ', responseStripe);
+                setClientSecret(responseStripe.clientSecret);
+            }
+
+            chargeClientSecret();
+        }, [paymentMethod]
+    );
+
+    const options = {
+        clientSecret
+    }
+
+
     return (
         <div className="px-2 py-3 mb-4">
             <h3 className="step-title">Método de pago</h3>
@@ -20,34 +47,21 @@ function Tarjeta({ onChangeDataCard, setDatosTarjeta, setPaymentMethod, paymentM
                 }
             </div>
 
-            <div className='p-2'>
-
-                {paymentMethod === "tarjeta" && (
-                    <div className="card-form">
-                        <div className="form-group">
-                            <label className="form-label mt-4">Número de tarjeta</label>
-                            <input className="input" id='cardNumber' name='cardNumber' placeholder="1234 5678 9012 3456" onChange={onChangeDataCard} />
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label className="form-label">Mes</label>
-                                <input className="input" id='monthExp' name='monthExp' placeholder="MM" maxLength="2" onChange={onChangeDataCard} />
+            {
+                clientSecret ?
+                    <Elements stripe={stripePromise} options={options}>
+                        <FormTarjeta paymentMethod={paymentMethod} />
+                    </Elements>
+                    :
+                    <div className="container">
+                        <div className="d-flex justify-content-center align-items-center flex-column">
+                            <div className="spinner-border" role="status">
+                                <span className="sr-only"></span>
                             </div>
-
-                            <div className="form-group">
-                                <label className="form-label">Año</label>
-                                <input className="input" id='yearExp' name='yearExp' placeholder="aaaa" maxLength="4" onChange={onChangeDataCard} />
-                            </div>
-
-                            <div className="form-group">
-                                <label className="form-label">CVC</label>
-                                <input className="input" id='cvc' name='cvc' placeholder="1234" maxLength="4" onChange={onChangeDataCard} />
-                            </div>
+                            <span>Cargando</span>
                         </div>
                     </div>
-                )}
-            </div>
+            }
         </div>
     )
 }

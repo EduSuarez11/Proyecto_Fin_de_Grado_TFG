@@ -73,7 +73,21 @@ const requestFetch = {
 
         const response = await request.json();
         return response;
+    },
+
+    getClientStripe: async (clientData, type, direccionEnvio) => {
+        const request = await fetch(`${URL_TIENDA}/create-intent`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ clientData, type, direccionEnvio })
+        });
+
+        const response = await request.json();
+        return response;
     }
+
 
 }
 

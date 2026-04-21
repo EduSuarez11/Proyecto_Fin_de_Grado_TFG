@@ -50,6 +50,7 @@ function FinPedido() {
     }
 
 
+    // PayPal
     async function createOrder() {
         const requestOrder = await fetch('http://localhost:3000/api/Tienda/Create/Order', {
             method: 'POST',
@@ -66,6 +67,7 @@ function FinPedido() {
         return responseOrder.orderId;
     }
 
+    //PayPal
     async function onApprove() {
         console.log('Orden aprobada, procediendo a captura. OrderID: ', orderId);
         console.log('Id de pedido de cliente: ', orderClient);
@@ -92,7 +94,7 @@ function FinPedido() {
                         stages === 1 ? <Direcciones onChangeAddress={onChangeAddress} />
                             :
                             stages === 2 ?
-                                <Tarjeta onChangeDataCard={onChangeDataCard} setDatosTarjeta={setDatosTarjeta} setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} />
+                                <Tarjeta setDatosTarjeta={setDatosTarjeta} setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} clientData={clientData} direccionEnvio={direccionEnvio} />
                                 :
                                 <Resumen datosTarjeta={datosTarjeta} datosDireccion={direccionEnvio} paymentMethod={paymentMethod} />
                     }
