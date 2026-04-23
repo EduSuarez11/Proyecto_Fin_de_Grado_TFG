@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router"
 function CompraFinalizada() {
 
     const location = useLocation();
-    const {orderId, clientId} = location.state.data;
+    const {orderId, clientId} = location.state?.data;
 
     return (
         <div className="success-container">

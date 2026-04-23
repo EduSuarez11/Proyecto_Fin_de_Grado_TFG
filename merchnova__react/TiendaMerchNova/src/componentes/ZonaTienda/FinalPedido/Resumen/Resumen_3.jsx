@@ -1,11 +1,37 @@
 import './Resumen_3.css';
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import useGlobalState from "../../../../global_state/globalState";
+import { useElements, useStripe } from '@stripe/react-stripe-js';
 
 function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
 
     const { clientData, order } = useGlobalState();
+    
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
+
+    // async function handleSubmit() {
+    //     if (!stripe || !elements) return;
+
+    //     //setProcessing(true);
+    //     const { error } = await stripe.confirmPayment({
+    //         elements,
+    //         confirmParams: {
+    //             return_url: 'http://localhost:5173/Portal/Pedido/CompraExitosa'
+    //         }
+    //     });
+
+    //     if (error) console.log('Error al realizar el pago con stripe: ', error);
+    //     //setProcessing(false);
+    // }
+
+    // useImperativeHandle(ref, () => {
+    //     return {
+    //         stripe,
+    //         elements,
+    //         handle: handleSubmit
+    //     }
+    // })
+
 
     return (
         <div className="checkout-step fade-in">
@@ -26,11 +52,11 @@ function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
                     {paymentMethod === "paypal" && "🟡 PayPal"}
                 </p>
 
-                {paymentMethod === "tarjeta" && (
+                {/* {paymentMethod === "tarjeta" && (
                     <p className="card-preview">
                         **** **** **** {datosTarjeta?.cardNumber.slice(-4)}
                     </p>
-                )}
+                )} */}
             </div>
 
             <div className="summary-section">

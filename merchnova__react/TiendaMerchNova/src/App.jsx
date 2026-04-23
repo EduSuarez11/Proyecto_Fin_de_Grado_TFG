@@ -21,6 +21,7 @@ import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos
 import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
 import requestFetch from "./componentes/Servicios/peticiones_fetch";
 import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
+import { stripePromise } from "./componentes/configurations/config";
 
 
 const optionsPayPal = {
@@ -29,8 +30,6 @@ const optionsPayPal = {
    intent: "capture"
 }
 
-
-//const stripePromise = loadStripe('pk_test_51TGgrgFG96Vz4N9HHrugSSm9QBM9Fo957lXnuTvIYiKr6wU6RTk21O1bOdU6yo5eHLR6Ln24PwWyyZUS0QhtQHwJ00ZtxUcstv')
 
 const requestHome = async () => {
    const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
