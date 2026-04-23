@@ -106,127 +106,126 @@ shopRouter.post('/FiltrarProductos', async (req, res, next) => {
 });
 
 
-
-// MÉTODO PARA REALIZAR LOS PASOS DE STRIPE
-async function useService(clientData, order, paymethod, existIds) {
-
-
-
-    if (!existIds) {
-        // 1º Paso: Id cliente
-
-    } else {
-
-    }
-
-
-
-    // 3º Paso: Cobro
-    // order._id = new mongoose.Types.ObjectId();
-    // const createCharge = await stripeService.ChargeClient_3(clientId, cardId, order.total, order._id.toString());
-
-    // console.log('Cargo pago: ', createCharge)
-    // if (!createCharge) throw new Error('No se pudo crear el cobro del pedido.');
-
-    // pedidos.fechaPago = new Date(Date.now());
-    // const setOrders = await mongoose.connection.collection('clientes').updateOne(
-    //     { 'cuenta.email': clientData.cuenta.email },
-    //     {
-    //         $push: {
-    //             pedidos: order
-    //         }
-    //     }
-    // );
-
-    if (!paymentIntent.client_secret) throw new Error('No se pudo obtener el cliente.');
-    return paymentIntent;
-}
-
-
 // EJECUTAR EL PAGO CON TARJETA ...
+// shopRouter.post('/create-intent', async (req, res, next) => {
+//     try {
+//         const { clientData, type, direccionEnvio } = req.body;
+//         console.log('Datos de create intent ', req.body);
+//         let clientId;
+//         let paymentIntent;
+//         clientData.carrito._id = new mongoose.Types.ObjectId();
+
+//         //console.log('Todos los datos: ', req.body);
+
+//         if (type === 'tarjeta') {
+//             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
+//             const existPay = await mongoose.connection.collection('clientes').findOne({
+//                 'metodoPago': {
+//                     $elemMatch: {
+//                         tipo: 'tarjeta'
+//                     }
+//                 }
+//             });
+//             console.log('Existe previo pago: ', JSON.stringify(existPay));
+
+//             let payment_intent;
+//             if (!existPay) {
+//                 // Si no existe el pago, crear un pago de Stripe
+//                 clientId = await stripeService.CreateStripeClient_1(clientData.nombreCompleto, clientData.cuenta.email, direccionEnvio);
+//                 if (!clientId) throw new Error('No se ha podido obtener el id de cliente de Stripe.');
+
+//                 console.log('Cliente id: ', clientId)
+
+//                 // 2º Paso: Id tarjeta
+//                 // cardId = await stripeService.CreateCard_2(clientId, order.metodoPago);
+//                 // if (!cardId) throw new Error('No se ha podido al obtener el id de tarjeta.');
+
+//                 const updateData = await mongoose.connection.collection('clientes').updateOne({
+//                     'cuenta.email': clientData.cuenta.email
+//                 },
+//                     {
+//                         $set: {
+//                             metodoPago: {
+//                                 tipo: 'tarjeta',
+//                                 info: {
+//                                     clientId
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 );
+//                 // console.log('Datos actualizados: ', updateData);
+
+//                 // console.log(`Id de cliente ${clientId} y cardId ${cardId}`)
+
+//                 // if (!updateData.acknowledged) throw new Error('No se pudo actualizar los identificadores.');
+//             } else {
+//                 // Si existe un pago, recoger id de cliente y tarjeta
+//                 //clientId = existPay.info.clientId;
+//                 //useService(clientData, order, getIds, true);
+//             }
+
+//             paymentIntent = await stripe.paymentIntents.create(
+//                 {
+//                     'amount': Math.round(clientData.carrito.total * 100),
+//                     'currency': 'eur',
+//                     'customer': clientId,
+//                     'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
+//                     'payment_method_types': ['card'],
+//                     'metadata': {
+//                         orderId: clientData.carrito._id.toString()
+//                     }
+//                 }
+//             );
+
+//             console.log('Payment intent: ', paymentIntent);
+//         }
+
+//         res.status(200).send({ code: 0, message: 'Intento de pago con tarjeta creado con éxito', clientSecret: paymentIntent.client_secret });
+//     } catch (error) {
+//         console.log('Error en la peticion middleware: ', error);
+//         res.status(200).send({ code: 4, message: error });
+//     }
+// });
+
 shopRouter.post('/create-intent', async (req, res, next) => {
     try {
         const { clientData, type, direccionEnvio } = req.body;
         console.log('Datos de create intent ', req.body);
-        let clientId;
+        let clientSecret;
         let paymentIntent;
         clientData.carrito._id = new mongoose.Types.ObjectId();
 
-        //console.log('Todos los datos: ', req.body);
-
-        if (type === 'tarjeta') {
-            // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
-            const existPay = await mongoose.connection.collection('clientes').findOne({
-                'metodoPago': {
-                    $elemMatch: {
-                        tipo: 'tarjeta'
-                    }
-                }
+        
+            const customer = await stripe.customers.create({
+                name: clientData.nombreCompleto,
+                email: clientData.cuenta.email,
             });
-            console.log('Existe previo pago: ', JSON.stringify(existPay));
 
-            let payment_intent;
-            if (!existPay) {
-                // Si no existe el pago, crear un pago de Stripe
-                clientId = await stripeService.CreateStripeClient_1(clientData.nombreCompleto, clientData.cuenta.email, direccionEnvio);
-                if (!clientId) throw new Error('No se ha podido obtener el id de cliente de Stripe.');
-
-                console.log('Cliente id: ', clientId)
-
-                // 2º Paso: Id tarjeta
-                // cardId = await stripeService.CreateCard_2(clientId, order.metodoPago);
-                // if (!cardId) throw new Error('No se ha podido al obtener el id de tarjeta.');
-
-                const updateData = await mongoose.connection.collection('clientes').updateOne({
-                    'cuenta.email': clientData.cuenta.email
-                },
-                    {
-                        $set: {
-                            metodoPago: {
-                                tipo: 'tarjeta',
-                                info: {
-                                    clientId
-                                }
-                            }
-                        }
-                    }
-                );
-                // console.log('Datos actualizados: ', updateData);
-
-                // console.log(`Id de cliente ${clientId} y cardId ${cardId}`)
-
-                // if (!updateData.acknowledged) throw new Error('No se pudo actualizar los identificadores.');
-            } else {
-                // Si existe un pago, recoger id de cliente y tarjeta
-                //clientId = existPay.info.clientId;
-                //useService(clientData, order, getIds, true);
-            }
-
-            paymentIntent = await stripe.paymentIntents.create(
-                {
-                    'amount': Math.round(clientData.carrito.total * 100),
-                    'currency': 'eur',
-                    'customer': clientId,
-                    'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
-                    'automatic_payment_methods': {
-                        'enabled': true,
-                    },
-                    'metadata': {
-                        orderId: clientData.carrito._id.toString()
-                    }
+            const payment_intent = await stripe.paymentIntents.create({
+                'amount': Math.round(clientData.carrito.total * 100),
+                'currency': 'eur',
+                'customer': customer.id,
+                //'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
+                'automatic_payment_methods': {
+                    'enabled': true
                 }
-            );
+                // 'metadata': {
+                //     orderId: clientData.carrito._id.toString()
+                // }
+            });
 
-            console.log('Payment intent: ', paymentIntent);
-        }
+            clientSecret = payment_intent.client_secret;
+    
+        if (!payment_intent.client_secret) throw new Error('No se pudo obtener el cliente secreto');
 
-        res.status(200).send({ code: 0, message: 'Intento de pago con tarjeta creado con éxito', clientSecret: paymentIntent.client_secret });
+
+        res.status(200).send({ code: 0, message: 'Pasos de stripe completados', clientSecret });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
-        res.status(200).send({ code: 4, message: error });
+        res.status(200).send({ code: 4, message: error.message });
     }
 });
-
 
 shopRouter.post('/Create/Order', async (req, res, next) => {
     try {
