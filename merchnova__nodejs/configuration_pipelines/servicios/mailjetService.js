@@ -15,7 +15,7 @@ const messageEmail = (data, url) => {
 
 const messageSetPassword = (data, url) => {
     return `
-    <h1>Hola ${data.nombre},</h1>
+    <h1>Cambio de contraseña</h1>
     <p>Este email ha sido enviado para poder restablecer tu contraseña: </p>
     <a href="${url}">Restablecer contraseña</a>
     <p>Si no has sido tu quien ha provocado esta acción, puedes ignorar este correo electrónico.</p>
@@ -28,7 +28,7 @@ const messageSetPassword = (data, url) => {
 module.exports = {
     sendEmail: async (clientData, token) => {
         try {
-            const EnlaceActivacion = `http://localhost:3000/api/Cliente/ActivacionCuenta?token=${token}&email=${clientData.email}`;
+            const EnlaceActivacion = `http://localhost:3000/api/auth/Activacion-Cuenta?token=${token}&email=${clientData.email}`;
             const BASE64_APIKEYS_COD = Buffer.from(`${process.env.MAILJET_PUBLIC_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64');
 
             const MailjetBody = JSON.stringify({

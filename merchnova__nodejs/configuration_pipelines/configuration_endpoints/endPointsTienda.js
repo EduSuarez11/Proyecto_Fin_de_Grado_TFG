@@ -17,93 +17,9 @@ const shopRouter = express.Router();
  */
 
 
-// OBTENER TODOS LOS PRODUCTOS PARA MOSTRARLOS EN LA VISTA DE PRODUCTOS.JSX
-shopRouter.get('/Productos', async (req, res, next) => {
-    try {
 
 
-        // Usar limit para obtener solo algunos productos destacados en el Home
-        const products = await mongoose.connection.collection('productos').find().toArray();
-        //console.log('Productos obtenidos de la base de datos: ', JSON.stringify(products));
-        res.status(200).send({ code: 0, message: 'Productos obtenidos correctamente', data: products });
-    } catch (error) {
-        console.log('Error al obtener los productos: ', error);
-        res.status(200).send({ code: 1, message: `Error al obtener los productos: ${error}` });
-    }
 
-});
-
-// OBTENER EL PRODUCTO QUE ESCOGES AL VER SU INFO
-shopRouter.get('/Producto/:categoria/:slug', async (req, res, next) => {
-    try {
-
-        const getProduct = await mongoose.connection.collection('productos').findOne({
-            categoria: req.params.categoria,
-            slug: req.params.slug
-        })
-
-        if (!getProduct) throw new Error('Producto no encontrado en la base de datos');
-
-        const moreProducts = await mongoose.connection.collection('productos').aggregate([{
-            $match: {
-                nombre: { $ne: getProduct.nombre }
-            }
-        }, { $sample: { size: 4 } }]).toArray();
-
-        //console.log('Producto encontrado: ', getProduct);
-        res.status(200).send({ code: 0, message: 'Producto obtenido', product: getProduct, moreProducts });
-    } catch (error) {
-        console.log('Error al obtener el producto: ', error);
-        res.status(200).send({ code: 2, message: `Error al obtener el producto: ${error}` });
-    }
-})
-
-
-// OBTENER 4 PRODUCTOS PARA MOSTRAR EN EL HOME
-shopRouter.get('/Productos/Home', async (req, res, next) => {
-    try {
-
-        const products = await mongoose.connection.collection('productos').find().sort({ precio: -1 }).limit(4).toArray();
-
-        if (!products) throw new Error('Productos no encontrados en la base de datos');
-
-        //console.log('Producto encontrado: ', products);
-        res.status(200).send({ code: 0, message: 'Producto home obtenidos', data: products });
-    } catch (error) {
-        console.log('Error al obtener el producto: ', error);
-        res.status(200).send({ code: 3, message: `Error al obtener el producto: ${error}` });
-    }
-});
-
-
-// MUESTRA LOS PRODUCTOS FILTRADOS SEGÚN SU TIPO. QUEDA POR HACER POR PRECIO Y VALORACIÓN
-shopRouter.post('/FiltrarProductos', async (req, res, next) => {
-    try {
-        console.log(JSON.stringify(req.body));
-        const types = Object.keys(req.body.dataFilter);
-
-        console.log('Tipos: ', types);
-
-        const filterProducts = await mongoose.connection.collection('productos').find().toArray();
-
-        const filter = filterProducts.filter(el => {
-            const category = types.length === 0 || types.includes(el.categoria);
-            const price = (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
-
-            return category && price;
-        })
-        // filterProducts.forEach(el => {
-        //     if (types.includes(el.categoria)) {
-        //         filter.push(el);
-        //     }
-        // });
-        console.log('Nuevos productos con filtro: ', filter);
-
-        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
-    } catch (error) {
-        res.status(200).send({ code: 5, message: error });
-    }
-});
 
 
 // EJECUTAR EL PAGO CON TARJETA ...
@@ -227,6 +143,8 @@ shopRouter.post('/create-intent', async (req, res, next) => {
     }
 });
 
+
+// CREAR ORDEN DE PAYPAL Y GUARDAR LOS DATOS DE LA ORDEN EN LA BASE DE DATOS
 shopRouter.post('/Create/Order', async (req, res, next) => {
     try {
         const { clientData, order, direccionEnvio } = req.body;
@@ -277,6 +195,7 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
 })
 
 
+// CAPTURAR EL PAGO DE PAYPAL Y GUARDAR LOS DATOS DE LA CAPTURA EN LA BASE DE DATOS
 shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
     try {
         const orderId = req.params.orderId;
@@ -328,6 +247,7 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
                             },
                         }
                     },
+                    'pedidos$.estado': 'COMPLETADO',
                     'pedidos.$.fechaPago': fechaPago,
                     'pedidos.$.fechaEnvio': fechaEnvio,
                     'carrito.itemsPedido': [],
@@ -349,167 +269,8 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
 
 
 
-async function findProduct(client, order) {
-    const productExists = await mongoose.connection.collection('clientes').findOne({
-        'cuenta.email': client.cuenta.email,
-        'carrito.itemsPedido': {
-            $elemMatch: {
-                'producto.nombre': order.nombre
-            }
-        }
-    });
-
-    return productExists;
-}
-
-shopRouter.post('/Persistencia/Agregar', async (req, res, next) => {
-    try {
-        const { client, order, quantity, gastosEnvio } = req.body;
-        //console.log(order, '--------', gastosEnvio);
-        //console.log(req.body);
-        const find = await findProduct(client, order);
-
-        let subtotalPrice = client.carrito.itemsPedido.reduce((total, item) => {
-            const precio = item.producto.precio || 0;
-            const cantidad = item.quantity || 0;
-            return total + (precio * cantidad);
-        }, 0);
-
-        const nuevoItemPrecio = (order.precio * quantity);
-        subtotalPrice += nuevoItemPrecio;
 
 
-        subtotalPrice = Math.round(subtotalPrice * 100) / 100;
-
-        //console.log('Subtotal: ', subtotalPrice);
-
-        let updateData;
-        if (find) {
-            updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                {
-                    'cuenta.email': client.cuenta.email,
-                    'carrito.itemsPedido.producto.nombre': order.nombre
-                },
-                {
-                    $inc: {
-                        'carrito.itemsPedido.$.quantity': quantity
-                    },
-
-                    $set: {
-                        'carrito.gastosEnvio': gastosEnvio,
-                        'carrito.subtotal': subtotalPrice,
-                        'carrito.total': subtotalPrice + gastosEnvio
-                    }
-                },
-                { returnDocument: "after" }
-            );
-            console.log('Cantidad actualizada: ', updateData);
-        } else {
-            updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                {
-                    'cuenta.email': client.cuenta.email,
-                },
-                {
-                    $push: {
-                        'carrito.itemsPedido': {
-                            producto: order,
-                            quantity
-                        }
-                    },
-                    $set: {
-                        'carrito.cuponDescuento': [],
-                        'carrito.gastosEnvio': gastosEnvio,
-                        'carrito.subtotal': subtotalPrice,
-                        'carrito.total': subtotalPrice + gastosEnvio
-                    }
-                },
-                { returnDocument: "after" }
-            );
-            //console.log('Nuevo producto en carrito: ', updateData);
-        }
-
-        //if (!updateData) throw new Error('No se pudo actualizar los datos del carrito');
-
-        res.status(200).send({ code: 0, message: 'Pedido introducido en la BBDD', data: updateData });
-    } catch (error) {
-        console.log('Error en persistencia: ', error)
-        res.status(200).send({ code: 5, message: error });
-    }
-});
-
-
-shopRouter.post('/Persistencia/Eliminar', async (req, res, next) => {
-    try {
-        const { client, order, quantity } = req.body;
-
-        const find = findProduct(client, order);
-
-        let deleteProductCart;
-        if (find) {
-            deleteProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                {
-                    'cuenta.email': client.cuenta.email,
-                },
-                {
-                    $pull: {
-                        'carrito.itemsPedido': {
-                            'producto.nombre': order.nombre,
-                            quantity
-                        }
-                    }
-                },
-                { returnDocument: "after" }
-            );
-        }
-
-        res.status(200).send({ code: 0, message: 'Producto eliminado del carrito', data: deleteProductCart })
-    } catch (error) {
-        console.log('Error en persistencia: ', error)
-        res.status(200).send({ code: 6, message: error });
-    }
-});
-
-shopRouter.post('/Persistencia/Actualizar', async (req, res, next) => {
-    try {
-        const { client, order, quantity } = req.body;
-
-        const find = findProduct(client, order);
-
-        let updateProductCart;
-        if (find) {
-            updateProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                {
-                    'cuenta.email': client.cuenta.email,
-                    'carrito.itemsPedido.producto.nombre': order.nombre
-                },
-                {
-                    $set: {
-                        'carrito.itemsPedido.$.quantity': quantity
-                    }
-                },
-                { returnDocument: "after" }
-            )
-        }
-
-        res.status(200).send({ code: 0, message: 'Producto actualizado en el carrito', data: updateProductCart });
-    } catch (error) {
-        console.log('Error en persistencia: ', error)
-        res.status(200).send({ code: 7, message: error });
-    }
-});
-
-shopRouter.get('/Categorias', async (req, res, next) => {
-    try {
-
-        const allCategories = await mongoose.connection.collection('categorias').find().toArray();
-
-        if (!allCategories) throw new Error('No se pudieron encontrar las categorias');
-
-        res.status(200).send({ code: 0, message: 'Categorias obtenidas', categories: allCategories });
-    } catch (error) {
-        res.status(200).send({ code: 8, message: error, categories: [] });
-    }
-});
 
 
 module.exports = shopRouter;
