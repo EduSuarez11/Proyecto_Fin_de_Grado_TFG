@@ -3,7 +3,7 @@ import './InfoProducto.css';
 import useGlobalState from '../../../../global_state/globalState';
 import { startTransition, useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
-import requestFetch from '../../../Servicios/peticiones_fetch';
+import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart';
 
 function InfoProducto() {
 
@@ -17,7 +17,7 @@ function InfoProducto() {
     useEffect(
         () => {
             async function randomProducts() {
-                const requestProducts = await fetch(`http://localhost:3000/api/Tienda/Producto/${resp.product.categoria}/${resp.product.slug}`)
+                const requestProducts = await fetch(`http://localhost:3000/api/products/Producto/${resp.product.categoria}/${resp.product.slug}`)
                 const response = await requestProducts.json();
 
                 setMoreProducts(response.moreProducts);
@@ -46,7 +46,7 @@ function InfoProducto() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         if (clientData != null) {
-            const response = await requestFetch.cartPersistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio }, '/Agregar');
+            const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio }, '/Agregar');
 
             if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
 

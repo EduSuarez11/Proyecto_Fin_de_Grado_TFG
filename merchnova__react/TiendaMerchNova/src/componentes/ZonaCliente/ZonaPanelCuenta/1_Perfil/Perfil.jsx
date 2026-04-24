@@ -2,6 +2,7 @@ import './Perfil.css';
 import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../../global_state/globalState";
 import { useEffect, useRef, useState } from "react";
+import { request_auth } from '../../../Servicios/peticiones_auth_frontend/request_auth';
 
 function PerfilCuenta() {
     const { clientData, setClientData } = useGlobalState();
@@ -70,16 +71,8 @@ function PerfilCuenta() {
 
     async function handleSubmitProfile() {
         try {
-            console.log('Datos nuevos: ', formProfile);
-
-            const requestNewData = await fetch('http://localhost:3000/api/Cliente/Perfil/Update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formProfile)
-            });
-
-            const responseNewData = await requestNewData.json();
-            console.log('Respuesta node:', responseNewData);
+            const responseNewData = await request_auth.request_update(formProfile);
+            //console.log('Respuesta node:', responseNewData);
             setClientData(responseNewData.data.newClientData);
             navigate('/', { state: { msg: `${responseNewData.message}` } });
         } catch (error) {
@@ -87,16 +80,12 @@ function PerfilCuenta() {
         }
     }
 
-
-
-    //console.log('Paises obtenidos: ', countries);
-    //console.log('Cliente: ', clientData);
     return (
         <div className="card p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0 fw-bold">Mi Perfil</h2>
                 <div className="text-end">
-                    <span className="badge bg-success mb-1">Cuenta Activa</span>
+                    <span className="badge bg-success mb-1">Tipo de cuenta: {clientData.cuenta.tipo}</span>
                 </div>
             </div>
 

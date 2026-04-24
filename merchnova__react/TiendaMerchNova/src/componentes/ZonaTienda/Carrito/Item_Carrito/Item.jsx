@@ -1,14 +1,14 @@
 import './Item.css';
 import useGlobalState from '../../../../global_state/globalState';
 import { Link } from 'react-router-dom';
-import requestFetch from '../../../Servicios/peticiones_fetch';
+import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart';
 
 function Item() {
     const { clientData, setClientData, order, setOrder } = useGlobalState();
 
     async function deleteOnCart({ item }) {
         if (clientData != null) {
-            const newCartAfter = await requestFetch.cartPersistence({ clientData, order: item.producto, quantity: item.quantity }, '/Eliminar');
+            const newCartAfter = await request_cart.cart_persistence({ clientData, order: item.producto, quantity: item.quantity }, '/Eliminar');
             //console.log('Producto eliminado de cart: ', newCartAfter);
             setClientData(newCartAfter.data);
         } else {
@@ -20,7 +20,7 @@ function Item() {
 
     async function updateOnCart({ item, quantity }) {
         if (clientData != null) {
-            const updateCart = await requestFetch.cartPersistence({ clientData, order: item.producto, quantity }, '/Actualizar');
+            const updateCart = await request_cart.cart_persistence({ clientData, order: item.producto, quantity }, '/Actualizar');
             console.log('Carrito actualizado: ', updateCart);
             setClientData(updateCart.data);
         } else {

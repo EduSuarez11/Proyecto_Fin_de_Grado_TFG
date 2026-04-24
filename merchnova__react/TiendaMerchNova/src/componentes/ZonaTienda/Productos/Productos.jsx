@@ -1,7 +1,7 @@
 import { Link, useLoaderData } from 'react-router-dom';
 import './Productos.css';
 import { useRef, useState } from 'react';
-import requestFetch from '../../Servicios/peticiones_fetch';
+import { request_filter_products } from '../../Servicios/peticiones_products/request_products';
 
 
 function Productos() {
@@ -56,7 +56,7 @@ function Productos() {
 
     async function handleFilter() {
         console.log('Filtrado de productos: ', JSON.stringify(typeProduct), priceFilter);
-        const response = await requestFetch.requestGetProductsByFilter(typeProduct, priceFilter);
+        const response = await request_filter_products.get_products_filter(typeProduct, priceFilter);
         //console.log('Respuesta: ', response);
 
         // Si esta marcado todos, muestra todos los productos

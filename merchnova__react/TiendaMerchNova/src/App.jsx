@@ -22,6 +22,8 @@ import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direccio
 import requestFetch from "./componentes/Servicios/peticiones_fetch";
 import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
 import { stripePromise } from "./componentes/configurations/config";
+import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancelada/CompraCancelada";
+import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_products/request_products";
 
 
 const optionsPayPal = {
@@ -32,42 +34,24 @@ const optionsPayPal = {
 
 
 const requestHome = async () => {
-   const productsRequest = await fetch('http://localhost:3000/api/Tienda/Productos/Home');
-   const response = await productsRequest.json();
-   //console.log('Productos cargados: ', response.data);
-   // #region ------------------------ Respuesta node ---------------------
-   /* Objeto response:
-       {
-           code: 0
-           message: '...',
-           data: {
-               clientData: {nombreCompleto: '...'},
-           }
-       }
-           */
-   //#endregion ------------------------------------------------------------
+   const response = await request_products.get_home_products();
    return response;
 }
 
 const getChosenProduct = async ({ params }) => {
-   //console.log('parametro url: ', params);
-   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Producto/${params.categoria}/${params.slug}`);
-   const response = await requestProduct.json();
+   const response = await request_filter_products.get_chosen_product(params);
    return response;
 }
 
 const getAllProducts = async () => {
-   const requestProduct = await fetch(`http://localhost:3000/api/Tienda/Productos`);
-   const response = await requestProduct.json();
+   const response = await request_products.get_all_products();
    return response;
 }
-
 
 const securityApplication = () => {
    const token = sessionStorage.getItem('token');
    if (!token) throw redirect('/Cliente/TipoLogin');
 }
-
 
 const applicationRoutes = createBrowserRouter(
    [
@@ -104,7 +88,8 @@ const applicationRoutes = createBrowserRouter(
                   {
                      path: 'Pedido', loader: securityApplication, children: [
                         { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries },
-                        { path: 'CompraExitosa', element: <CompraFinalizada /> }
+                        { path: 'CompraExitosa', element: <CompraFinalizada /> },
+                        { path: 'CompraCancelada', element: <CompraCancelada /> }
                      ]
                   },
 

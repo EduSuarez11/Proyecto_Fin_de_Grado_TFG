@@ -17,63 +17,7 @@ const requestFetch = {
         return responseCountries;
     },
 
-
-    // Peticion para obtener los productos por filtro
-    requestGetProductsByFilter: async (dataFilter, priceFilter) => {
-        const request = await fetch(`${URL_TIENDA}/FiltrarProductos`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ dataFilter, priceFilter })
-        });
-        const response = await request.json();
-
-        return response;
-    },
-
-
-    // Peticion para carrito con persistencia
-    cartPersistence: async ({ clientData, order, quantity, gastosEnvio }, route) => {
-        const request = await fetch(`${URL_TIENDA}/Persistencia${route}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ client: clientData, order, quantity, gastosEnvio })
-        });
-
-        const response = await request.json();
-        return response;
-    },
-
-    // Peticion para login con Google
-    loginGoogle: async () => {
-        const request = await fetch(`${URL_CLIENTE}/LoginGoogle`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        const response = await request.json();
-        return response;
-    },
-
-    getCategories: async () => {
-        const request = await fetch(`${URL_TIENDA}/Categorias`);
-        const response = await request.json();
-        console.log(response);
-        return response;
-    },
-
-    tokenVerify: async (token) => {
-        const request = await fetch(`${URL_CLIENTE}/Verify/Token`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        const response = await request.json();
-        return response;
-    },
+    
 
     getClientStripe: async (clientData, type, direccionEnvio) => {
         const request = await fetch(`${URL_TIENDA}/create-intent`, {
@@ -90,20 +34,5 @@ const requestFetch = {
 
 
 }
-
-
-export const requestData = {
-    AddNewDirection: async ({ clientData, data }) => {
-        const request = await fetch(`${URL_CLIENTE}/NewDirection`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientData, data })
-        });
-
-        const response = await request.json();
-        return response;
-    }
-}
-
 
 export default requestFetch;

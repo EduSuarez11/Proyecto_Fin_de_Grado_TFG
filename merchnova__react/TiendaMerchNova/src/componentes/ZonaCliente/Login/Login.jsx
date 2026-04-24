@@ -4,7 +4,8 @@ import InputHTMLComponent from "../../global_components/InputComponent/InputHTML
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import useGlobalState from "../../../global_state/globalState";
 import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
-import { request_set_password } from "../../Servicios/peticiones_login/peticiones_login";
+import { request_auth } from "../../Servicios/peticiones_auth_frontend/request_auth";
+import { request_profile } from "../../Servicios/peticiones_perfil/request_profile";
 
 function Login() {
 
@@ -73,20 +74,20 @@ function Login() {
     }
 
 
+    // FUNCION QUE CONTROLA LOS DATOS INTRODUCIDOS EN LOS INPUTS DEL FORMULARIO
     function onChangeInput(e) {
-        setFormLogin({
-            ...formLogin,
-            [e.target.name]: e.target.value,
-        });
+        setFormLogin({ ...formLogin, [e.target.name]: e.target.value });
 
         if (e.target.name === 'password') checkPassword(e.target.value);
         if (e.target.name === 'email') checkEmail(e.target.value);
     }
 
+
+    // FUNCION QUE ENVIA EL EMAIL AL SERVIDOR PARA SOLICITAR UN CAMBIO DE CONTRASEÑA
     async function handleSetPassword() {
-        console.log('Email: ', email);
-        const response = await request_set_password.SetDataProfile(email);
-        console.log('Respuesta del envio del email: ', response);
+        //console.log('Email: ', email);
+        const response = await request_profile.set_data_profile(email);
+        //console.log('Respuesta del envio del email: ', response);
         if (response.code !== 0) {
             setErrorLogin(response.message);
             return;
@@ -94,25 +95,18 @@ function Login() {
         setLogoutMessage(response.message);
     }
 
+    // ENVIA LOS DATOS AL SERVIDOR DE NODE PARA REALIZAR LAS VERIFICACIONES NECESARIAS
     async function handleSubmit(e) {
         try {
             let form;
             if (recaptchaReference.current != null) {
                 const token = await window.grecaptcha.enterprise.getResponse(recaptchaReference.current);
-                //console.log('Token Recaptcha: ', tokenRecaptcha);
-                form = {
-                    ...formLogin,
-                    tokenRecaptcha: token
-                }
+                form = { ...formLogin, tokenRecaptcha: token }
             }
 
-            const requestLogin = await fetch('http://localhost:3000/api/Cliente/Login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form)
-            });
+            // Peticion a node
+            const response = await request_auth.request_login(form);
 
-            const response = await requestLogin.json();
             // #region ------------------------ Respuesta node ---------------------
             /* Objeto response:
                 {
@@ -127,14 +121,12 @@ function Login() {
                     */
             //#endregion ------------------------------------------------------------
             if (response.code !== 0) {
-                console.log('Error en el Login: ', response.message);
                 setErrorLogin(`${response.message}`);
             } else {
                 sessionStorage.setItem("token", response.data.accessToken);
                 setClientData(response.data.clientData);
                 navigate('/', { state: { msg: `${response.message}` } });
             }
-
         } catch (error) {
             console.log('Error: ', error);
         }

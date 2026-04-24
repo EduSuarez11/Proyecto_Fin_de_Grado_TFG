@@ -115,6 +115,12 @@ function FinPedido() {
         navigate('/Portal/Pedido/CompraExitosa', { state: { data: { orderId: orderClient, clientId: clientData._id } } });
     }
 
+
+    function handleCancelPayment() {
+        navigate('/Portal/Pedido/CompraCancelada');
+    }
+    
+
     
 
     return (
@@ -139,7 +145,7 @@ function FinPedido() {
                                     {
                                         stages === 1 ?
                                             <div className='d-flex flex-row justify-content-end px-2'>
-                                                <Link to='/Cart'>
+                                                <Link to='/Portal/Cart'>
                                                     <button className="btn btn-outline-secondary me-2 px-4">Volver al carrito</button>
                                                 </Link>
                                                 <button className="btn btn-stage" onClick={() => nextStage(stages)}>Continuar</button>
@@ -185,7 +191,7 @@ function FinPedido() {
 
                                 {
                                     (stages === 3 && paymentMethod === 'paypal') ?
-                                        <PayPalButtons createOrder={createOrder} onApprove={onApprove} />
+                                        <PayPalButtons createOrder={createOrder} onApprove={onApprove} onCancel={handleCancelPayment} />
                                         : (stages === 3 && paymentMethod === 'tarjeta') &&
                                         <button disabled={!refStripeElement.current?.stripe || !refStripeElement.current?.elements} className="btn btn-primary" onClick={refStripeElement.current?.handle} >Comprar</button>
 

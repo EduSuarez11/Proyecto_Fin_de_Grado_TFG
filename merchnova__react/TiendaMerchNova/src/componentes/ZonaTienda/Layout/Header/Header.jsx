@@ -3,7 +3,7 @@ import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
 import { useEffect, useRef, useState } from 'react';
-import requestFetch from '../../../Servicios/peticiones_fetch';
+import { request_category } from '../../../Servicios/peticiones_products/request_products';
 
 function Header() {
     const route = useLocation();
@@ -40,7 +40,7 @@ function Header() {
 
     useEffect(() => {
         const getCategories = async () => {
-            const response = await requestFetch.getCategories();
+            const response = await request_category.get_categories();
             setCategories(response.categories);
         }
         getCategories();

@@ -88,31 +88,13 @@ function Home() {
                                         <h5 className="card-title">{product.nombre}</h5>
                                         <p>{product.precio}</p>
                                         <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>
-                                            <button className="btn btn-purple">
-                                                Ver Detalles
-                                            </button>
+                                            <button className="btn btn-purple">Ver Detalles</button>
                                         </Link>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
-
-                    {/* <div className="row g-4">
-                        <div className="col-md-3">
-                            <div className="card product-card">
-                                <img src='miimagen.png' className="card-img-top"/>
-
-                                <div className="card-body text-center">
-                                    <h5 className="card-title">Camiseta personalizada</h5>
-                                    <p>14.99€</p>
-                                    <button className="btn btn-purple">
-                                        Añadir al carrito
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
 

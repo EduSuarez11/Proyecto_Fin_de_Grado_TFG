@@ -2,9 +2,10 @@ import './Direcciones.css'
 import { useLoaderData, useNavigate } from "react-router";
 import useGlobalState from "../../../../global_state/globalState";
 import { useRef, useState } from 'react';
-import requestFetch, { requestData } from '../../../Servicios/peticiones_fetch';
+import { requestData } from '../../../Servicios/peticiones_fetch';
 import Error from '../../../global_components/SuccessErrorComponent/SuccessOrError';
 import SuccessOrError from '../../../global_components/SuccessErrorComponent/SuccessOrError';
+import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 
 function MisDirecciones() {
     const { clientData, setClientData } = useGlobalState();
@@ -33,7 +34,7 @@ function MisDirecciones() {
 
     async function handleSubmitAddress() {
         //console.log('Direccion nueva: ', newAddress);
-        const responseData = await requestData.AddNewDirection({ clientData, data: newAddress });
+        const responseData = await request_profile.add_new_direction({ clientData, data: newAddress });
 
         console.log(responseData)
         if (responseData.code === 0) {

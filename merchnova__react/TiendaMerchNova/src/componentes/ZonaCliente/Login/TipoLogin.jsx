@@ -3,8 +3,9 @@ import './TipoLogin.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useGlobalState from '../../../global_state/globalState';
 import MensajeSuccess from "../../global_components/MensajeComponent/MensajeSuccess";
-import requestFetch from '../../Servicios/peticiones_fetch';
-import request_login_discord from '../../Servicios/peticiones_login/peticiones_login';
+
+import { request_google } from '../../Servicios/peticiones_auth_frontend/request_google';
+import { request_discord } from '../../Servicios/peticiones_auth_frontend/request_discord';
 
 function TipoLogin() {
     const navigate = useNavigate();
@@ -16,14 +17,15 @@ function TipoLogin() {
 
     useEffect(() => {
         const popupEvent = async (event) => {
-            console.log("Mensaje recibido: ", event.data);
+            //console.log("Mensaje recibido: ", event.data);
             if (event.data.code && !doubleRequest.current) {
                 try {
                     doubleRequest.current = true;
-                    const responseDiscord = await request_login_discord.RequestCallbackDiscord(event.data.code);
-                    //console.log('Respuesta desde discord: ', responseDiscord);
+                    const responseDiscord = await request_discord.request_callback_discord(event.data.code);
                     
-                    const response = await request_login_discord.RequestLoginDiscord(responseDiscord.user);
+                    const response = await request_discord.request_login_discord(responseDiscord.user);
+
+                    if (response.code !== 0) throw new Error('Fallo en la peticion de discord');
 
                     sessionStorage.setItem("token", response.data.access_token);
                     setClientData(response.data.user);
@@ -40,47 +42,25 @@ function TipoLogin() {
 
 
     function getDataGoogle(ev) {
-        console.log('Datos de google: ', ev);
-        const dataGoogle = {
-            nombreCompleto: ev.data.dataUser.name,
-            cuenta: {
-                tipo: 'google',
-                email: ev.data.dataUser.email,
-                password: '',
-                genero: ev.data.dataUser.gender === 'male' ? 'Masculino' : 'Femenino',
-                cuentaActiva: true,
-                imagenCuenta: ev.data.dataUser.photo,
-                creacionCuenta: Date.now(),
-                sobreMi: '',
-                telefono: ''
-            },
-            pedidos: [],
-            carrito: {
-                itemsPedido: [],
-                cuponDescuento: [],
-                gastosEnvio: 0,
-                subtotal: 0,
-                total: 0
-            },
-            direcciones: []
-        }
-        setClientData(dataGoogle);
+        console.log('Datos de google: ', ev.data);
+        setClientData(ev.data.dataUser.client);
+        sessionStorage.setItem("token", ev.data.dataUser.accessToken);
         window.removeEventListener('message', getDataGoogle);
-        navigate('/', { state: { msg: 'Has iniciado sesión con Google' } });
+        navigate('/', {state: {msg: 'Has iniciado sesión con Google'}})
     }
 
     async function handleLoginGoogle() {
-        const response = await requestFetch.loginGoogle();
-        console.log('Respuesta url: ', response);
+        const response = await request_google.loginGoogle();
+        //console.log('Respuesta url: ', response);
+
+        if (response.code !== 0 ) throw new Error('Fallo en la peticion de google');
         window.addEventListener('message', getDataGoogle);
         googlePopup = window.open(response.url, 'Google_popup', 'width=800px; height=700px');
     }
 
     async function handleLoginDiscord() {
-        const requestURL = await fetch('http://localhost:3000/api/Cliente/LoginDiscord', { method: 'GET' });
-        const response = await requestURL.json();
-
-        console.log('Respuesta: ', response);
+        const response = await request_discord.discord_url();
+        //console.log('Respuesta: ', response);
         window.open(response.url, 'popup', 'width=800px; height=700px');
     }
 

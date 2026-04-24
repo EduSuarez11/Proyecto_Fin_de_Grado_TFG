@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import './RestablecerClave.css'
 import { redirect, useNavigate, useSearchParams } from 'react-router';
-import requestFetch from '../../../Servicios/peticiones_fetch';
-import { request_set_password } from '../../../Servicios/peticiones_login/peticiones_login';
+import { request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
+import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
+
 
 function RestablecerClave() {
     const [params] = useSearchParams();
@@ -21,7 +22,7 @@ function RestablecerClave() {
     useEffect(
         () => {
             const verifyUser = async () => {
-                const responseToken = await requestFetch.tokenVerify(token);
+                const responseToken = await request_get_token.token_verify(token);
                 console.log('Token: ', token)
                 console.log('Respuesta de verificado token: ', responseToken)
                 if (responseToken.data?.user?._id !== clientId) return navigate('/');
@@ -36,7 +37,7 @@ function RestablecerClave() {
     async function handlePassword() {
         //const email = params.get('email');
         console.log('Constraseña nueva: ', password);
-        const responsePass = await request_set_password.setNewPassword(password);
+        const responsePass = await request_profile.set_new_password(password);
         console.log('Respuesta del cambio de la contraseña: ', responsePass);
         if (responsePass.code !== 0) {
             setErrorMsg(responsePass.message);

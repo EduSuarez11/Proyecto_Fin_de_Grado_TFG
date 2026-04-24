@@ -1,6 +1,7 @@
 import { useState } from "react"
 import './Registro.css';
 import InputHTMLComponent from '../../global_components/InputComponent/InputHTML'
+import { request_auth } from "../../Servicios/peticiones_auth_frontend/request_auth";
 
 function Registro() {
     const [formRegistro, setFormRegistro] = useState({})
@@ -52,25 +53,15 @@ function Registro() {
 
     async function handleSubmit(ev) {
         try {
-            console.log('Datos form: ', formRegistro)
+            // Peticion al servidor con los datos del formulario
+            const data = request_auth.request_register(formRegistro);
 
-            const response = await fetch('http://localhost:3000/api/Cliente/Registro', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formRegistro)
-            });
-
-            const data = await response.json();
             if (data.code !== 0) {
-                //console.log('Error en el registro: ', data.message);
-                setCodeResponse(`${data.code}`)
+                setCodeResponse(`${data.code}`);
                 setMessages(`${data.message}`);
             } else {
                 setCodeResponse(`${data.code}`);
                 setMessages(`${data.message}`);
-                //console.log('Respuesta del servidor: ', data.message);
             }
         } catch (error) {
             console.log('Error en el Registro: ', error);
