@@ -1,10 +1,11 @@
 import './CompraFinalizada.css'
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useParams, useSearchParams } from "react-router"
+import useGlobalState from '../../../../global_state/globalState';
 
 function CompraFinalizada() {
-
-    const location = useLocation();
-    const {orderId, clientId} = location.state?.data;
+    const [params] = useSearchParams();
+    const orderId = params.get('orderId');
+    const clientId = params.get('clientId');
 
     return (
         <div className="success-container">
@@ -32,8 +33,8 @@ function CompraFinalizada() {
                 </div>
 
                 <div className="success-actions">
-                    <Link to="/Portal/Productos" className="btn-primary">Seguir comprando</Link>
-                    <Link to="/Cliente/Pedidos" className="btn-secondary">Ver mis pedidos</Link>
+                    <Link to="/Portal/Productos" className="btn-primary">Mirar más productos</Link>
+                    <Link to="/Cliente/Cuenta/Pedidos" className="btn-secondary">Ver mis pedidos</Link>
                 </div>
 
             </div>

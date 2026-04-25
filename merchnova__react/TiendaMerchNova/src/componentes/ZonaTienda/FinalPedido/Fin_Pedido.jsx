@@ -13,20 +13,18 @@ function FinPedido() {
 
     const [stages, setStages] = useState(1);
     const navigate = useNavigate();
-    const { clientData, order, setPayData } = useGlobalState();
+    const { clientData, setClientData, order, setPayData } = useGlobalState();
     const [direccionEnvio, setDireccionEnvio] = useState();
     const [datosTarjeta, setDatosTarjeta] = useState();
     const [clientSecret, setClientSecret] = useState();
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
     const refStripeElement = useRef(null);
     const refClient = useRef(null);
-    
+
     let orderId;
     let orderClient;
 
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.map(item => item.producto.precio * item.quantity).reduce((acc, curr) => acc + curr, 0);
-
-
 
     useEffect(
         () => {
@@ -57,23 +55,11 @@ function FinPedido() {
         });
     }
 
-    function onChangeDataCard(ev) {
-        setDatosTarjeta({
-            ...datosTarjeta,
-            [ev.target.id]: ev.target.value
-        });
-    }
-
     function nextStage(stage) {
         setStages(stages + 1);
-
         if (stage === 1) {
             console.log('Datos direccion (pasa por aqui): ', direccionEnvio);
             setPayData('setShippingData', direccionEnvio);
-        }
-        if (stage === 2) {
-            console.log('Datos tarjeta (pasa por aqui): ', datosTarjeta);
-            setPayData('setDataCard', datosTarjeta);
         }
     }
 
@@ -94,14 +80,15 @@ function FinPedido() {
         const responseCapture = await request_paypal.approve_payment(clientData, orderClient, orderId);
         console.log('Respuesta de la captura: ', responseCapture);
         if (responseCapture.code !== 0) throw new Error('Fallo al capturar el pago.');
-        navigate('/Portal/Pedido/CompraExitosa', { state: { data: { orderId: orderClient, clientId: clientData._id } } });
+        setClientData(responseCapture.newUser);
+        navigate(`/Portal/Pedido/CompraExitosa?orderId=${orderClient}&clientId=${clientData._id}`);
     }
 
 
     function handleCancelPayment() {
         navigate('/Portal/Pedido/CompraCancelada');
     }
-    
+
 
     return (
 
@@ -116,10 +103,10 @@ function FinPedido() {
                                 {stages === 1 && <Direcciones onChangeAddress={onChangeAddress} />}
 
                                 <div className={stages === 2 ? 'd-block' : 'd-none'}>
-                                    <Tarjeta setDatosTarjeta={setDatosTarjeta} setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} clientData={clientData} direccionEnvio={direccionEnvio} ref={refStripeElement} />
+                                    <Tarjeta setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} clientData={clientData} direccionEnvio={direccionEnvio} ref={refStripeElement} />
                                 </div>
 
-                                {stages === 3 && <Resumen datosTarjeta={datosTarjeta} datosDireccion={direccionEnvio} paymentMethod={paymentMethod} />}
+                                {stages === 3 && <Resumen datosDireccion={direccionEnvio} paymentMethod={paymentMethod} />}
 
                                 <div className="checkout-actions">
                                     {

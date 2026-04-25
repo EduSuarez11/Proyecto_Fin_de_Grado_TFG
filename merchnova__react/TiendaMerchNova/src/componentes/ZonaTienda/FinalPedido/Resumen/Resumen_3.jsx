@@ -3,7 +3,7 @@ import { useImperativeHandle, useState } from "react";
 import useGlobalState from "../../../../global_state/globalState";
 import { useElements, useStripe } from '@stripe/react-stripe-js';
 
-function Resumen({ datosTarjeta, datosDireccion, paymentMethod }) {
+function Resumen({ datosDireccion, paymentMethod }) {
 
     const { clientData, order } = useGlobalState();
     

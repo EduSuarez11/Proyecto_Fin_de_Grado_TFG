@@ -19,7 +19,7 @@ function Item() {
     const subtotal = clientData === null ? null : clientData.carrito.itemsPedido.reduce((sum, item) => sum + (item.producto.precio * item.quantity), 0);
 
     async function updateOnCart({ item, quantity }) {
-        if (clientData != null) {
+        if (clientData !== null) {
             const updateCart = await request_cart.cart_persistence({ clientData, order: item.producto, quantity }, '/Actualizar');
             console.log('Carrito actualizado: ', updateCart);
             setClientData(updateCart.data);
@@ -58,11 +58,11 @@ function Item() {
                                                 <div className="item-info">
                                                     <h3>{item.product.nombre}</h3>
                                                     <p>Talla: M</p>
-                                                    <p className="item-price">{item.product.precio}</p>
+                                                    <p className="item-price">{item.product.precio} €</p>
                                                 </div>
 
                                                 <div className="d-flex align-items-center gap-2">
-                                                    <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
+                                                    <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() =>  updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
                                                     <span className="fw-semibold" style={{ minWidth: "20px", textAlign: "center" }}>
                                                         {item.quantity}
                                                     </span>
@@ -91,14 +91,14 @@ function Item() {
                                         </div>
 
                                         <div className="d-flex align-items-center gap-2">
-                                            <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
+                                            <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity === 1 ? item.quantity : item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
                                             <span className="fw-semibold" style={{ minWidth: "20px", textAlign: "center" }}>
                                                 {item.quantity}
                                             </span>
                                             <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity + 1 })} style={{ width: "32px", height: "32px" }}>+</button>
                                         </div>
 
-                                        <div className="item-total">{item.producto.precio}</div>
+                                        <div className="item-total">{item.producto.precio * item.quantity} €</div>
 
                                         <button className="remove-item" onClick={() => deleteOnCart({ item })}>✕</button>
                                     </div>

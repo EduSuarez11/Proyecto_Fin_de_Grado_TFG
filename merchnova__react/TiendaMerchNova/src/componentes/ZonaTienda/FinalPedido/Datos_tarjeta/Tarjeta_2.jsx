@@ -4,43 +4,23 @@ import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@
 import { stripePromise } from "../../../configurations/config";
 import FormTarjeta from "./FormTarjeta";
 
-function Tarjeta({ setDatosTarjeta, setPaymentMethod, paymentMethod, clientData, direccionEnvio, ref }) {
+function Tarjeta({ setPaymentMethod, paymentMethod, clientData, direccionEnvio, ref }) {
 
     const stripe = useStripe();
     const elements = useElements();
-    //const [clientSecret, setClientSecret] = useState();
-    //const [processing, setProcessing] = useState(false);
-
-    // useEffect(
-    //     () => {
-    //         const chargeClientSecret = async () => {
-    //             if (paymentMethod !== 'tarjeta') return;
-    //             const responseStripe = await requestFetch.getClientStripe(clientData, paymentMethod, direccionEnvio);
-    //             console.log('Respuesta client secret: ', responseStripe);
-    //             setClientSecret(responseStripe.clientSecret);
-    //             console.log('Cliente secreto: ', responseStripe.clientSecret);
-    //         }
-
-    //         chargeClientSecret();
-    //     }, [paymentMethod]
-    // );
-
 
     useImperativeHandle(ref, () => { return { stripe, elements, handle: handleSubmit } });
 
     async function handleSubmit() {
         if (!stripe || !elements) return;
-
-        //setProcessing(true);
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: 'http://localhost:5173/Portal/Pedido/CompraExitosa'
+                return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?orderId=${clientData.carrito._id}&clientId=${clientData._id}`
             }
         });
-
+        
         if (error) console.log('Error al realizar el pago con stripe: ', error);
-        //setProcessing(false);
     }
 
 
@@ -56,7 +36,6 @@ function Tarjeta({ setDatosTarjeta, setPaymentMethod, paymentMethod, clientData,
                             <input type="radio" id={tipo.toLowerCase()} name="paymentMethod" value={tipo.toLowerCase()} checked={paymentMethod === tipo.toLowerCase()}
                                 onChange={() => {
                                     setPaymentMethod(tipo.toLowerCase());
-                                    setDatosTarjeta(prev => tipo === 'Tarjeta' ? ({ ...prev, tipo: tipo.toLowerCase() }) : ({ tipo: tipo.toLowerCase() }));
                                 }}
                             />
                             <label htmlFor={tipo.toLowerCase()}>{tipo}</label>
