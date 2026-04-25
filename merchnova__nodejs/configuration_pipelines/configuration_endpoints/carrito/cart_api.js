@@ -88,6 +88,16 @@ manage_cart.post('/Persistencia/Eliminar', async (req, res, next) => {
 
         const find = findProduct(client, order);
 
+        // Calcular el subtotal 
+        const subtotal = client.carrito.itemsPedido.reduce((sum, item) => {
+            if (item.producto.nombre === order.nombre) {
+                return sum;
+            }
+            return sum + (item.producto.precio * item.quantity);
+        }, 0);
+        
+        const subtotalRound = Math.round(subtotal * 100) / 100;
+
         let deleteProductCart;
         if (find) {
             deleteProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
@@ -98,6 +108,10 @@ manage_cart.post('/Persistencia/Eliminar', async (req, res, next) => {
                             'producto.nombre': order.nombre,
                             quantity
                         }
+                    },
+                    $set: {
+                        'carrito.subtotal': subtotalRound,
+                        'carrito.total': subtotalRound + client.carrito.gastosEnvio
                     }
                 },
                 { returnDocument: "after" }
@@ -117,11 +131,26 @@ manage_cart.post('/Persistencia/Actualizar', async (req, res, next) => {
 
         const find = findProduct(client, order);
 
+        // Calcular el subtotal
+        const subtotal = client.carrito.itemsPedido.reduce((sum, item) => {
+            const cantidadActual = item.producto.nombre === order.nombre ? quantity : item.quantity;
+            return sum + (item.producto.precio * cantidadActual);
+        }, 0);
+        
+        const subtotalRound = Math.round(subtotal * 100) / 100;
+
         let updateProductCart;
         if (find) {
             updateProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 { 'cuenta.email': client.cuenta.email, 'carrito.itemsPedido.producto.nombre': order.nombre },
-                { $set: { 'carrito.itemsPedido.$.quantity': quantity } },
+                {
+                    $set: {
+                        'carrito.itemsPedido.$.quantity': quantity,
+                        'carrito.gastosEnvio': client.carrito.gastosEnvio,
+                        'carrito.subtotal': subtotalRound,
+                        'carrito.total': subtotalRound + client.carrito.gastosEnvio
+                    }
+                },
                 { returnDocument: "after" }
             )
         }

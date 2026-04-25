@@ -38,7 +38,6 @@ manage_payment.post('/create-intent', async (req, res, next) => {
 
         if (!payment_intent.client_secret) throw new Error('No se pudo obtener el cliente secreto');
 
-
         res.status(200).send({ code: 0, message: 'Pasos de stripe completados', clientSecret });
     } catch (error) {
         console.log('Error en la peticion middleware: ', error);
@@ -46,6 +45,24 @@ manage_payment.post('/create-intent', async (req, res, next) => {
     }
 });
 
+manage_payment.post('/Update-Order', async (req, res, next) => {
+    try {
+        const { clientData, capturaPago } = req.body;
+        console.log('Datos para actualización de orden: ', req.body);
+        const fecha = new Date();
+        const fechaPago = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(orderId) },
+            {},
+            { returnDocument: 'after' },
+        )
+        res.status(200).send({ code: 0, message: 'Orden actualizada correctamente', newUser: updatePayData });
+    } catch (error) {
+        console.log('Error al actualizar la orden: ', error);
+        res.status(200).send({ code: 11, message: 'No se pudo actualizar la orden' });
+    }
+});
 
 // CREAR ORDEN DE PAYPAL Y GUARDAR LOS DATOS DE LA ORDEN EN LA BASE DE DATOS
 manage_payment.post('/Create/Order', async (req, res, next) => {
@@ -92,7 +109,7 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
         // )
 
         // if (!orderExist) {
-        
+
         const updateOrder = await mongoose.connection.collection('clientes').updateOne(
             { 'cuenta.email': clientData.cuenta.email },
             { $push: { pedidos: order } }
@@ -118,6 +135,7 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
         const orderId = req.params.orderId;
         const { clientData, id } = req.body;
 
+        console.log('Datos para captura de pago: ', req.body);
         console.log('Id de pedido: ', orderId, ' y Id de pedido: ', id);
 
         const capturaPago = await paypalService.CapturePaymentOfPaypal_2(orderId);
@@ -135,7 +153,7 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
         const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 
         // Guardar el resto de datos de pago del cliente
-        const updatePayData = await mongoose.connection.collection('clientes').updateOne(
+        const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(id) },
             {
                 $set: {
@@ -164,7 +182,7 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
                             },
                         }
                     },
-                    'pedidos$.estado': 'COMPLETADO',
+                    'pedidos.$.estado': 'COMPLETADO',
                     'pedidos.$.fechaPago': fechaPago,
                     'pedidos.$.fechaEnvio': fechaEnvio,
                     'carrito.itemsPedido': [],
@@ -172,12 +190,19 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
                     'carrito.gastosEnvio': 0,
                     'carrito.total': 0,
                 }
-            });
+            },
+            { returnDocument: 'after' }
+        );
+
+        // const updateProductStock = await mongoose.connection.collection('productos').updateMany(
+        //     { _id: { $in: clientData.carrito.itemsPedido.map(item => new mongoose.Types.ObjectId(item._id)) } },
+        //     { $inc: { stock: -1 } }
+        // );
 
         console.log('Actualización de datos de pago en cliente: ', updatePayData);
         if (updatePayData.modifiedCount === 0) throw new Error('No se pudo actualizar los datos de pago del cliente.');
 
-        res.status(200).send({ code: 0, message: 'Pago correcto', orderCapture: capturaPago });
+        res.status(200).send({ code: 0, message: 'Pago correcto', orderCapture: capturaPago, newUser: updatePayData });
     } catch (error) {
         console.log('Error en la captura de pago: ', error);
         res.status(200).send({ code: 10, message: 'No se pudo capturar el pago de PayPal' });

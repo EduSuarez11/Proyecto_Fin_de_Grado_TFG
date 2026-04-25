@@ -84,7 +84,7 @@ module.exports = {
 
     CapturePaymentOfPaypal_2: async (orderId) => {
         try {
-            const token = await getToken();
+            const {token} = await getToken();
             console.log('Id de orden: ', orderId, ' y token: ', token);
             const responsePayment = await requestInNode.capturePaymentWithId(orderId, token);
 
