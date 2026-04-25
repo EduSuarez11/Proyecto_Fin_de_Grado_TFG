@@ -60,7 +60,7 @@ function TipoLogin() {
 
     async function handleLoginDiscord() {
         const response = await request_discord.discord_url();
-        //console.log('Respuesta: ', response);
+        console.log('Respuesta: ', response);
         window.open(response.url, 'popup', 'width=800px; height=700px');
     }
 

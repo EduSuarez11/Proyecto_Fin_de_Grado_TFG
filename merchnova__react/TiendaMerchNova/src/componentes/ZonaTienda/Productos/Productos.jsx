@@ -1,7 +1,7 @@
 import { Link, useLoaderData } from 'react-router-dom';
 import './Productos.css';
 import { useRef, useState } from 'react';
-import { request_filter_products } from '../../Servicios/peticiones_products/request_products';
+import { request_filter_products } from '../../Servicios/peticiones_productos/request_products';
 
 
 function Productos() {

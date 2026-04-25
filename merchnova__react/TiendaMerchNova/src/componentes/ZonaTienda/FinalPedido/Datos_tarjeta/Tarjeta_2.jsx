@@ -1,5 +1,5 @@
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
-import requestFetch from "../../../Servicios/peticiones_fetch";
+import requestFetch from "../../../Servicios/request_external_api";
 import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { stripePromise } from "../../../configurations/config";
 import FormTarjeta from "./FormTarjeta";

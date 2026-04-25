@@ -12,18 +12,17 @@ import PerfilCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/1_Perfil/Per
 import CarritoCuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/4_CarritoCuenta/MiCarritoCuenta";
 import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
 import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
-import peticiones_fetch from "./componentes/Servicios/peticiones_fetch";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
 import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
 import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/CompraFinalizada";
 import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos";
 import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
-import requestFetch from "./componentes/Servicios/peticiones_fetch";
 import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
 import { stripePromise } from "./componentes/configurations/config";
 import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancelada/CompraCancelada";
-import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_products/request_products";
+import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_productos/request_products";
+import request_external from "./componentes/Servicios/request_external_api";
 
 
 const optionsPayPal = {
@@ -39,7 +38,7 @@ const requestHome = async () => {
 }
 
 const getChosenProduct = async ({ params }) => {
-   const response = await request_filter_products.get_chosen_product(params);
+   const response = await request_filter_products.get_chosen_product({params});
    return response;
 }
 
@@ -72,9 +71,9 @@ const applicationRoutes = createBrowserRouter(
                   { path: 'TipoLogin', element: <TipoLogin /> },
                   {
                      path: 'Cuenta', element: <Cuenta />, loader: securityApplication, children: [
-                        { path: 'Perfil', element: <PerfilCuenta />, loader: peticiones_fetch.requestGetCountries },
+                        { path: 'Perfil', element: <PerfilCuenta />, loader: request_external.request_get_countries },
                         { path: 'Pedidos', element: <Pedidos /> },
-                        { path: 'MisDirecciones', element: <MisDirecciones />, loader: peticiones_fetch.requestGetCountries },
+                        { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
                         { path: 'MiCarrito', element: <CarritoCuenta /> }
                      ]
                   },
@@ -87,7 +86,7 @@ const applicationRoutes = createBrowserRouter(
                path: 'Portal', children: [
                   {
                      path: 'Pedido', loader: securityApplication, children: [
-                        { path: 'DetallesEncargo', element: <FinPedido />, loader: peticiones_fetch.requestGetCountries },
+                        { path: 'DetallesEncargo', element: <FinPedido />, loader: request_external.request_get_countries },
                         { path: 'CompraExitosa', element: <CompraFinalizada /> },
                         { path: 'CompraCancelada', element: <CompraCancelada /> }
                      ]

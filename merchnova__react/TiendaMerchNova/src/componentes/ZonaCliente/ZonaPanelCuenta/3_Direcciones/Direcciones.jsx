@@ -2,7 +2,6 @@ import './Direcciones.css'
 import { useLoaderData, useNavigate } from "react-router";
 import useGlobalState from "../../../../global_state/globalState";
 import { useRef, useState } from 'react';
-import { requestData } from '../../../Servicios/peticiones_fetch';
 import Error from '../../../global_components/SuccessErrorComponent/SuccessOrError';
 import SuccessOrError from '../../../global_components/SuccessErrorComponent/SuccessOrError';
 import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';

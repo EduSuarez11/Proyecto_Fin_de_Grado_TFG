@@ -3,7 +3,7 @@ import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
 import { useEffect, useRef, useState } from 'react';
-import { request_category } from '../../../Servicios/peticiones_products/request_products';
+import { request_category } from '../../../Servicios/peticiones_productos/request_products';
 
 function Header() {
     const route = useLocation();
@@ -52,7 +52,7 @@ function Header() {
 
             if (token) {
                 const timeRes = setTimeout(async () => {
-                    const requestVerifyToken = await fetch('http://localhost:3000/api/Cliente/Verify/Token', {
+                    const requestVerifyToken = await fetch('http://localhost:3000/api/auth/Verify/Token', {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`

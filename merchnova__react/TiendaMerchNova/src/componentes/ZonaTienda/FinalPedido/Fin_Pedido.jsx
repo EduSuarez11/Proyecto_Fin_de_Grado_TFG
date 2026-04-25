@@ -7,7 +7,7 @@ import Direcciones from "./Datos_direcciones/Direcciones_1";
 import Tarjeta from "./Datos_tarjeta/Tarjeta_2";
 import { Elements, useElements, useStripe } from "@stripe/react-stripe-js";
 import { stripePromise } from "../../configurations/config";
-import requestFetch from "../../Servicios/peticiones_fetch";
+import { request_paypal, request_stripe } from "../../Servicios/peticiones_pago/request_payment";
 
 function FinPedido() {
 
@@ -32,7 +32,7 @@ function FinPedido() {
         () => {
             const chargeClientSecret = async () => {
                 if (!clientSecret) {
-                    const responseStripe = await requestFetch.getClientStripe(clientData, paymentMethod, direccionEnvio);
+                    const responseStripe = await request_stripe.get_client_stripe(clientData, paymentMethod, direccionEnvio);
                     console.log('Respuesta client secret: ', responseStripe);
                     setClientSecret(responseStripe.clientSecret);
                 }
@@ -77,39 +77,21 @@ function FinPedido() {
         }
     }
 
-    console.log('Usememo: ', options);
-
 
     // PayPal
     async function createOrder() {
-        const requestOrder = await fetch('http://localhost:3000/api/Tienda/Create/Order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ clientData, order, direccionEnvio })
-        });
-
-        const responseOrder = await requestOrder.json();
+        const responseOrder = await request_paypal.create_order(clientData, order, direccionEnvio);
         console.log('Respuesta de la orden: ', responseOrder);
         orderId = responseOrder.orderId;
         orderClient = responseOrder.orderClient;
         return responseOrder.orderId;
     }
 
-    console.log('refStripe: ', refStripeElement)
     //PayPal
     async function onApprove() {
         console.log('Orden aprobada, procediendo a captura. OrderID: ', orderId);
         console.log('Id de pedido de cliente: ', orderClient);
-        const requestCapture = await fetch(`http://localhost:3000/api/Tienda/Capture/Payment/${orderId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ clientData, id: orderClient.toString() })
-        });
-        const responseCapture = await requestCapture.json();
+        const responseCapture = await request_paypal.approve_payment(clientData, orderClient, orderId);
         console.log('Respuesta de la captura: ', responseCapture);
         if (responseCapture.code !== 0) throw new Error('Fallo al capturar el pago.');
         navigate('/Portal/Pedido/CompraExitosa', { state: { data: { orderId: orderClient, clientId: clientData._id } } });
@@ -119,8 +101,6 @@ function FinPedido() {
     function handleCancelPayment() {
         navigate('/Portal/Pedido/CompraCancelada');
     }
-    
-
     
 
     return (
