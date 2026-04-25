@@ -33,10 +33,10 @@ manage_products_filter.get('/Chosen/:categoria/:slug', async (req, res, next) =>
 // MUESTRA LOS PRODUCTOS FILTRADOS SEGÚN SU TIPO.
 manage_products_filter.post('/FiltrarProductos', async (req, res, next) => {
     try {
-        console.log(JSON.stringify(req.body));
+        //console.log(JSON.stringify(req.body));
         const types = Object.keys(req.body.dataFilter);
 
-        console.log('Tipos: ', types);
+        //console.log('Tipos: ', types);
 
         const filterProducts = await mongoose.connection.collection('productos').find().toArray();
 
@@ -45,13 +45,8 @@ manage_products_filter.post('/FiltrarProductos', async (req, res, next) => {
             const price = (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
 
             return category && price;
-        })
-        // filterProducts.forEach(el => {
-        //     if (types.includes(el.categoria)) {
-        //         filter.push(el);
-        //     }
-        // });
-        console.log('Nuevos productos con filtro: ', filter);
+        });
+        //console.log('Nuevos productos con filtro: ', filter);
 
         res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
     } catch (error) {
