@@ -2,8 +2,7 @@
 //const cookiesParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
-const mongoose  = require('mongoose');
-const shopRouter = require('./configuration_endpoints/endpointsTienda');
+const mongoose = require('mongoose');
 const path = require("path");
 const manage_auth_email = require('./configuration_endpoints/auth/auth_email_api');
 const manage_auth_google = require('./configuration_endpoints/auth/auth_google_api');
@@ -14,6 +13,7 @@ const manage_cart = require('./configuration_endpoints/carrito/cart_api');
 const manage_category = require('./configuration_endpoints/productos/category_api');
 const manage_profile_data = require('./configuration_endpoints/profile/profile_api');
 const manage_auth_token = require('./configuration_endpoints/auth/auth_token_api');
+const manage_payment = require('./configuration_endpoints/pago/payment_api');
 const pathImages = path.join(__dirname, "../images");
 const connectDB = async () => {
     try {
@@ -47,10 +47,10 @@ module.exports = async (confServerExpress) => {
 
     // Configuracion de "auth"
     confServerExpress.use('/api/auth', manage_auth_email);
-    confServerExpress.use('/api/auth', manage_auth_google);
-    confServerExpress.use('/api/auth', manage_auth_discord);
+    confServerExpress.use('/api/Cliente', manage_auth_google);
+    confServerExpress.use('/api/Cliente', manage_auth_discord);
     confServerExpress.use('/api/auth', manage_auth_token);
-    
+
 
     // Configuracion de "products"
     confServerExpress.use('/api/products', manage_products);
@@ -63,6 +63,5 @@ module.exports = async (confServerExpress) => {
     // Configuracion de "profile"
     confServerExpress.use('/api/profile', manage_profile_data);
 
-
-    confServerExpress.use('/api/Tienda', shopRouter);
+    confServerExpress.use('/api/pay', manage_payment);
 }

@@ -2,9 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwtService = require('../../servicios/jwtService');
 const { request_discord } = require('../../servicios/peticiones_api_externas/request_api_external');
-
+const crypto = require('crypto');
 const manage_auth_discord = express.Router();
-
+dataCrypto = crypto.randomBytes(32).toString('hex');
 
 manage_auth_discord.get('/Url-Discord', async (req, resp, next) => {
     try {
@@ -13,7 +13,8 @@ manage_auth_discord.get('/Url-Discord', async (req, resp, next) => {
 
         resp.status(200).send({ code: 0, message: 'URL obtenida', url: URL_DISCORD });
     } catch (error) {
-        resp.status(200).send({ code: 5, message: 'URL obtenida', url: URL_DISCORD });
+        console.log('Error en url discord: ', error)
+        resp.status(200).send({ code: 5, message: 'No se pudo obtener la url de discord' });
     }
 });
 

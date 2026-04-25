@@ -1,110 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const paypalService = require('../../servicios/paypalService');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
-const stripeService = require('../servicios/stripeService');
-const paypalService = require('../servicios/paypalService');
-const shopRouter = express.Router();
+//const stripeService = require('../servicios/stripeService');
 
-/**
- * Códigos de mensaje de error:
- *  1º Error en obtener todos los productos
- *  2º Error en obtener el producto que eliges para comprar o añadir al carrito
- *  3º Error en obtener los productos de la página principal (Home.jsx)
- *  4º Error en el pago con tarjeta
- *  5º Persistir en carrito (añadir)
- *  6º Persistir en carrito (eliminar)
- *  7º Persistir en carrito (actualizar)
- */
+const manage_payment = express.Router();
 
 
-
-
-
-
-
-// EJECUTAR EL PAGO CON TARJETA ...
-// shopRouter.post('/create-intent', async (req, res, next) => {
-//     try {
-//         const { clientData, type, direccionEnvio } = req.body;
-//         console.log('Datos de create intent ', req.body);
-//         let clientId;
-//         let paymentIntent;
-//         clientData.carrito._id = new mongoose.Types.ObjectId();
-
-//         //console.log('Todos los datos: ', req.body);
-
-//         if (type === 'tarjeta') {
-//             // Comprobar si el cliente va a pagar por primera vez o ya lo ha hecho anteriormente
-//             const existPay = await mongoose.connection.collection('clientes').findOne({
-//                 'metodoPago': {
-//                     $elemMatch: {
-//                         tipo: 'tarjeta'
-//                     }
-//                 }
-//             });
-//             console.log('Existe previo pago: ', JSON.stringify(existPay));
-
-//             let payment_intent;
-//             if (!existPay) {
-//                 // Si no existe el pago, crear un pago de Stripe
-//                 clientId = await stripeService.CreateStripeClient_1(clientData.nombreCompleto, clientData.cuenta.email, direccionEnvio);
-//                 if (!clientId) throw new Error('No se ha podido obtener el id de cliente de Stripe.');
-
-//                 console.log('Cliente id: ', clientId)
-
-//                 // 2º Paso: Id tarjeta
-//                 // cardId = await stripeService.CreateCard_2(clientId, order.metodoPago);
-//                 // if (!cardId) throw new Error('No se ha podido al obtener el id de tarjeta.');
-
-//                 const updateData = await mongoose.connection.collection('clientes').updateOne({
-//                     'cuenta.email': clientData.cuenta.email
-//                 },
-//                     {
-//                         $set: {
-//                             metodoPago: {
-//                                 tipo: 'tarjeta',
-//                                 info: {
-//                                     clientId
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 );
-//                 // console.log('Datos actualizados: ', updateData);
-
-//                 // console.log(`Id de cliente ${clientId} y cardId ${cardId}`)
-
-//                 // if (!updateData.acknowledged) throw new Error('No se pudo actualizar los identificadores.');
-//             } else {
-//                 // Si existe un pago, recoger id de cliente y tarjeta
-//                 //clientId = existPay.info.clientId;
-//                 //useService(clientData, order, getIds, true);
-//             }
-
-//             paymentIntent = await stripe.paymentIntents.create(
-//                 {
-//                     'amount': Math.round(clientData.carrito.total * 100),
-//                     'currency': 'eur',
-//                     'customer': clientId,
-//                     'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
-//                     'payment_method_types': ['card'],
-//                     'metadata': {
-//                         orderId: clientData.carrito._id.toString()
-//                     }
-//                 }
-//             );
-
-//             console.log('Payment intent: ', paymentIntent);
-//         }
-
-//         res.status(200).send({ code: 0, message: 'Intento de pago con tarjeta creado con éxito', clientSecret: paymentIntent.client_secret });
-//     } catch (error) {
-//         console.log('Error en la peticion middleware: ', error);
-//         res.status(200).send({ code: 4, message: error });
-//     }
-// });
-
-shopRouter.post('/create-intent', async (req, res, next) => {
+manage_payment.post('/create-intent', async (req, res, next) => {
     try {
         const { clientData, type, direccionEnvio } = req.body;
         console.log('Datos de create intent ', req.body);
@@ -112,27 +15,27 @@ shopRouter.post('/create-intent', async (req, res, next) => {
         let paymentIntent;
         clientData.carrito._id = new mongoose.Types.ObjectId();
 
-        
-            const customer = await stripe.customers.create({
-                name: clientData.nombreCompleto,
-                email: clientData.cuenta.email,
-            });
 
-            const payment_intent = await stripe.paymentIntents.create({
-                'amount': Math.round(clientData.carrito.total * 100),
-                'currency': 'eur',
-                'customer': customer.id,
-                //'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
-                'automatic_payment_methods': {
-                    'enabled': true
-                }
-                // 'metadata': {
-                //     orderId: clientData.carrito._id.toString()
-                // }
-            });
+        const customer = await stripe.customers.create({
+            name: clientData.nombreCompleto,
+            email: clientData.cuenta.email,
+        });
 
-            clientSecret = payment_intent.client_secret;
-    
+        const payment_intent = await stripe.paymentIntents.create({
+            'amount': Math.round(clientData.carrito.total * 100),
+            'currency': 'eur',
+            'customer': customer.id,
+            //'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
+            'automatic_payment_methods': {
+                'enabled': true
+            }
+            // 'metadata': {
+            //     orderId: clientData.carrito._id.toString()
+            // }
+        });
+
+        clientSecret = payment_intent.client_secret;
+
         if (!payment_intent.client_secret) throw new Error('No se pudo obtener el cliente secreto');
 
 
@@ -145,7 +48,7 @@ shopRouter.post('/create-intent', async (req, res, next) => {
 
 
 // CREAR ORDEN DE PAYPAL Y GUARDAR LOS DATOS DE LA ORDEN EN LA BASE DE DATOS
-shopRouter.post('/Create/Order', async (req, res, next) => {
+manage_payment.post('/Create/Order', async (req, res, next) => {
     try {
         const { clientData, order, direccionEnvio } = req.body;
         console.log(req.body);
@@ -166,7 +69,7 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
         order.total = clientData.carrito.total;
         order.estado = 'EN_CURSO';
         order.direccionEnvio = {
-            domicilio: direccionEnvio.direccion,
+            domicilio: direccionEnvio.domicilio,
             municipio: direccionEnvio.municipio,
             provincia: direccionEnvio.provincia,
             codigo_postal: direccionEnvio.codigoPostal,
@@ -180,23 +83,37 @@ shopRouter.post('/Create/Order', async (req, res, next) => {
             pais: clientData.direcciones[0].pais
         }
 
+
+        // const orderExist = await mongoose.connection.collection('clientes').findOne(
+        //     {
+        //         'cuenta.email': clientData.cuenta.email,
+        //         'pedidos': { $elemMatch: { _id: new mongoose.Types.ObjectId(order._id) } }
+        //     }
+        // )
+
+        // if (!orderExist) {
+        
         const updateOrder = await mongoose.connection.collection('clientes').updateOne(
             { 'cuenta.email': clientData.cuenta.email },
-            {
-                $push: {
-                    pedidos: order
-                }
-            }
+            { $push: { pedidos: order } }
         );
+        // } else {
+        //     const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+        //         { 'cuenta.email': clientData.cuenta.email },
+        //         { $set: { pedidos: order } }
+        //     );
+        // }
+
         res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', orderId: orderPaypal.id, orderClient: order._id });
     } catch (error) {
+        console.log('Error: ', error);
         res.status(200).send({ code: 9, message: 'Error en la creacion de orden' });
     }
 })
 
 
 // CAPTURAR EL PAGO DE PAYPAL Y GUARDAR LOS DATOS DE LA CAPTURA EN LA BASE DE DATOS
-shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
+manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
     try {
         const orderId = req.params.orderId;
         const { clientData, id } = req.body;
@@ -267,10 +184,4 @@ shopRouter.post('/Capture/Payment/:orderId', async (req, res, next) => {
     }
 })
 
-
-
-
-
-
-
-module.exports = shopRouter;
+module.exports = manage_payment;

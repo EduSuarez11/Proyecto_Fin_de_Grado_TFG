@@ -7,7 +7,8 @@ let tokenAccessPaypal = {
 
 async function getToken() {
     try {
-        if (tokenAccessPaypal.token && tokenAccessPaypal.expiration) return tokenAccessPaypal.token;
+        console.log('Token: ', tokenAccessPaypal);
+        if (tokenAccessPaypal.token && tokenAccessPaypal.expiration) return tokenAccessPaypal;
 
         const { access_token, expires_in } = await requestInNode.generateTokenPaypal();
         if (!access_token && !expiration) throw new Error('No se pudo crear el token de acceso de PayPal.');
@@ -65,7 +66,7 @@ module.exports = {
                 payment_source: {
                     paypal: {
                         experience_context: {
-                            return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?clientId=${clientData._id}&orderId=${order._id}`,
+                            return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?clientId=${clientData._id}`,
                             cancel_url: `http://localhost:5173/Tienda/CompraFinalizada?clientId=${clientData._id}&paymentCanceled=true`
                         }
                     }
