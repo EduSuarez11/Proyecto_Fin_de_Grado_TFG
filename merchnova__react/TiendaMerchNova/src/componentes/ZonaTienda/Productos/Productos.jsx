@@ -28,12 +28,18 @@ function Productos() {
 
 
     function onChangeCheckbox(ev) {
-        //console.log('Evento checked que pasa: ', ev.target.checked);
+        console.log('Evento checked que pasa: ', ev.target.checked);
+        console.log('Value: ', ev.target.value)
         if (ev.target.checked) {
-            setTypeProduct({
-                ...typeProduct,
-                [ev.target.name]: ev.target.value
-            })
+            if (typeProduct.todos === 'todos') {
+                setTypeProduct({ [ev.target.name]: ev.target.value });
+            } else {
+                setTypeProduct({
+                    ...typeProduct,
+                    [ev.target.name]: ev.target.value
+                })
+            }
+
         } else {
             // Desestructuro para eliminar al instante el checkbox que dejas de seleccionar
             const { [ev.target.name]: _, ...deleteType } = typeProduct;
