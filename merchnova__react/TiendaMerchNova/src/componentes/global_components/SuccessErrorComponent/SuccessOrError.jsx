@@ -1,7 +1,7 @@
 import './SuccessOrError.css'
 function SuccessOrError({ errorRef, message }) {
     //console.log('Message:', message)
-    console.log('True or false: ', message)
+    //console.log('True or false: ', message)
     return (
         <div className="modal fade" id="successErrorModal" tabIndex="-1" ref={errorRef}>
             <div className="modal-dialog modal-dialog-centered">

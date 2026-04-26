@@ -19,8 +19,7 @@
     background: #fff;
     border-radius: 12px;
     padding: 20px;
-
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
 
@@ -125,7 +124,18 @@
 }
 
 
+.delete-address-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 
+    transition: .25s;
+}
 
-
-
+/* icono */
+.delete-address-btn i {
+    font-size: 15px;
+}

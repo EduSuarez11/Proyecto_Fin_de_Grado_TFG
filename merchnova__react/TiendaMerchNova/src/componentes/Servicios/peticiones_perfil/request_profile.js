@@ -10,6 +10,16 @@ export const request_profile = {
         return response;
     },
 
+    remove_direction: async (clientData, direccion) => {
+        const request = await fetch(`http://localhost:3000/api/profile/Remove-Direction`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientData, direccion })
+        });
+        const response = await request.json();
+        return response;
+    },
+
     set_data_profile: async (email) => {
         const requestNewData = await fetch(`http://localhost:3000/api/profile/ForgotPassword`, {
             method: 'POST',

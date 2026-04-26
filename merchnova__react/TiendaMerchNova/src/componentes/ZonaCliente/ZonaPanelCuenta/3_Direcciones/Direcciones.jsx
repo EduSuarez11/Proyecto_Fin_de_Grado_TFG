@@ -9,6 +9,7 @@ import { request_profile } from '../../../Servicios/peticiones_perfil/request_pr
 function MisDirecciones() {
     const { clientData, setClientData } = useGlobalState();
     const countries = useLoaderData();
+    const [direction, setDirection] = useState({});
     const navigate = useNavigate();
     const errorRef = useRef(null);
     const [message, setMessage] = useState({
@@ -48,6 +49,21 @@ function MisDirecciones() {
         }
     }
 
+    async function handleRemoveAddress() {
+        const responseData = await request_profile.remove_direction(clientData, direction);
+        console.log(responseData);
+        if (responseData.code === 0) {
+            setClientData(responseData.dataUpdate);
+            setMessage({ msg: responseData.message, successOrError: true });
+            const modal = new window.bootstrap.Modal('#' + errorRef.current.id);
+            modal.show();
+        } else {
+            setMessage({ msg: responseData.message, successOrError: true });
+            const modal = new window.bootstrap.Modal('#' + errorRef.current.id);
+            modal.show();
+        }
+    }
+
 
     return (
         <div className="addresses-container">
@@ -57,10 +73,14 @@ function MisDirecciones() {
             <div className="addresses-grid">
                 {
                     clientData.direcciones.map((direccion, pos) =>
-
-                        <div className="address-card">
-                            <p className="address-name">Dirección {pos === 0 ? `${pos + 1} (Principal)` : `${pos + 1}`}</p>
-                            <p className="address-line">{direccion.domicilio}</p>
+                        <div className="address-card" title={`Dirección ${pos + 1}`}>
+                            <div className='d-flex justify-content-between'>
+                                <p className="address-name">Dirección {pos === 0 ? `${pos + 1} (Principal)` : `${pos + 1}`}</p>
+                                <button className="delete-address-btn btn btn-sm btn-outline-danger ms-3" title="Eliminar dirección" data-bs-toggle="modal" data-bs-target="#removeAddress" onClick={() => setDirection(direccion)}>
+                                    <i className="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <p className="address-line">{direccion.domicilio}, {direccion.municipio}</p>
                             <p className="address-line">{direccion.provincia} ({direccion.codigoPostal}), {direccion.pais}</p>
                             <p className="address-phone">+34 {clientData.cuenta.telefono}</p>
                         </div>
@@ -148,11 +168,30 @@ function MisDirecciones() {
                     </div>
                 </div>
 
+
+                <div class="modal fade" id='removeAddress' tabIndex="-1" aria-hidden='true'>
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Eliminar dirección</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de eliminar está dirección, los cambios no se podrán deshacer?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onClick={handleRemoveAddress}>Confirmar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <SuccessOrError errorRef={errorRef} message={message} />
 
             </div>
 
-        </div >
+        </div>
     )
 }
 
