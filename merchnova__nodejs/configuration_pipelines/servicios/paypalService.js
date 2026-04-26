@@ -16,7 +16,7 @@ async function getToken() {
         tokenAccessPaypal.token = access_token;
         tokenAccessPaypal.expiration = Date.now() + (expires_in - 300) * 1000;
 
-        console.log('Token: ', tokenAccessPaypal);
+        //console.log('Token: ', tokenAccessPaypal);
         return tokenAccessPaypal;
     } catch (error) {
         console.log('Error al crear el token paypal: ', error);
@@ -85,7 +85,7 @@ module.exports = {
     CapturePaymentOfPaypal_2: async (orderId) => {
         try {
             const {token} = await getToken();
-            console.log('Id de orden: ', orderId, ' y token: ', token);
+            //console.log('Id de orden: ', orderId, ' y token: ', token);
             const responsePayment = await requestInNode.capturePaymentWithId(orderId, token);
 
             //console.log('Captura de pago: ', responsePayment);

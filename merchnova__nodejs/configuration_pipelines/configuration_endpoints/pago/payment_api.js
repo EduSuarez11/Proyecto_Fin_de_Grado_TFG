@@ -9,7 +9,7 @@ const manage_payment = express.Router();
 
 manage_payment.post('/create-intent', async (req, res, next) => {
     try {
-        const { clientData, type, direccionEnvio } = req.body;
+        const { clientData, direccionEnvio } = req.body;
         console.log('Datos de create intent ', req.body);
         let clientSecret;
         let paymentIntent;
@@ -45,19 +45,66 @@ manage_payment.post('/create-intent', async (req, res, next) => {
     }
 });
 
-manage_payment.post('/Update-Order', async (req, res, next) => {
+manage_payment.post('/order-update', async (req, res, next) => {
     try {
-        const { clientData, capturaPago } = req.body;
+        const { clientData, order, direccionEnvio } = req.body;
         console.log('Datos para actualización de orden: ', req.body);
+
+        // FECHA DE PAGO Y ENTREGA
         const fecha = new Date();
         const fechaPago = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
         const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(orderId) },
-            {},
-            { returnDocument: 'after' },
+
+        // CREAR UN ID DEL PEDIDO Y AÑADIR OTROS DATOS AL PEDIDO
+        order._id = new mongoose.Types.ObjectId();
+        order.metodoPago = {
+            tipo: 'Tarjeta',
+            info: {
+                estado: 'COMPLETADO',
+            }
+        };
+        order.items = clientData.carrito.itemsPedido;
+        order.subtotal = clientData.carrito.subtotal;
+        order.total = clientData.carrito.total;
+        order.estado = 'COMPLETED';
+        order.direccionEnvio = {
+            domicilio: direccionEnvio.domicilio,
+            municipio: direccionEnvio.municipio,
+            provincia: direccionEnvio.provincia,
+            codigo_postal: direccionEnvio.codigoPostal,
+            pais: direccionEnvio.pais
+        }
+        order.direccionFacturacion = {
+            domicilio: clientData.direcciones[0].domicilio,
+            municipio: clientData.direcciones[0].municipio,
+            provincia: clientData.direcciones[0].provincia,
+            codigo_postal: clientData.direcciones[0].codigoPostal,
+            pais: clientData.direcciones[0].pais
+        }
+
+        const newPayData = await mongoose.connection.collection('clientes').updateOne(
+            { _id: new mongoose.Types.ObjectId(clientData._id) },
+            { $push: { pedidos: order } }
         )
-        res.status(200).send({ code: 0, message: 'Orden actualizada correctamente', newUser: updatePayData });
+
+        if (newPayData.modifiedCount === 0) throw new Error('No se pudieron actualizar los datos');
+
+        const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': order._id },
+            {
+                $set: {
+                    'pedidos.$.fechaPago': fechaPago,
+                    'pedidos.$.fechaEnvio': fechaEnvio,
+                    'carrito.itemsPedido': [],
+                    'carrito.subtotal': 0,
+                    'carrito.gastosEnvio': 0,
+                    'carrito.total': 0,
+                }
+            },
+            { returnDocument: 'after' }
+        )
+
+        res.status(200).send({ code: 0, message: 'Orden actualizada correctamente', newUser: updatePayData, orderId: order._id });
     } catch (error) {
         console.log('Error al actualizar la orden: ', error);
         res.status(200).send({ code: 11, message: 'No se pudo actualizar la orden' });
@@ -101,25 +148,32 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
         }
 
 
-        // const orderExist = await mongoose.connection.collection('clientes').findOne(
-        //     {
-        //         'cuenta.email': clientData.cuenta.email,
-        //         'pedidos': { $elemMatch: { _id: new mongoose.Types.ObjectId(order._id) } }
-        //     }
-        // )
-
-        // if (!orderExist) {
-
-        const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-            { 'cuenta.email': clientData.cuenta.email },
-            { $push: { pedidos: order } }
-        );
-        // } else {
-        //     const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-        //         { 'cuenta.email': clientData.cuenta.email },
-        //         { $set: { pedidos: order } }
-        //     );
-        // }
+        // Comprobar si existe un pedido existente para evitar crear pedidos "basura"
+        const orderExist = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': clientData.cuenta.email, 'pedidos.metodoPago.info.estado': 'PENDIENTE' })
+        console.log('Pedido existente: ', orderExist);
+        if (!orderExist) {
+            // Si no existe, crear el pedido en estado "PENDIENTE"
+            const updateOrder = await mongoose.connection.collection('clientes').updateOne(
+                { 'cuenta.email': clientData.cuenta.email },
+                { $push: { pedidos: order } }
+            );
+        } else {
+            // Si existe, continuar con ese pedido y actualizar los campos que posiblemente podrian haber cambiado.
+            const pendingOrder = orderExist.pedidos.find(pedido => pedido.metodoPago.info.estado === 'PENDIENTE');
+            //console.log('Pedido pendiente: ', pendingOrder);
+            await mongoose.connection.collection('clientes').updateOne(
+                { 'cuenta.email': clientData.cuenta.email, 'pedidos._id': pendingOrder._id },
+                {
+                    $set: {
+                        'pedidos.$.items': order.items,
+                        'pedidos.$.subtotal': order.subtotal,
+                        'pedidos.$.gastosEnvio': order.gastosEnvio,
+                        'pedidos.$.total': order.total,
+                        'pedidos.$.direccionEnvio': order.direccionEnvio
+                    }
+                }
+            );
+        }
 
         res.status(200).send({ code: 0, message: 'URL de PayPal obtenida', orderId: orderPaypal.id, orderClient: order._id });
     } catch (error) {
