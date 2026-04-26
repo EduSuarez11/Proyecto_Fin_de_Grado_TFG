@@ -1,11 +1,22 @@
 export const request_stripe = {
-    get_client_stripe: async (clientData, type, direccionEnvio) => {
+    get_client_stripe: async (clientData, direccionEnvio) => {
         const request = await fetch(`http://localhost:3000/api/pay/create-intent`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ clientData, type, direccionEnvio })
+            body: JSON.stringify({ clientData, direccionEnvio })
+        });
+
+        const response = await request.json();
+        return response;
+    },
+
+    update_order: async (clientData, order, direccionEnvio) => {
+        const request = await fetch(`http://localhost:3000/api/pay/order-update`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientData, order, direccionEnvio })
         });
 
         const response = await request.json();

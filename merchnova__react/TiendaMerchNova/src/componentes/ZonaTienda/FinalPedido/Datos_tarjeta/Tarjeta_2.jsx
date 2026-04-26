@@ -3,9 +3,11 @@ import requestFetch from "../../../Servicios/request_external_api";
 import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { stripePromise } from "../../../configurations/config";
 import FormTarjeta from "./FormTarjeta";
+import { request_stripe } from "../../../Servicios/peticiones_pago/request_payment";
+import useGlobalState from "../../../../global_state/globalState";
 
-function Tarjeta({ setPaymentMethod, paymentMethod, clientData, direccionEnvio, ref }) {
-
+function Tarjeta({ setPaymentMethod, paymentMethod, clientData, direccionEnvio, order, ref }) {
+    const {setClientData} = useGlobalState();
     const stripe = useStripe();
     const elements = useElements();
 
@@ -13,10 +15,14 @@ function Tarjeta({ setPaymentMethod, paymentMethod, clientData, direccionEnvio, 
 
     async function handleSubmit() {
         if (!stripe || !elements) return;
+        const response = await request_stripe.update_order(clientData, order, direccionEnvio);
+        //console.log('Respuesta de la peticion: ', response);
+        if (response.code !== 0) throw new Error('Error en la peticion');
+        setClientData(response.newUser);
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?orderId=${clientData.carrito._id}&clientId=${clientData._id}`
+                return_url: `http://localhost:5173/Portal/Pedido/CompraExitosa?orderId=${response.orderId}&clientId=${clientData._id}`
             }
         });
         

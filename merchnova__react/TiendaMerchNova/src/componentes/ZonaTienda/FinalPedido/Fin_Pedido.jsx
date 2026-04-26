@@ -30,8 +30,8 @@ function FinPedido() {
         () => {
             const chargeClientSecret = async () => {
                 if (!clientSecret) {
-                    const responseStripe = await request_stripe.get_client_stripe(clientData, paymentMethod, direccionEnvio);
-                    console.log('Respuesta client secret: ', responseStripe);
+                    const responseStripe = await request_stripe.get_client_stripe(clientData, direccionEnvio);
+                    //console.log('Respuesta client secret: ', responseStripe);
                     setClientSecret(responseStripe.clientSecret);
                 }
                 //console.log('Cliente secreto: ', responseStripe.clientSecret);
@@ -103,7 +103,7 @@ function FinPedido() {
                                 {stages === 1 && <Direcciones onChangeAddress={onChangeAddress} />}
 
                                 <div className={stages === 2 ? 'd-block' : 'd-none'}>
-                                    <Tarjeta setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} clientData={clientData} direccionEnvio={direccionEnvio} ref={refStripeElement} />
+                                    <Tarjeta setPaymentMethod={setPaymentMethod} paymentMethod={paymentMethod} clientData={clientData} direccionEnvio={direccionEnvio} ref={refStripeElement} order={order} />
                                 </div>
 
                                 {stages === 3 && <Resumen datosDireccion={direccionEnvio} paymentMethod={paymentMethod} />}
