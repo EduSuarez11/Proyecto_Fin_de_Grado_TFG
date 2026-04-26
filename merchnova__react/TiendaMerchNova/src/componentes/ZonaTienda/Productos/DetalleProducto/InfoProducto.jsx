@@ -17,7 +17,7 @@ function InfoProducto() {
     useEffect(
         () => {
             async function randomProducts() {
-                const requestProducts = await fetch(`http://localhost:3000/api/products/Producto/${resp.product.categoria}/${resp.product.slug}`)
+                const requestProducts = await fetch(`http://localhost:3000/api/products/Chosen/${resp.product.categoria}/${resp.product.slug}`)
                 const response = await requestProducts.json();
 
                 setMoreProducts(response.moreProducts);
