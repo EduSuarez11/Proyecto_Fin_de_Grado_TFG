@@ -64,4 +64,33 @@ manage_profile_data.post('/NewDirection', async (req, res, next) => {
     }
 });
 
+manage_profile_data.post('/Remove-Direction', async (req, res, next) => {
+    try {
+        const { clientData, direccion } = req.body;
+        console.log(req.body)
+        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) },
+            {
+                $pull: {
+                    direcciones: {
+                        domicilio: direccion.domicilio,
+                        provincia: direccion.provincia,
+                        municipio: direccion.municipio,
+                        codigoPostal: direccion.codigoPostal,
+                        pais: direccion.pais
+                    }
+                }
+            },
+            { returnDocument: "after" }
+        );
+        if (updateData.modifiedCount === 0) throw new Error('No se pudo eliminar la dirección.');
+        res.status(200).send({ code: 0, message: 'Dirección eliminada con éxito', dataUpdate: updateData });
+    } catch (error) {
+        console.log('Error al eliminar dirección: ', error);
+        res.status(200).send({ code: 14, message: `${error.message}` });
+    }
+
+
+})
+
 module.exports = manage_profile_data;
