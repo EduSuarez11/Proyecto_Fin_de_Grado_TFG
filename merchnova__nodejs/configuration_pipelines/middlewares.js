@@ -14,6 +14,7 @@ const manage_category = require('./configuration_endpoints/productos/category_ap
 const manage_profile_data = require('./configuration_endpoints/profile/profile_api');
 const manage_auth_token = require('./configuration_endpoints/auth/auth_token_api');
 const manage_payment = require('./configuration_endpoints/pago/payment_api');
+const manage_clients = require('./configuration_endpoints/auth/clients_api');
 const pathImages = path.join(__dirname, "../images");
 const connectDB = async () => {
     try {
@@ -50,6 +51,7 @@ module.exports = async (confServerExpress) => {
     confServerExpress.use('/api/Cliente', manage_auth_google);
     confServerExpress.use('/api/Cliente', manage_auth_discord);
     confServerExpress.use('/api/auth', manage_auth_token);
+    confServerExpress.use('/api/auth', manage_clients);
 
 
     // Configuracion de "products"
