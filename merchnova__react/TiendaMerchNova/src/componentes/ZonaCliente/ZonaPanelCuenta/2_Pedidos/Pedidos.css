@@ -104,3 +104,69 @@
 .btn-outline-purple:hover {
     background: #f3e8ff;
 }
+
+
+.empty-user-orders{
+    background:#fff;
+    padding:70px 35px;
+    border-radius:18px;
+
+    text-align:center;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.05);
+    border:1px solid #eee;
+}
+
+
+.empty-user-icon{
+    width:95px;
+    height:95px;
+
+    margin:0 auto 25px;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+      linear-gradient(
+       to right,
+       rgba(123,47,247,.12),
+       rgba(199,120,251,.12)
+      );
+}
+
+.empty-user-icon i{
+   font-size:42px;
+   color:#6a0dad;
+}
+
+
+.empty-user-orders h4{
+   font-weight:700;
+   margin-bottom:12px;
+}
+
+
+.empty-user-orders p{
+   color:#777;
+   max-width:420px;
+   margin:0 auto 28px;
+   line-height:1.6;
+}
+
+.btn-purple{
+    background: linear-gradient(to right,#7b2ff7,#c778fb);
+
+    color:white;
+    border:none;
+
+    border-radius:10px;
+    padding:11px 22px;
+}
+
+.btn-purple:hover{
+    opacity:.95;
+}
