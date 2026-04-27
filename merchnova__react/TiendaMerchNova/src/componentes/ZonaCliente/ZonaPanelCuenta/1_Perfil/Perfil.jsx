@@ -97,7 +97,7 @@ function PerfilCuenta() {
                             <label htmlFor="imageUpload" className={(!editProfile || clientData.cuenta.tipo === 'discord') ? `btn btn-purple btn-sm w-100 opacity` : `btn btn-purple btn-sm w-100`} >
                                 <i className="bi bi-camera me-2"></i>Cambiar Foto
                             </label>
-                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo === 'google' ) ? !editProfile : true} onChange={changeImagePreview} />
+                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo === 'google') ? !editProfile : true} onChange={changeImagePreview} />
                             {
                                 (clientData.cuenta.tipo === 'discord' || clientData.cuenta.tipo === 'google') &&
                                 <div className="form-text small text-danger">
@@ -276,12 +276,9 @@ function PerfilCuenta() {
                                 <option>Selecciona tu país...</option>
                                 {
                                     countries.map((country, index) =>
-                                        <>
-                                            {/* <img style={{ width: '30px' }} src={country.flags.svg} /> */}
-                                            <option key={index}>
-                                                {country.name.common}
-                                            </option>
-                                        </>
+                                        <option key={index}>
+                                            {country.name.common}
+                                        </option>
                                     )
                                 }
                             </select>
