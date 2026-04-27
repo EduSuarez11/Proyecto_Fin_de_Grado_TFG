@@ -6,6 +6,7 @@ function Cuenta() {
     const { logOut } = useGlobalState();
     const navigate = useNavigate();
     const location = useLocation();
+    const { clientData } = useGlobalState();
 
     return (
         <div className="container my-5">
@@ -24,11 +25,14 @@ function Cuenta() {
                                     { name: 'Mis Pedidos', route: '/Cliente/Cuenta/Pedidos', icon: 'bi bi-box-seam me-2' },
                                     { name: 'Mis Direcciones', route: '/Cliente/Cuenta/MisDirecciones', icon: 'bi bi-geo-alt me-2' },
                                     { name: 'Mi Carrito', route: '/Cliente/Cuenta/MiCarrito', icon: 'bi bi-cart3 me-2' },
-                                ].map((element, index) =>
-                                    <Link to={element.route} key={index} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active-link' : ''}`}>
-                                        <i className={element.icon}></i> {element.name}
-                                    </Link>
-                                )
+                                    { name: 'Panel de Clientes', route: '/Cliente/Cuenta/PanelClientes', icon: 'bi bi-person-circle me-2' }
+                                ]
+                                    .filter(element => element.name !== 'Panel de Clientes' || clientData.cuenta.rol === 'ADMINISTRADOR')
+                                    .map((element, index) =>
+                                        <Link to={element.route} key={index} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active-link' : ''}`}>
+                                            <i className={element.icon}></i> {element.name}
+                                        </Link>
+                                    )
                             }
                             <hr className="text-muted my-2" />
                             <button onClick={() => { logOut(); navigate('/', { state: { msg: 'Has cerrado sesión' } }) }}

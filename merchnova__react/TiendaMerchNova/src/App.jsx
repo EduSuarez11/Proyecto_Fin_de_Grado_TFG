@@ -23,6 +23,7 @@ import { stripePromise } from "./componentes/configurations/config";
 import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancelada/CompraCancelada";
 import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_productos/request_products";
 import request_external from "./componentes/Servicios/request_external_api";
+import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClientes/PanelCliente";
 
 
 const optionsPayPal = {
@@ -74,7 +75,8 @@ const applicationRoutes = createBrowserRouter(
                         { path: 'Perfil', element: <PerfilCuenta />, loader: request_external.request_get_countries },
                         { path: 'Pedidos', element: <Pedidos /> },
                         { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
-                        { path: 'MiCarrito', element: <CarritoCuenta /> }
+                        { path: 'MiCarrito', element: <CarritoCuenta /> },
+                        { path: 'PanelClientes', element: <PanelClientes/>}
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
@@ -117,7 +119,7 @@ const applicationRoutes = createBrowserRouter(
                element: <LoginCallback />
             },
 
-            { path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../public/logo_images/error.png" style={{ width: '800px' }} /></div> }
+            { path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../../logo_images/error.png" style={{ width: '800px' }} /></div> }
          ]
       }
    ]);

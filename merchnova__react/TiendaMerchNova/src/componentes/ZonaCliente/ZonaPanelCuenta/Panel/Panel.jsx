@@ -37,24 +37,22 @@ function Panel({ order, clientData, logOut }) {
                         <small className="text-muted">Mi cuenta</small>
                     </li>
                     {
-                        ["Perfil", "Mis Pedidos", "Configuración", "Cerrar Sesión"].map((elemento, index) =>
-                            <>
+                        ["Perfil", "Mis Pedidos", "Panel de Clientes", "Configuración", "Cerrar Sesión"]
+                            .filter(elemento => elemento !== 'Panel de Clientes' || clientData.cuenta.rol === 'ADMINISTRADOR')
+                            .map((elemento, index) =>
                                 <li key={index}>
                                     {elemento !== 'Cerrar Sesión' ?
-                                        <Link className='dropdown-item' to={elemento === 'Mis Pedidos' ? '/Cliente/Cuenta/Pedidos' : (`/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`)}>
+                                        <Link className='dropdown-item' to={elemento === 'Mis Pedidos' ? '/Cliente/Cuenta/Pedidos' : (elemento === 'Panel de Clientes' ? '/Cliente/Cuenta/PanelClientes' : `/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`)}>
                                             {elemento}
                                         </Link>
                                         :
-                                        <button className='dropdown-item text-danger' onClick={() => {logOut();sessionStorage.removeItem("token") ;navigate('/Cliente/TipoLogin', {state: {msg: 'Has cerrado sesión'}})}}>
+                                        <button className='dropdown-item text-danger' onClick={() => { logOut(); sessionStorage.removeItem("token"); navigate('/Cliente/TipoLogin', { state: { msg: 'Has cerrado sesión' } }) }}>
                                             {elemento}
                                         </button>
                                     }
+                                    {elemento === 'Configuración' && <hr className="dropdown-divider" />}
                                 </li>
-                                {
-                                    elemento === 'Configuración' && <li><hr className="dropdown-divider" /></li>
-                                }
-                            </>
-                        )
+                            )
                     }
                 </ul>
             </div>
