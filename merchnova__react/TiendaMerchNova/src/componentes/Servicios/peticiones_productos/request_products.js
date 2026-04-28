@@ -33,12 +33,8 @@ export const request_filter_products = {
     },
 
     // Peticion para obtener los productos por filtro
-    get_products_filter: async (dataFilter, priceFilter) => {
-        const request = await fetch(`http://localhost:3000/api/products/FiltrarProductos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dataFilter, priceFilter })
-        });
+    get_products_filter: async () => {
+        const request = await fetch('http://localhost:3000/api/products/FiltrarProductos');
         const response = await request.json();
 
         return response;
@@ -49,7 +45,7 @@ export const request_category = {
     get_categories: async () => {
         const request = await fetch(`http://localhost:3000/api/products/Categorias`);
         const response = await request.json();
-        
+
         return response;
     }
 }

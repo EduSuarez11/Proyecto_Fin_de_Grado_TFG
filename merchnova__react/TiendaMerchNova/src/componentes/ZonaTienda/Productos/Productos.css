@@ -96,26 +96,123 @@
 
 
 .product-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    transition: transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 
 .ribbon {
-    position: absolute;
-    top: 10px;
-    right: -35px;
-    background: linear-gradient(to right, #6a0dad, #8a2be2);
-    color: white;
-    padding: 4px 35px;
-    font-size: 14px;
-    font-weight: 500;
-    transform: rotate(45deg);
-    z-index: 2;
+  position: absolute;
+  top: 10px;
+  right: -35px;
+  background: linear-gradient(to right, #6a0dad, #8a2be2);
+  color: white;
+  padding: 4px 35px;
+  font-size: 14px;
+  font-weight: 500;
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+.shop-pagination-wrapper {
+  margin-top: 45px;
+  display: flex;
+  justify-content: center;
+}
+
+.shop-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  background: #fff;
+  padding: 14px 22px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, .06);
+}
+
+
+
+.page-number,
+.page-nav-btn {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: .25s;
+}
+
+
+
+.page-number {
+  background: #f6f1ff;
+  color: #6a0dad;
+}
+
+
+.page-number.active {
+  background:
+    linear-gradient(to right,
+      #7b2ff7,
+      #c778fb);
+
+  color: #fff;
+
+  box-shadow:
+    0 6px 18px rgba(123, 47, 247, .3);
+}
+
+
+
+.page-number:hover,
+.page-nav-btn:hover {
+  transform: translateY(-2px);
+}
+
+
+
+.page-nav-btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #6a0dad;
+}
+
+
+
+.pagination-dots {
+  padding: 0 4px;
+  color: #999;
+  font-weight: 700;
+}
+
+
+.shop-pagination-wrapper {
+  margin-top: 25px;
+  margin-bottom: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pagination-results {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 18px;
 }

@@ -1,73 +1,84 @@
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import './Productos.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { request_filter_products } from '../../Servicios/peticiones_productos/request_products';
 
 
 function Productos() {
     const products = useLoaderData();
     const [typeProduct, setTypeProduct] = useState({});
+    const [products, setProducts] = useState();
     const [priceFilter, setPriceFilter] = useState({});
-    const [productsFilter, setProductsFilter] = useState(products.data);
-    const [filters, setFilters] = useState({
-        todos: true,
-        camisetas: false,
-        sudaderas: false,
-        tazas: false,
-        llaveros: false
-    });
+    const [params, setParams] = useSearchParams();
+    // const [filters, setFilters] = useState({
+    //     todos: true,
+    //     camisetas: false,
+    //     sudaderas: false,
+    //     tazas: false,
+    //     llaveros: false
+    // });
 
-    const checkFilter = (name) => {
-        const todos = name === 'todos';
-        const camisetas = name === 'camisetas';
-        const sudaderas = name === 'sudaderas';
-        const tazas = name === 'tazas';
-        const llaveros = name === 'llaveros';
-        setFilters({ todos, camisetas, sudaderas, tazas, llaveros })
+    // const checkFilter = (name) => {
+    //     const todos = name === 'todos';
+    //     const camisetas = name === 'camisetas';
+    //     const sudaderas = name === 'sudaderas';
+    //     const tazas = name === 'tazas';
+    //     const llaveros = name === 'llaveros';
+    //     setFilters({ todos, camisetas, sudaderas, tazas, llaveros })
+    // }
+
+    const page = parseInt(params.get('page')) || 1;
+    const categories = params.get('categorias') || "todos";
+
+    useEffect(
+        () => {
+            const getProductsByPage = () => {
+                const response = await request_filter_products.get_products_filter();
+                setProducts(response.products);
+            }
+        }, [page, categories]
+    );
+
+    const cambiarPagina = (nuevaPagina) => {
+        // Esto actualiza la URL: /productos?page=2&categories=tazas
+        searchParams.set('page', nuevaPagina);
+        setSearchParams(searchParams);
+    };
+
+    const aplicarFiltros = (nuevasCategorias) => {
+        // nuevasCategorias es un array ['tazas', 'camisetas']
+        // Lo convertimos a string para la URL: "tazas,camisetas"
+        searchParams.set('categories', nuevasCategorias.join(','));
+        searchParams.set('page', 1); // Al filtrar, siempre volvemos a la pág 1
     }
 
 
     function onChangeCheckbox(ev) {
-        console.log('Evento checked que pasa: ', ev.target.checked);
-        console.log('Value: ', ev.target.value)
-        if (ev.target.checked) {
-            if (typeProduct.todos === 'todos') {
-                setTypeProduct({ [ev.target.name]: ev.target.value });
-            } else {
-                setTypeProduct({
-                    ...typeProduct,
-                    [ev.target.name]: ev.target.value
-                })
-            }
-
-        } else {
-            // Desestructuro para eliminar al instante el checkbox que dejas de seleccionar
-            const { [ev.target.name]: _, ...deleteType } = typeProduct;
-            console.log('Tipo: ', deleteType);
-            setTypeProduct(deleteType);
-        }
-
-
+        //console.log('Value: ', ev.target.value)
+        setTypeProduct({
+            ...typeProduct,
+            [ev.target.id]: ev.target.value
+        });
         // Evita que marque la casilla "todos" y las demas casillas a la vez
-        if (ev.target.name === 'todos' && ev.target.checked) {
-            checkFilter(ev.target.name);
-        } else {
-            setFilters((prev) => ({
-                ...prev,
-                'todos': false,
-                [ev.target.name]: ev.target.checked
-            }));
-        }
+        // if (ev.target.name === 'todos' && ev.target.checked) {
+        //     checkFilter(ev.target.name);
+        // } else {
+        //     setFilters((prev) => ({
+        //         ...prev,
+        //         'todos': false,
+        //         [ev.target.name]: ev.target.checked
+        //     }));
+        // }
     }
 
     async function handleFilter() {
         console.log('Filtrado de productos: ', JSON.stringify(typeProduct), priceFilter);
-        const response = await request_filter_products.get_products_filter(typeProduct, priceFilter);
+        const response = await request_filter_products.get_products_filter();
         //console.log('Respuesta: ', response);
 
         // Si esta marcado todos, muestra todos los productos
-        const types = Object.keys(typeProduct);
-        types.includes("todos") ? setProductsFilter(products.data) : setProductsFilter(response.products);
+        // const types = Object.keys(typeProduct);
+        // types.includes("todos") ? setProductsFilter(products.data) : setProductsFilter(response.products);
         //console.log('Productos filtrados: ', productsFilter);
     }
 
@@ -101,12 +112,10 @@ function Productos() {
 
                     <div className="filter-box">
                         <h6>Categoría</h6>
-                        <input className="form-check-input" type="checkbox" name='todos' value='todos' onChange={onChangeCheckbox} checked={filters.todos} />
-                        <label className='form-check-label ms-2'>Todos</label>
                         {
-                            ["Camisetas", "Sudaderas", "Tazas", "Llaveros"].map((element, index) =>
+                            ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Pósteres"].map((element, index) =>
                                 <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="checkbox" name={element.charAt(0).toLowerCase() + element.slice(1)} value={element.charAt(0).toLowerCase() + element.slice(1)} onChange={onChangeCheckbox} checked={filters[element.toLowerCase()]} />
+                                    <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={onChangeCheckbox} />
                                     <label className="form-check-label">{element}</label>
                                 </div>
                             )
@@ -115,16 +124,14 @@ function Productos() {
 
                     <div className="filter-box">
                         <h6>Valoración</h6>
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" name="rating" />
-                            <label className="form-check-label">{handleValorations(4.0)} De 4 o más</label>
-                        </div>
-
-                        <div className="form-check">
-                            <input className="form-check-input" type="radio" name="rating" />
-                            <label className="form-check-label">{handleValorations(3.0)} De 3 hasta 4</label>
-                        </div>
-
+                        {
+                            ["De 4 o más", "De 3 hasta 4"].map((element, index) =>
+                                <div className="form-check" key={index}>
+                                    <input className="form-check-input" type="radio" name="rating" />
+                                    <label className="form-check-label">{element}</label>
+                                </div>
+                            )
+                        }
                     </div>
 
                     <div className="filter-box">
@@ -141,7 +148,7 @@ function Productos() {
 
                 <div className="col-lg-9">
                     <div className="row">
-                        {productsFilter.map((product, index) =>
+                        {products.map((product, index) =>
                             <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     {product.rebaja > 0 && (
@@ -162,19 +169,22 @@ function Productos() {
                                 </div>
                             </Link>
                         )}
-                        {/* <div className="col-md-3 mb-4">
-                            <div className="card product-card">
-                                <img src="https://via.placeholder.com/250" className="card-img-top" />
-                                <div className="card-body">
-                                    <h6 className="product-title">Sudadera Gaming</h6>
-                                    <div className="rating">⭐⭐⭐⭐☆</div>
-                                    <p className="price">39.99€</p>
-                                    <button className="btn btn-purple w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </div> */}
                     </div>
                 </div>
+            </div>
+
+            {/* PAGINACIÓN */}
+            <div className="shop-pagination-wrapper">
+                <div className="pagination-results">Mostrando 1-12 de 96 productos</div>
+                <nav className="shop-pagination">
+                    <button className="page-nav-btn">&lt;</button>
+                    <button className="page-number active">1</button>
+                    <button className="page-number">2</button>
+                    <button className="page-number">3</button>
+                    <span className="pagination-dots">...</span>
+                    <button className="page-number">8</button>
+                    <button className="page-nav-btn">&gt;</button>
+                </nav>
             </div>
         </div>
     );

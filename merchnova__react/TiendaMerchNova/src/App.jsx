@@ -96,8 +96,8 @@ const applicationRoutes = createBrowserRouter(
 
                   {
                      path: 'Productos',
-                     element: <Productos />,
-                     loader: getAllProducts
+                     element: <Productos />
+                     // loader: getAllProducts
                   },
 
                   {
