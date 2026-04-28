@@ -31,26 +31,36 @@ manage_products_filter.get('/Chosen/:categoria/:slug', async (req, res, next) =>
 
 
 // MUESTRA LOS PRODUCTOS FILTRADOS SEGÚN SU TIPO.
-manage_products_filter.post('/FiltrarProductos', async (req, res, next) => {
+manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
     try {
         //console.log(JSON.stringify(req.body));
-        const types = Object.keys(req.body.dataFilter);
+        //const types = Object.keys(req.body.dataFilter);
+        const { categoria, minPrice, maxPrice, page } = req.query;
+        const LimitProductsForPage = 9;
 
-        //console.log('Tipos: ', types);
+        let parameter = {};
+        categoria === 'todos' ? {} : parameter.categoria = categoria;
 
-        const filterProducts = await mongoose.connection.collection('productos').find().toArray();
 
-        const filter = filterProducts.filter(el => {
-            const category = types.length === 0 || types.includes(el.categoria);
-            const price = (el.precio >= req.body.priceFilter.minimo && el.precio <= req.body.priceFilter.maximo || !req.body.priceFilter.minimo && !req.body.priceFilter.maximo);
+        console.log('Tipos: ', parameter);
 
-            return category && price;
+        const filterProducts = await mongoose.connection.collection('productos').find(parameter)
+            .sort({ nombre: 1 })
+            .limit(LimitProductsForPage)
+            .skip(page === 1 ? 1 : ((parseInt(page) - 1) * LimitProductsForPage))
+            .toArray();
+
+
+        const filter = filterProducts.filter(producto => {
+            const price = (producto.precio >= minPrice && producto.precio <= maxPrice || !minPrice && !maxPrice);
+            return price;
         });
-        //console.log('Nuevos productos con filtro: ', filter);
+        console.log('Nuevos productos con filtro: ', filter);
+        console.log('Productos size: ', filter.length);
 
         res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
     } catch (error) {
-        res.status(200).send({ code: 5, message: error });
+        res.status(200).send({ code: 5, message: error.message });
     }
 });
 
