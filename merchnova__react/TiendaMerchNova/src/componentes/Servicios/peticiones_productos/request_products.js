@@ -33,8 +33,8 @@ export const request_filter_products = {
     },
 
     // Peticion para obtener los productos por filtro
-    get_products_filter: async () => {
-        const request = await fetch('http://localhost:3000/api/products/FiltrarProductos');
+    get_products_filter: async (categories, page) => {
+        const request = await fetch(`http://localhost:3000/api/products/FiltrarProductos?page=${page}&categoria=${categories}`);
         const response = await request.json();
 
         return response;

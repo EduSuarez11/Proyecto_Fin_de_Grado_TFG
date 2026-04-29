@@ -128,6 +128,7 @@
 
 .shop-pagination {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
@@ -145,9 +146,7 @@
 
 .page-number,
 .page-nav-btn {
-  width: 42px;
-  height: 42px;
-
+  text-align: center;
   border: none;
   border-radius: 12px;
 

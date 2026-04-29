@@ -5,9 +5,9 @@ import { request_filter_products } from '../../Servicios/peticiones_productos/re
 
 
 function Productos() {
-    const products = useLoaderData();
     const [typeProduct, setTypeProduct] = useState({});
     const [products, setProducts] = useState();
+    const [totalPages, setTotalPages] = useState();
     const [priceFilter, setPriceFilter] = useState({});
     const [params, setParams] = useSearchParams();
     // const [filters, setFilters] = useState({
@@ -28,28 +28,33 @@ function Productos() {
     // }
 
     const page = parseInt(params.get('page')) || 1;
-    const categories = params.get('categorias') || "todos";
+    const categories = params.get('categoria') || "todos";
 
     useEffect(
         () => {
-            const getProductsByPage = () => {
-                const response = await request_filter_products.get_products_filter();
-                setProducts(response.products);
+            const getProductsByPage = async () => {
+                const response = await request_filter_products.get_products_filter(categories, page);
+                console.log('Respuesta de la peticion: ', response)
+                setProducts(response.data.products);
+                setTotalPages(response.data.totalPages);
             }
+            getProductsByPage();
         }, [page, categories]
     );
 
-    const cambiarPagina = (nuevaPagina) => {
+    const handleSetPage = (nuevaPagina) => {
         // Esto actualiza la URL: /productos?page=2&categories=tazas
-        searchParams.set('page', nuevaPagina);
-        setSearchParams(searchParams);
+        if (nuevaPagina === page) return; // Si la página es la misma, no hacemos nada
+        params.set('page', nuevaPagina);
+        setParams(params);
     };
 
-    const aplicarFiltros = (nuevasCategorias) => {
+    const applicationFilter = (nuevaCategoria) => {
         // nuevasCategorias es un array ['tazas', 'camisetas']
         // Lo convertimos a string para la URL: "tazas,camisetas"
-        searchParams.set('categories', nuevasCategorias.join(','));
-        searchParams.set('page', 1); // Al filtrar, siempre volvemos a la pág 1
+        params.set('categoria', nuevaCategoria);
+        params.set('page', 1); // Al filtrar, siempre volvemos a la pág 1
+        setParams(params);
     }
 
 
@@ -148,43 +153,55 @@ function Productos() {
 
                 <div className="col-lg-9">
                     <div className="row">
-                        {products.map((product, index) =>
-                            <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
-                                <div className="card product-card">
-                                    {product.rebaja > 0 && (
-                                        <div className="ribbon">
-                                            -{product.rebaja}%
-                                        </div>
-                                    )}
-                                    <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
-                                    <div className="card-body">
-                                        <h6 className="title-product">{product.nombre}</h6>
-                                        <div className="rating">
-                                            {handleValorations(product.valoraciones)} {product.valoraciones}
-                                        </div>
+                        {products !== null ?
+                            <>
+                                {
+                                    (products?.map((product, index) =>
+                                        <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
+                                            <div className="card product-card">
+                                                {product.rebaja > 0 && (
+                                                    <div className="ribbon">
+                                                        -{product.rebaja}%
+                                                    </div>
+                                                )}
+                                                <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
+                                                <div className="card-body">
+                                                    <h6 className="title-product">{product.nombre}</h6>
+                                                    <div className="rating">
+                                                        {handleValorations(product.valoraciones)} {product.valoraciones}
+                                                    </div>
 
-                                        <p className="price">{product.precio}</p>
-                                        <button className="btn btn-purple w-100">Ver detalles</button>
-                                    </div>
+                                                    <p className="price">{product.precio}</p>
+                                                    <button className="btn btn-purple w-100">Ver detalles</button>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                <div className="shop-pagination-wrapper">
+                                    <div className="pagination-results">Mostrando 1-12 de 96 productos</div>
+                                    <nav className="shop-pagination">
+                                        <button className="page-nav-btn" disabled={page === 1} onClick={() => handleSetPage(page - 1)} >&lt;</button>
+
+                                        {Array.from({ length: totalPages }).map((_, pos) =>
+                                            <>
+                                                <button className={pos + 1 === page ? "page-number active" : "page-number"} onClick={() => handleSetPage(pos + 1)} >{pos + 1}</button>
+                                                {page + 3 === pos && <span className="pagination-dots">...</span>}
+                                            </>
+                                        )}
+                                        <button className="page-nav-btn" disabled={page === totalPages} onClick={() => handleSetPage(page + 1)} >&gt;</button>
+                                    </nav>
                                 </div>
-                            </Link>
-                        )}
+                            </>
+                            :
+                            <div className="d-flex justify-content-center align-items-center flex-column">
+                                <div className="spinner-border" role="status">
+                                    <span className="sr-only"></span>
+                                </div>
+                                <span>Cargando</span>
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
-
-            {/* PAGINACIÓN */}
-            <div className="shop-pagination-wrapper">
-                <div className="pagination-results">Mostrando 1-12 de 96 productos</div>
-                <nav className="shop-pagination">
-                    <button className="page-nav-btn">&lt;</button>
-                    <button className="page-number active">1</button>
-                    <button className="page-number">2</button>
-                    <button className="page-number">3</button>
-                    <span className="pagination-dots">...</span>
-                    <button className="page-number">8</button>
-                    <button className="page-nav-btn">&gt;</button>
-                </nav>
             </div>
         </div>
     );

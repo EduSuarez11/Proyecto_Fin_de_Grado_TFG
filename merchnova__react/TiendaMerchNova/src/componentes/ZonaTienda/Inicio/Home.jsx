@@ -47,7 +47,7 @@ function Home() {
                         Adquiere camisetas, tazas y accesorios únicos
                     </p>
 
-                    <Link to='/Portal/Productos'>
+                    <Link to='/Portal/Productos?page=1&categoria=todos'>
                         <button className="btn btn-light btn-lg mt-3">Explorar productos</button>
                     </Link>
                 </div>
