@@ -36,29 +36,32 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
         //console.log(JSON.stringify(req.body));
         //const types = Object.keys(req.body.dataFilter);
         const { categoria, minPrice, maxPrice, page } = req.query;
-        const LimitProductsForPage = 9;
 
+        const LimitProductsForPage = 12;
+
+        //console.log('Precios: ', parseInt(minPrice), parseInt(maxPrice))
+        //console.log('Parametros de url: ', JSON.stringify(req.query));
         let parameter = {};
-        categoria === 'todos' ? {} : parameter.categoria = categoria;
+        if (categoria && categoria !== 'todos') {
+            parameter.categoria = categoria
+        }
 
+        if (minPrice !== null) parameter.precio.$gte = parseInt(minPrice); // Mayor
+        if (maxPrice !== null) parameter.precio.$lte = parseInt(maxPrice); // Menor
 
-        console.log('Tipos: ', parameter);
 
         const filterProducts = await mongoose.connection.collection('productos').find(parameter)
             .sort({ nombre: 1 })
             .limit(LimitProductsForPage)
-            .skip(page === 1 ? 1 : ((parseInt(page) - 1) * LimitProductsForPage))
+            .skip((parseInt(page) - 1) * LimitProductsForPage)
             .toArray();
 
+        const total = await mongoose.connection.collection('productos').countDocuments(parameter);
+        const totalPages = Math.ceil(total / LimitProductsForPage);
 
-        const filter = filterProducts.filter(producto => {
-            const price = (producto.precio >= minPrice && producto.precio <= maxPrice || !minPrice && !maxPrice);
-            return price;
-        });
-        console.log('Nuevos productos con filtro: ', filter);
-        console.log('Productos size: ', filter.length);
+        console.log('Productos size: ', filterProducts.length);
 
-        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', products: filter });
+        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', data: { products: filterProducts, totalPages } });
     } catch (error) {
         res.status(200).send({ code: 5, message: error.message });
     }
