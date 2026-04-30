@@ -36,9 +36,7 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
         //console.log(JSON.stringify(req.body));
         //const types = Object.keys(req.body.dataFilter);
         const { categoria, minPrice, maxPrice, page } = req.query;
-
         const LimitProductsForPage = 12;
-
         //console.log('Precios: ', parseInt(minPrice), parseInt(maxPrice))
         //console.log('Parametros de url: ', JSON.stringify(req.query));
         let parameter = {};
@@ -46,9 +44,11 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
             parameter.categoria = categoria
         }
 
-        if (minPrice !== null) parameter.precio.$gte = parseInt(minPrice); // Mayor
-        if (maxPrice !== null) parameter.precio.$lte = parseInt(maxPrice); // Menor
+        if (minPrice && maxPrice && parseInt(minPrice) > 0 && parseInt(maxPrice) > 0) {
+            parameter.precio = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) }
+        }
 
+        console.log(parameter);
 
         const filterProducts = await mongoose.connection.collection('productos').find(parameter)
             .sort({ nombre: 1 })
@@ -58,11 +58,11 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
 
         const total = await mongoose.connection.collection('productos').countDocuments(parameter);
         const totalPages = Math.ceil(total / LimitProductsForPage);
+        //console.log('Productos size: ', filterProducts.length);
 
-        console.log('Productos size: ', filterProducts.length);
-
-        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', data: { products: filterProducts, totalPages } });
+        res.status(200).send({ code: 0, message: 'Productos con filtro obtenidos', data: { products: filterProducts, totalPages, total, limit: LimitProductsForPage } });
     } catch (error) {
+        console.log('Error: ', error);
         res.status(200).send({ code: 5, message: error.message });
     }
 });
