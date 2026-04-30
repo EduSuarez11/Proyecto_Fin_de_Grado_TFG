@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useSearchParams } from 'react-router-dom';
+import { data, Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import './Productos.css';
 import { useEffect, useRef, useState } from 'react';
 import { request_filter_products } from '../../Servicios/peticiones_productos/request_products';
@@ -6,40 +6,40 @@ import { request_filter_products } from '../../Servicios/peticiones_productos/re
 
 function Productos() {
     const [typeProduct, setTypeProduct] = useState({});
-    const [products, setProducts] = useState();
-    const [totalPages, setTotalPages] = useState();
-    const [priceFilter, setPriceFilter] = useState({});
+    const [dataProducts, setDataProducts] = useState({
+        lengthProducts: 0,
+        totalPages: 0,
+        totalProducts: 0,
+        products: []
+    });
+    const [priceFilter, setPriceFilter] = useState({
+        minPrice: 0,
+        maxPrice: 0
+    });
     const [params, setParams] = useSearchParams();
-    // const [filters, setFilters] = useState({
-    //     todos: true,
-    //     camisetas: false,
-    //     sudaderas: false,
-    //     tazas: false,
-    //     llaveros: false
-    // });
-
-    // const checkFilter = (name) => {
-    //     const todos = name === 'todos';
-    //     const camisetas = name === 'camisetas';
-    //     const sudaderas = name === 'sudaderas';
-    //     const tazas = name === 'tazas';
-    //     const llaveros = name === 'llaveros';
-    //     setFilters({ todos, camisetas, sudaderas, tazas, llaveros })
-    // }
+    const [errorPrice, setErrorPrice] = useState('');
 
     const page = parseInt(params.get('page')) || 1;
     const categories = params.get('categoria') || "todos";
+    const minPrice = params.get('minPrice') || 0;
+    const maxPrice = params.get('maxPrice') || 0;
 
     useEffect(
         () => {
             const getProductsByPage = async () => {
-                const response = await request_filter_products.get_products_filter(categories, page);
+                const response = await request_filter_products.get_products_filter(categories, page, minPrice, maxPrice);
                 console.log('Respuesta de la peticion: ', response)
-                setProducts(response.data.products);
-                setTotalPages(response.data.totalPages);
+                setDataProducts({
+                    ...dataProducts,
+                    limit: response.data.limit,
+                    totalPages: response.data.totalPages,
+                    lengthProducts: response.data.summaryProducts,
+                    totalProducts: response.data.total,
+                    products: response.data.products
+                });
             }
             getProductsByPage();
-        }, [page, categories]
+        }, [page, categories, maxPrice, minPrice]
     );
 
     const handleSetPage = (nuevaPagina) => {
@@ -49,42 +49,20 @@ function Productos() {
         setParams(params);
     };
 
-    const applicationFilter = (nuevaCategoria) => {
-        // nuevasCategorias es un array ['tazas', 'camisetas']
-        // Lo convertimos a string para la URL: "tazas,camisetas"
+    const handleFilter = (nuevaCategoria, minPrice, maxPrice) => {
+        if (minPrice > maxPrice) {
+            setErrorPrice('El precio mínimo no puede ser mayor que el de máximo');
+            return;
+        }
+
+        if (minPrice || maxPrice || minPrice !== 0 || maxPrice !== 0) {
+            params.set("minPrice", minPrice);
+            params.set("maxPrice", maxPrice);
+        }
+
         params.set('categoria', nuevaCategoria);
-        params.set('page', 1); // Al filtrar, siempre volvemos a la pág 1
+        params.set('page', 1);
         setParams(params);
-    }
-
-
-    function onChangeCheckbox(ev) {
-        //console.log('Value: ', ev.target.value)
-        setTypeProduct({
-            ...typeProduct,
-            [ev.target.id]: ev.target.value
-        });
-        // Evita que marque la casilla "todos" y las demas casillas a la vez
-        // if (ev.target.name === 'todos' && ev.target.checked) {
-        //     checkFilter(ev.target.name);
-        // } else {
-        //     setFilters((prev) => ({
-        //         ...prev,
-        //         'todos': false,
-        //         [ev.target.name]: ev.target.checked
-        //     }));
-        // }
-    }
-
-    async function handleFilter() {
-        console.log('Filtrado de productos: ', JSON.stringify(typeProduct), priceFilter);
-        const response = await request_filter_products.get_products_filter();
-        //console.log('Respuesta: ', response);
-
-        // Si esta marcado todos, muestra todos los productos
-        // const types = Object.keys(typeProduct);
-        // types.includes("todos") ? setProductsFilter(products.data) : setProductsFilter(response.products);
-        //console.log('Productos filtrados: ', productsFilter);
     }
 
     // Controla las valoraciones
@@ -120,7 +98,7 @@ function Productos() {
                         {
                             ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Pósteres"].map((element, index) =>
                                 <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={onChangeCheckbox} />
+                                    <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={(ev) => setTypeProduct(ev.target.id !== null ? ev.target.id : null)} />
                                     <label className="form-check-label">{element}</label>
                                 </div>
                             )
@@ -142,21 +120,23 @@ function Productos() {
                     <div className="filter-box">
                         <h6>Precio</h6>
                         <div className="price-inputs">
-                            <input type="number" className="form-control" name='minimo' placeholder="Min €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.name]: ev.target.value })} />
+                            <input type="number" className="form-control" name='minPrice' id='minPrice' placeholder="Min €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
                             <span>-</span>
-                            <input type="number" className="form-control" name='maximo' placeholder="Max €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.name]: ev.target.value })} />
+                            <input type="number" className="form-control" name='maxPrice' id='maxPrice' placeholder="Max €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
                         </div>
 
-                        <button className="btn btn-purple w-100 mt-2" onClick={handleFilter} >Aplicar</button>
+                        {errorPrice !== '' && <span className='text-danger'>{errorPrice}</span>}
+
+                        <button className="btn btn-purple w-100 mt-2" onClick={() => handleFilter((typeProduct === null ? "todos" : typeProduct), priceFilter.minPrice, priceFilter.maxPrice)} >Aplicar</button>
                     </div>
                 </div>
 
                 <div className="col-lg-9">
                     <div className="row">
-                        {products !== null ?
+                        {dataProducts.products !== null ?
                             <>
                                 {
-                                    (products?.map((product, index) =>
+                                    (dataProducts.products?.map((product, index) =>
                                         <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`} className="col-md-3 mb-4" key={index}>
                                             <div className="card product-card">
                                                 {product.rebaja > 0 && (
@@ -178,17 +158,17 @@ function Productos() {
                                         </Link>
                                     ))}
                                 <div className="shop-pagination-wrapper">
-                                    <div className="pagination-results">Mostrando 1-12 de 96 productos</div>
+                                    <div className="pagination-results">{Math.min(page * dataProducts?.limit, dataProducts?.totalProducts)} de {dataProducts?.totalProducts} productos</div>
                                     <nav className="shop-pagination">
                                         <button className="page-nav-btn" disabled={page === 1} onClick={() => handleSetPage(page - 1)} >&lt;</button>
 
-                                        {Array.from({ length: totalPages }).map((_, pos) =>
+                                        {Array.from({ length: dataProducts.totalPages }).map((_, pos) =>
                                             <>
                                                 <button className={pos + 1 === page ? "page-number active" : "page-number"} onClick={() => handleSetPage(pos + 1)} >{pos + 1}</button>
                                                 {page + 3 === pos && <span className="pagination-dots">...</span>}
                                             </>
                                         )}
-                                        <button className="page-nav-btn" disabled={page === totalPages} onClick={() => handleSetPage(page + 1)} >&gt;</button>
+                                        <button className="page-nav-btn" disabled={page === dataProducts.totalPages} onClick={() => handleSetPage(page + 1)} >&gt;</button>
                                     </nav>
                                 </div>
                             </>
