@@ -43,7 +43,7 @@
 }
 
 .btn-purple:hover {
-    opacity: 0.9;
+    background:linear-gradient(to right,#7c2ff79f,#c778fb9f);
 }
 
 

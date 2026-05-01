@@ -103,7 +103,6 @@ function Header() {
                     </button>
 
                     {showButtonsSession(route.pathname) ?
-
                         <div className="collapse navbar-collapse" id="navbarContent">
                             <form className="d-flex mx-auto search-bar">
                                 <input className="form-control me-2" type="search" placeholder="Buscar productos..." />
@@ -152,30 +151,20 @@ function Header() {
 
             <nav className="subnav">
                 <div className="subnav-container">
-                    <div className="subnav-item has-dropdown" onMouseEnter={handleShowPanel} onMouseLeave={handleHiddenPanel} >Productos</div>
-
-                    {
-                        showPanel &&
+                    <Link to='/Portal/Productos?page=1&categoria=todos'>
+                        <div className="subnav-item has-dropdown" onMouseEnter={handleShowPanel} onMouseLeave={handleHiddenPanel}>Productos</div>
+                    </Link>
+                    {showPanel &&
                         <div className="menu-panel" onMouseEnter={handleShowPanelFromInside} onMouseLeave={handleHiddenPanel}>
                             <div className="grid-panel">
-
-                                {
-                                    categories.map((el, pos) =>
-                                        <div className="category" key={pos}>{el.nombreCat}</div>
-                                    )
-                                }
-                                {/* <div className="category">Camisetas</div>
-                                <div className="category">Sudaderas</div>
-                                <div className="category">Tazas</div>
-                                <div className="category">Llaveros</div>
-
-                                <div className="category">Posters</div>
-                                <div className="category">Peluches</div> */}
+                                {categories.map((el, pos) =>
+                                    <Link className="text-decoration-none" style={{color: 'inherit'}} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`}>
+                                        <div className="category fw-medium" key={pos}>{el.nombreCat}</div>
+                                    </Link>
+                                )}
                             </div>
                         </div>
-
                     }
-
 
                     <div className="subnav-item">Ofertas</div>
 

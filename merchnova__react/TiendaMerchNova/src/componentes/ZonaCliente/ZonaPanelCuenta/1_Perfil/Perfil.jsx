@@ -15,12 +15,13 @@ function PerfilCuenta() {
 
 
     const [validateProfile, setValidateProfile] = useState({
-        nombre: false,
-        telefono: false,
-        codigoPostal: false,
-        domicilio: false,
-        municipio: false,
-        provincia: false,
+        nombre: clientData.nombreCompleto !== null,
+        telefono: clientData.cuenta.telefono !== null,
+        codigoPostal: clientData.direcciones[0]?.codigoPostal ? true : false,
+        domicilio: clientData.direcciones[0]?.domicilio ? true : false,
+        municipio: clientData.direcciones[0]?.municipio ? true : false,
+        provincia: clientData.direcciones[0]?.provincia ? true : false,
+        pais: clientData.direcciones[0]?.pais ? true : false,
         sobreMi: false
     })
 
@@ -28,9 +29,10 @@ function PerfilCuenta() {
     const validators = {
         nombre: (value) => value.length >= 6 && value.length <= 50,
         telefono: (value) => /^\d{9}$/.test(value),
-        codigoPostal: (value) => /^[a-zA-Z0-9\s-]{3,12}$/.test(value),
+        codigoPostal: (value) => /^[a-zA-Z0-9\s-]{3,8}$/.test(value),
         domicilio: (value) => /^[a-zA-Z0-9.,\s\-#°ª]{8,60}$/i.test(value),
         municipio: (value) => value.length >= 2 && value.length <= 20,
+        pais: (value) => value === 'Ninguno' ? false : true,
         provincia: (value) => value.length >= 2 && value.length <= 20,
         sobreMi: (value) => value.length <= 200
     }
@@ -44,6 +46,8 @@ function PerfilCuenta() {
 
 
     function onChangeInputProfile(e) {
+        console.log('Validado perfil: ', validateProfile);
+        console.log('Form perfil: ', e.target.name, e.target.value);
         setFormProfile(() => ({
             ...formProfile,
             [e.target.name]: e.target.value
@@ -83,9 +87,9 @@ function PerfilCuenta() {
     return (
         <div className="card p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0 fw-bold">Mi Perfil</h2>
+                <h2 className="mb-0 fw-bold" style={{color: '#6a0dad'}}>Mi Perfil</h2>
                 <div className="text-end">
-                    <span className="badge bg-success mb-1">Tipo de cuenta: {clientData.cuenta.tipo}</span>
+                    <span className="badge bg-info mb-1 text-black fw-medium">Tipo de cuenta: {clientData.cuenta.tipo}</span>
                 </div>
             </div>
 
@@ -216,7 +220,7 @@ function PerfilCuenta() {
                                         formProfile.codigoPostal.length > 0 ?
                                             <span className={validateProfile.codigoPostal ? "text-success small" : "text-danger small"}>{validateProfile.codigoPostal ? '✅ Código postal válido' : '❌ Código postal inválido'}</span>
                                             :
-                                            <span className="small text-danger">* Código Postal obligatorio</span>
+                                            <span className="small text-danger">* CP obligatorio</span>
                                     )
                                 }
                             </div>
@@ -271,9 +275,12 @@ function PerfilCuenta() {
                         <div className="mb-4">
                             <label className="form-label fw-semibold">País</label>
                             <select type="text" name="pais" className="form-control custom-input" disabled={!editProfile}
-                                onChange={onChangeInputProfile} defaultValue={clientData.direcciones[0]?.pais || ''}
+                                onChange={(ev) => {
+                                    onChangeInputProfile(ev)
+                                    validateField('pais', ev.target.value);
+                                }} defaultValue={clientData.direcciones[0]?.pais || ''}
                             >
-                                <option>Selecciona tu país...</option>
+                                <option value='Ninguno'>Selecciona tu país...</option>
                                 {
                                     countries.map((country, index) =>
                                         <option key={index}>
@@ -361,11 +368,12 @@ function PerfilCuenta() {
                                     </button>
                                     :
                                     <>
-                                        <button type="button" className="btn btn-outline-secondary me-2 px-4" onClick={() => setEditProfile(false)}>
+                                        <button type="button" className="btn btn-cancel me-2 px-4" onClick={() => setEditProfile(false)}>
                                             Cancelar
                                         </button>
 
-                                        <button type="button" className="btn btn-purple px-4 fw-bold" onClick={handleSubmitProfile}>
+                                        <button type="button" className="btn btn-purple px-4 fw-bold" onClick={handleSubmitProfile} 
+                                        disabled={!validateProfile.codigoPostal || !validateProfile.municipio || !validateProfile.domicilio || !validateProfile.provincia || !validateProfile.nombre || !validateProfile.pais || !validateProfile.telefono}  >
                                             Guardar cambios
                                         </button>
                                     </>

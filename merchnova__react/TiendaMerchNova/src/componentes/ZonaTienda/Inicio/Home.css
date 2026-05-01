@@ -4,9 +4,23 @@
     color: #7b2ff7;
 }
 
+
+/* PARTE PRINCIPAL */
 .hero {
-    height: 500px;
-    background: linear-gradient(135deg, #7b2ff7, #c778fb);
+    height: 600px;
+    /* background: linear-gradient(135deg, #7b2ff7, #c778fb); */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/banner/banner.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.text-title {
+    color: #7b2ff7;
+}
+
+.text-paragraph {
+    color: #c778fb;
 }
 
 .category-card {
@@ -26,13 +40,13 @@
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
-.btn-purple {
-    background: #7b2ff7;
+.btn-products {
+    background:linear-gradient(to right,#7b2ff7,#c778fb);
     color: white;
 }
 
-.btn-purple:hover {
-    background: #5a1edb;
+.btn-products:hover {
+    background:linear-gradient(to right,#6c18f3,#b155ed);
     color: white;
 }
 

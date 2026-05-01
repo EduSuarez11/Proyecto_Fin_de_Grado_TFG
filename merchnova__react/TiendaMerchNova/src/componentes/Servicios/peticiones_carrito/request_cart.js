@@ -1,10 +1,10 @@
 export const request_cart = {
     // Peticion para carrito con persistencia
-    cart_persistence: async ({ clientData, order, quantity, gastosEnvio }, route) => {
+    cart_persistence: async ({ clientData, order, quantity, gastosEnvio, talla }, route) => {
         const request = await fetch(`http://localhost:3000/api/cart/Persistencia${route}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ client: clientData, order, quantity, gastosEnvio })
+            body: JSON.stringify({ client: clientData, order, quantity, gastosEnvio, talla })
         });
 
         const response = await request.json();

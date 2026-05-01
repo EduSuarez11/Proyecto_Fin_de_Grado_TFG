@@ -1,3 +1,4 @@
+/* ------------ NAVBAR PRINCIPAL ------------ */
 .logo-navbar {
     height: 50px;
     width: auto;
@@ -23,7 +24,7 @@
 }
 
 .navbar-merchnova {
-    background: linear-gradient(90deg, #6a0dad, #8a2be2);
+    background: linear-gradient(90deg, #760fbe, #b36ce2);
 }
 
 .user-avatar-btn {
@@ -47,31 +48,8 @@
     justify-content: center;
 }
 
-.subnav {
-    width: 100%;
-    background: linear-gradient(to right, #8311d4, #892be2d7);
-    padding: 10px 0;
-}
 
-.subnav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-}
-
-.subnav-item {
-    color: white;
-    font-weight: 500;
-    font-size: 16px;
-    cursor: pointer;
-    position: relative;
-    padding: 5px 10px;
-    transition: all 0.3s ease;
-}
-
-
+/* ------------ NAVBAR SECUNDARIO ------------ */
 .subnav-item:hover {
     opacity: 0.8;
 }
@@ -99,7 +77,8 @@
 /* CONTENEDOR BASE */
 .subnav {
     width: 100%;
-    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    /* background: linear-gradient(100deg, #760fbe, #b36ce2); */
+    background: linear-gradient(to right, #750fbedb, #b36ce2db);
     padding: 10px 0;
 }
 
@@ -129,9 +108,9 @@
     width: 500px;
     padding: 20px;
     color: white;
-    background: linear-gradient(to right, #6a0dad, #8a2be2);
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     z-index: 100;
 }
@@ -145,7 +124,7 @@
 
 .grid-panel {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
 }
 
@@ -160,7 +139,7 @@
 }
 
 .category:hover {
-    background: linear-gradient(to right, #6a0dad, #8a2be2);
-    color: white;
+    background:linear-gradient(to right,#6c18f3,#b155ed);
+	color: white;
     transform: translateY(-2px);
 }

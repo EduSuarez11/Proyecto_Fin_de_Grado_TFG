@@ -90,50 +90,54 @@ function Productos() {
                 <span className='current-product'>Tienda</span>
             </nav>
             <div className="row">
-                <div className="col-lg-3">
-                    <h5 className="filter-title">Filtros</h5>
+                <div className="col-lg-3 mb-5">
+                    <div className='filter-sticky'>
+                        {/* FILTROS */}
+                        <h5 className="filter-title">Filtros</h5>
 
-                    <div className="filter-box">
-                        <h6>Categoría</h6>
-                        {
-                            ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Pósteres"].map((element, index) =>
-                                <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={(ev) => setTypeProduct(ev.target.id !== null ? ev.target.id : null)} />
-                                    <label className="form-check-label">{element}</label>
-                                </div>
-                            )
-                        }
-                    </div>
-
-                    <div className="filter-box">
-                        <h6>Valoración</h6>
-                        {
-                            ["De 4 o más", "De 3 hasta 4"].map((element, index) =>
-                                <div className="form-check" key={index}>
-                                    <input className="form-check-input" type="radio" name="rating" />
-                                    <label className="form-check-label">{element}</label>
-                                </div>
-                            )
-                        }
-                    </div>
-
-                    <div className="filter-box">
-                        <h6>Precio</h6>
-                        <div className="price-inputs">
-                            <input type="number" className="form-control" name='minPrice' id='minPrice' placeholder="Min €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
-                            <span>-</span>
-                            <input type="number" className="form-control" name='maxPrice' id='maxPrice' placeholder="Max €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
+                        <div className="filter-box">
+                            <h6>Categoría</h6>
+                            {
+                                ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Pósteres"].map((element, index) =>
+                                    <div className="form-check" key={index}>
+                                        <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={(ev) => setTypeProduct(ev.target.id !== null ? ev.target.id : null)} />
+                                        <label className="form-check-label">{element}</label>
+                                    </div>
+                                )
+                            }
                         </div>
 
-                        {errorPrice !== '' && <span className='text-danger'>{errorPrice}</span>}
+                        <div className="filter-box">
+                            <h6>Valoración</h6>
+                            {
+                                ["De 4 o más", "De 3 hasta 4"].map((element, index) =>
+                                    <div className="form-check" key={index}>
+                                        <input className="form-check-input" type="radio" name="rating" />
+                                        <label className="form-check-label">{element}</label>
+                                    </div>
+                                )
+                            }
+                        </div>
 
-                        <button className="btn btn-purple w-100 mt-2" onClick={() => handleFilter((typeProduct === null ? "todos" : typeProduct), priceFilter.minPrice, priceFilter.maxPrice)} >Aplicar</button>
+                        <div className="filter-box">
+                            <h6>Precio</h6>
+                            <div className="price-inputs">
+                                <input type="number" className="form-control" name='minPrice' id='minPrice' placeholder="Min €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
+                                <span>-</span>
+                                <input type="number" className="form-control" name='maxPrice' id='maxPrice' placeholder="Max €" onChange={(ev) => setPriceFilter({ ...priceFilter, [ev.target.id]: ev.target.value })} />
+                            </div>
+
+                            {errorPrice !== '' && <span className='text-danger'>{errorPrice}</span>}
+
+                            <button className="btn btn-filter w-100 mt-2 fw-medium" onClick={() => handleFilter((typeProduct === null ? "todos" : typeProduct), priceFilter.minPrice, priceFilter.maxPrice)} >Aplicar</button>
+                        </div>
                     </div>
                 </div>
 
+                {/* PRODUCTOS A MOSTRAR */}
                 <div className="col-lg-9">
                     <div className="row">
-                        {dataProducts.products !== null ?
+                        {dataProducts.products  ?
                             <>
                                 {
                                     (dataProducts.products?.map((product, index) =>
@@ -144,7 +148,7 @@ function Productos() {
                                                         -{product.rebaja}%
                                                     </div>
                                                 )}
-                                                <img src={`http://localhost:3000${product.imagen}`} className="card-img-top" />
+                                                <img src={`http://localhost:3000${product.imagen}`} className="card-img-top p-2" />
                                                 <div className="card-body">
                                                     <h6 className="title-product">{product.nombre}</h6>
                                                     <div className="rating">
@@ -152,12 +156,12 @@ function Productos() {
                                                     </div>
 
                                                     <p className="price">{product.precio}</p>
-                                                    <button className="btn btn-purple w-100">Ver detalles</button>
+                                                    <button className="btn btn-products fw-medium w-100">Ver detalles</button>
                                                 </div>
                                             </div>
                                         </Link>
                                     ))}
-                                <div className="shop-pagination-wrapper">
+                                <div className="shop-pagination-wrapper mb-4">
                                     <div className="pagination-results">{Math.min(page * dataProducts?.limit, dataProducts?.totalProducts)} de {dataProducts?.totalProducts} productos</div>
                                     <nav className="shop-pagination">
                                         <button className="page-nav-btn" disabled={page === 1} onClick={() => handleSetPage(page - 1)} >&lt;</button>

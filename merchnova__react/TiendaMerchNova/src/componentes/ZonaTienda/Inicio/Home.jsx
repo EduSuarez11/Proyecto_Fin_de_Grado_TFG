@@ -2,6 +2,7 @@ import { Link, useLoaderData, useLocation } from 'react-router-dom';
 import './Home.css';
 import { useState } from 'react';
 import MensajeSuccess from '../../global_components/MensajeComponent/MensajeSuccess';
+import ProductosValorados from './Carrusel_productos/ProductosValorados';
 
 
 function Home() {
@@ -33,68 +34,53 @@ function Home() {
     //console.log('Productos en Home: ', products);
     return (
         <>
-            <div className="hero text-center text-white d-flex align-items-center">
+            <div className="hero text-center d-flex align-items-center">
                 {
                     loginSuccess &&
                     <MensajeSuccess msg={loginSuccess} setState={setLoginSuccess} />
                 }
                 <div className="container">
-                    <h1 className="display-4 fw-bold">
-                        Compra y vende tu Merch Personalizado
-                    </h1>
+                    <h1 className="display-4 fw-bold text-title">Compra y vende tu Merch Personalizado</h1>
 
-                    <p className="lead">
-                        Adquiere camisetas, tazas y accesorios únicos
-                    </p>
+                    <p className="lead fw-semibold text-paragraph">Adquiere camisetas, tazas y accesorios únicos</p>
 
                     <Link to='/Portal/Productos?page=1&categoria=todos'>
-                        <button className="btn btn-light btn-lg mt-3">Explorar productos</button>
+                        <button className="btn btn-products fw-semibold btn-lg mt-3">Explorar productos</button>
                     </Link>
                 </div>
             </div>
 
             <div className="py-5 bg-light text-center">
                 <div className="container">
-                    <h2 className="mb-5">Categorías</h2>
+                    <h2 className="mb-2 text-title fw-bold">Categorías</h2>
+                    <p className='mb-4 mt-3 fw-semibold'>
+                        Disponemos de varías categorías de productos en nuestra tienda como por ejemplo: camisetas, tazas,
+                        sudaderas, peluches y otros productos. Ven y descubre las maravillas que encontrarás en nuestra tienda que
+                        también hay productos que en alguna vez reciben descuentos por tiempo limitado. ¡Así que te no te pierdas las
+                        mejores oportunidades!
+                    </p>
                     <div className="row g-4">
-                        {
-                            [
-                                { name: "Ropa", icon: '👕' },
-                                { name: "Tazas", icon: '☕' },
-                                { name: "Accesorios", icon: '🎒' },
-                            ].map((element, index) =>
-                                <div className="col-md-4" key={index}>
-                                    <div className="category-card p-4">
-                                        <h1>{element.icon}</h1>
-                                        <p>{element.name}</p>
-                                    </div>
+                        {[
+                            { name: "Ropa", icon: 'fa-solid fa-shirt' }, { name: "Tazas", icon: 'fa-solid fa-mug-saucer' }, { name: "Accesorios", icon: 'fa-solid fa-plus' },
+                        ].map((element, index) =>
+                            <div className="col-md-4" key={index}>
+                                <div className="category-card p-4">
+                                    <h1 className='mb-3'><i className={element.icon}></i></h1>
+                                    <p className='text-paragraph fw-medium'>{element.name}</p>
                                 </div>
-                            )
-                        }
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
             <div className="py-5">
                 <div className="container">
-                    <h2 className="text-center mb-5">Productos destacados</h2>
-                    <div className="row g-4">
-                        {products.data.map((product, index) =>
-                            <div className="col-md-3" key={index}>
-                                <div className="card product-card">
-                                    <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} className="card-img-top" />
+                    <h2 className="text-center mb-3 fw-bold text-title">Productos destacados</h2>
+                    <p className="mb-4 text-paragraph text-center fw-medium">Aquí puedes encontrar los productos más destacados en la tienda.</p>
 
-                                    <div className="card-body text-center">
-                                        <h5 className="card-title">{product.nombre}</h5>
-                                        <p>{product.precio}</p>
-                                        <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>
-                                            <button className="btn btn-purple">Ver Detalles</button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    <ProductosValorados products={products}/>
+                    
                 </div>
             </div>
 

@@ -79,11 +79,3 @@
 .btn-purple:hover {
     opacity: 0.9;
 }
-
-.active-link {
-    background-color: rgba(123, 47, 247, 0.1);
-    color: #7b2ff7;
-    font-weight: bold;
-    border-radius: 8px;
-    padding-left: 20px;
-}

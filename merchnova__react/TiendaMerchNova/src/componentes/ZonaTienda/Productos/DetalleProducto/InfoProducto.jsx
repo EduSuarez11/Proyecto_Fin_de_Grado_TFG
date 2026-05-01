@@ -1,5 +1,5 @@
-import { Link, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import './InfoProducto.css';
+import { Link, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import useGlobalState from '../../../../global_state/globalState';
 import { startTransition, useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
@@ -11,6 +11,7 @@ function InfoProducto() {
     const { order, setOrder, clientData, setClientData } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
+    const [talla, setTalla] = useState('');
     const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
     //console.log('Producto: ', resp);
 
@@ -46,7 +47,7 @@ function InfoProducto() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         if (clientData != null) {
-            const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio }, '/Agregar');
+            const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio, talla:talla }, '/Agregar');
 
             if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
 
@@ -108,9 +109,9 @@ function InfoProducto() {
                             </div>
                         }
                         <div className={resp.product.rebaja > 0 ? 'product-price text-decoration-line-through text-secondary opacity-price' : 'product-price mb-4'}>
-                            <span className='text-black'>{resp.product.rebaja === 0 && 'Por unidad: ' }</span>
+                            <span className='text-black'>{resp.product.rebaja === 0 && 'Por unidad: '}</span>
                             {resp.product.precio}€
-                            </div>
+                        </div>
                     </div>
 
 
@@ -122,7 +123,7 @@ function InfoProducto() {
                             <div className="sizes">
                                 {
                                     resp.product.talla.map((element, index) =>
-                                        <button className="size-btn" key={index}>{element}</button>
+                                        <div className={talla === element ? "talla-btn-active" : "size-btn"} id={element} onClick={(ev) => setTalla(element)} key={index}>{element}</div>
                                     )
                                 }
                             </div>
@@ -166,24 +167,6 @@ function InfoProducto() {
                         )
                     }
                 </div>
-                {/* <div className="related-card">
-                        <img src="/images/product2.jpg" alt="producto" />
-                        <h3>Camiseta 2</h3>
-                        <p>29.99€</p>
-                    </div>
-
-                    <div className="related-card">
-                        <img src="/images/product3.jpg" alt="producto" />
-                        <h3>Camiseta 3</h3>
-                        <p>29.99€</p>
-                    </div>
-
-                    <div className="related-card">
-                        <img src="/images/product4.jpg" alt="producto" />
-                        <h3>Camiseta 4</h3>
-                        <p>29.99€</p>
-                    </div> */}
-
             </div>
         </div>
     );

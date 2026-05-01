@@ -64,11 +64,20 @@
 
 .size-btn {
     padding: 10px 15px;
-    color: black;
     border: 2px solid #c778fb;
     background: white;
     border-radius: 6px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.talla-btn-active {
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
+    padding: 10px 15px;
+    border: 2px solid #c778fb;
+    border-radius: 6px;
+    cursor: default;
     transition: 0.2s;
 }
 

@@ -6,6 +6,7 @@ import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart
 function Item() {
     const { clientData, setClientData, order, setOrder } = useGlobalState();
 
+    
     async function deleteOnCart({ item }) {
         if (clientData != null) {
             const newCartAfter = await request_cart.cart_persistence({ clientData, order: item.producto, quantity: item.quantity }, '/Eliminar');
@@ -56,13 +57,13 @@ function Item() {
                                                 <img src={`http://localhost:3000${item.product.imagen}`} alt="producto" />
 
                                                 <div className="item-info">
-                                                    <h3>{item.product.nombre}</h3>
-                                                    <p>Talla: M</p>
+                                                    <h3 className='text-title fw-bold'>{item.product.nombre}</h3>
+                                                    <p>Talla: {item.product.talla} </p>
                                                     <p className="item-price">{item.product.precio} €</p>
                                                 </div>
 
                                                 <div className="d-flex align-items-center gap-2">
-                                                    <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() =>  updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
+                                                    <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity - 1 })} style={{ width: "32px", height: "32px" }}>−</button>
                                                     <span className="fw-semibold" style={{ minWidth: "20px", textAlign: "center" }}>
                                                         {item.quantity}
                                                     </span>
@@ -85,8 +86,8 @@ function Item() {
                                         <img src={`http://localhost:3000${item.producto.imagen}`} alt="producto" />
 
                                         <div className="item-info">
-                                            <h3>{item.producto.nombre}</h3>
-                                            <p>Talla: M</p>
+                                            <h3 className='text-title fw-bold'>{item.producto.nombre}</h3>
+                                            <p><strong>Talla: </strong>{item.producto.talla.join(', ')}</p>
                                             <p className="item-price">{item.producto.precio}</p>
                                         </div>
 
@@ -150,22 +151,17 @@ function Item() {
                     (
                         clientData.carrito.itemsPedido.length != 0 &&
                         <div className="cart-summary">
-                            <h2>Resumen</h2>
+                            <h2 className='text-title fw-bold mb-3'>Resumen</h2>
 
                             <div className="summary-line">
                                 <span>Subtotal</span>
-                                <span>
-                                    {Math.round(subtotal * 100) / 100} €
-                                    {/* <span>{clientData.carrito.producto.precio * clientData.carrito.quantity} €</span> */}
-                                </span>
+                                <span>{Math.round(subtotal * 100) / 100} €</span>
                             </div>
 
                             <div className="summary-line">
                                 <span>Envío</span>
-                                <span>{order.gastosEnvio}</span>
+                                <span>{order.gastosEnvio} €</span>
                             </div>
-
-                            <hr />
 
                             <div className="summary-total">
                                 <span>Total</span>
