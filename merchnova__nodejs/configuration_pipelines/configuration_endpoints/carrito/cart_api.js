@@ -18,7 +18,7 @@ async function findProduct(client, order) {
 
 manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
     try {
-        const { client, order, quantity, gastosEnvio } = req.body;
+        const { client, order, quantity, gastosEnvio, talla } = req.body;
         //console.log(order, '--------', gastosEnvio);
         //console.log(req.body);
         const find = await findProduct(client, order);
@@ -28,7 +28,9 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
             const cantidad = item.quantity || 0;
             return total + (precio * cantidad);
         }, 0);
-
+        
+        order.talla = [talla]
+        
         const nuevoItemPrecio = (order.precio * quantity);
         subtotalPrice += nuevoItemPrecio;
         subtotalPrice = Math.round(subtotalPrice * 100) / 100;
@@ -45,11 +47,14 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
                         'carrito.gastosEnvio': gastosEnvio,
                         'carrito.subtotal': subtotalPrice,
                         'carrito.total': subtotalPrice + gastosEnvio
+                    },
+                    $push: {
+                        'carrito.itemsPedido.$.producto.talla': order.talla
                     }
                 },
                 { returnDocument: "after" }
             );
-            console.log('Cantidad actualizada: ', updateData);
+            //console.log('Cantidad actualizada: ', updateData);
         } else {
             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 { 'cuenta.email': client.cuenta.email, },

@@ -21,7 +21,7 @@ manage_products.get('/Productos', async (req, res, next) => {
 // OBTENER 4 PRODUCTOS PARA MOSTRAR EN EL HOME
 manage_products.get('/Productos/Home', async (req, res, next) => {
     try {
-        const products = await mongoose.connection.collection('productos').find().sort({ precio: -1 }).limit(4).toArray();
+        const products = await mongoose.connection.collection('productos').find().sort({ valoraciones: -1 }).limit(8).toArray();
 
         if (!products) throw new Error('Productos no encontrados en la base de datos');
 
