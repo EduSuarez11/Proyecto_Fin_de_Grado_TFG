@@ -28,14 +28,13 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
             const cantidad = item.quantity || 0;
             return total + (precio * cantidad);
         }, 0);
-        
-        order.talla = [talla]
-        
+
+
         const nuevoItemPrecio = (order.precio * quantity);
         subtotalPrice += nuevoItemPrecio;
         subtotalPrice = Math.round(subtotalPrice * 100) / 100;
 
-        //console.log('Subtotal: ', subtotalPrice);
+        console.log('Talla: ', talla);
 
         let updateData;
         if (find) {
@@ -49,13 +48,14 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
                         'carrito.total': subtotalPrice + gastosEnvio
                     },
                     $push: {
-                        'carrito.itemsPedido.$.producto.talla': order.talla
+                        'carrito.itemsPedido.$.producto.talla': talla
                     }
                 },
                 { returnDocument: "after" }
             );
             //console.log('Cantidad actualizada: ', updateData);
         } else {
+            order.talla = [talla];
             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
                 { 'cuenta.email': client.cuenta.email, },
                 {
@@ -100,7 +100,7 @@ manage_cart.post('/Persistencia/Eliminar', async (req, res, next) => {
             }
             return sum + (item.producto.precio * item.quantity);
         }, 0);
-        
+
         const subtotalRound = Math.round(subtotal * 100) / 100;
 
         let deleteProductCart;
@@ -136,12 +136,15 @@ manage_cart.post('/Persistencia/Actualizar', async (req, res, next) => {
 
         const find = findProduct(client, order);
 
+        // Si actualiza mediante el carrito, se añadira la última talla que haya elegido (en un mismo producto)
+        const lastSize = order.talla.slice(-1)[0];
+
         // Calcular el subtotal
         const subtotal = client.carrito.itemsPedido.reduce((sum, item) => {
             const cantidadActual = item.producto.nombre === order.nombre ? quantity : item.quantity;
             return sum + (item.producto.precio * cantidadActual);
         }, 0);
-        
+
         const subtotalRound = Math.round(subtotal * 100) / 100;
 
         let updateProductCart;
@@ -154,17 +157,18 @@ manage_cart.post('/Persistencia/Actualizar', async (req, res, next) => {
                         'carrito.gastosEnvio': client.carrito.gastosEnvio,
                         'carrito.subtotal': subtotalRound,
                         'carrito.total': subtotalRound + client.carrito.gastosEnvio
-                    }
+                    },
+                    $push: { 'carrito.itemsPedido.$.producto.talla': lastSize }
                 },
-                { returnDocument: "after" }
+        { returnDocument: "after" }
             )
         }
 
-        res.status(200).send({ code: 0, message: 'Producto actualizado en el carrito', data: updateProductCart });
+res.status(200).send({ code: 0, message: 'Producto actualizado en el carrito', data: updateProductCart });
     } catch (error) {
-        console.log('Error en persistencia: ', error)
-        res.status(200).send({ code: 7, message: error });
-    }
+    console.log('Error en persistencia: ', error)
+    res.status(200).send({ code: 7, message: error });
+}
 });
 
 module.exports = manage_cart;

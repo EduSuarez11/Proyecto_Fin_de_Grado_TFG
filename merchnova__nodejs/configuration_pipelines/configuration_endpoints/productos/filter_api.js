@@ -48,7 +48,7 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
             parameter.precio = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) }
         }
 
-        console.log(parameter);
+        //console.log(parameter);
 
         const filterProducts = await mongoose.connection.collection('productos').find(parameter)
             .sort({ nombre: 1 })
