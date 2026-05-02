@@ -42,8 +42,8 @@ function PanelClientes() {
 
                 {/* TABS */}
                 <div className="orders-tabs">
-                    <button className="tab-btn active" onClick={() => setShowOrderCompleted(true)} >En curso<span className="tab-counter" >{getTotalPendingOrders()}</span></button>
-                    <button className="tab-btn" onClick={() => setShowOrderCompleted(false)} >Finalizados<span className="tab-counter" >{getTotalCompletedOrders()}</span></button>
+                    <button className={showOrderCompleted ? "tab-btn active" : "tab-btn"} onClick={() => setShowOrderCompleted(true)} >En curso<span className="tab-counter" >{getTotalPendingOrders()}</span></button>
+                    <button className={!showOrderCompleted ? "tab-btn active" : "tab-btn"} onClick={() => setShowOrderCompleted(false)} >Finalizados<span className="tab-counter" >{getTotalCompletedOrders()}</span></button>
                 </div>
 
                 {/* LISTADO PEDIDOS */}
@@ -67,8 +67,9 @@ function PanelClientes() {
                                     </div>
 
                                     <div className="customer-box">
-                                        <strong>Cliente:</strong> {client.nombreCompleto}
-                                        <span>{client.cuenta.email}</span>
+                                        <strong className='text-decoration-underline'>Cliente</strong>
+                                        <span><strong className='text-name'>Nombre:</strong> {client.nombreCompleto}</span>
+                                        <span><strong className='text-name'>Email:</strong> {client.cuenta.email}</span>
                                     </div>
 
                                     <div className="order-summary">
@@ -89,7 +90,7 @@ function PanelClientes() {
                                     </div>
 
                                     <div className="order-actions">
-                                        <button className="btn btn-outline-purple" onClick={() => setOrder(pedido)} data-bs-toggle="modal" data-bs-target={`#orderDetails`} >Ver detalles</button>
+                                        <button className="btn btn-outline-purple" onClick={() => setOrder(pedido)} data-bs-toggle="modal" data-bs-target='#orderDetails' >Ver detalles</button>
                                         {showOrderCompleted && <button className="btn btn-purple">Actualizar estado</button>}
                                     </div>
                                 </div>
@@ -102,10 +103,78 @@ function PanelClientes() {
                             <p>Actualmente no hay pedidos en esta sección.</p>
                             <button className="btn btn-outline-purple">Actualizar listado</button>
                         </div>
-                    )
-                    }
-                    <DetallesPedido order={order} modalId={`orderDetails`}/>
-                    
+                    )}
+
+                    <div className="modal" id='orderDetails' tabIndex="-1" aria-hidden="true">
+
+                        <div className="modal-dialog modal-dialog-centered modal-lg">
+                            <div className="modal-content order-modal">
+                                {/* header */}
+                                <div className="modal-header border-0 pb-2">
+                                    <div>
+                                        <h4 className="fw-bold mb-1">Detalle del pedido</h4>
+                                        <span className="order-modal-id">Pedido #{order?._id}</span>
+                                    </div>
+
+                                    <button className="btn-close" data-bs-dismiss="modal" />
+                                </div>
+
+                                {/* body */}
+                                <div className="modal-body">
+                                    <div className="order-products-list">
+                                        {
+                                            order?.items.map((item, index) => (
+                                                <div className="modal-product-card" key={index}>
+                                                    {/* IMAGEN */}
+                                                    <div className="modal-product-image">
+                                                        <img src={`http://localhost:3000${item?.producto?.imagen}`} alt={item?.producto?.nombre} />
+                                                    </div>
+
+                                                    {/* INFO */}
+                                                    <div className="product-main">
+                                                        <div className="product-info">
+                                                            <h6>{item?.producto?.nombre}</h6>
+
+                                                            <p>{item?.producto?.descripcion}</p>
+
+                                                            <div className="product-extra">
+                                                                <span className="product-qty">x{item?.quantity}</span>
+                                                                {
+                                                                    item?.producto?.talla &&
+                                                                    <span className="product-size">Talla: {item?.producto?.talla}</span>
+                                                                }
+                                                            </div>
+                                                        </div>
+
+                                                        {/* PRECIO */}
+                                                        <div className="product-price-box">
+                                                            <span className="unit-price">{item?.producto?.precio}</span>
+                                                            <small>Precio unidad</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+
+                                    {/* TOTAL */}
+                                    <div className="order-total-box">
+                                        <div>
+                                            <span>Total pedido</span>
+                                            <p>Incluye impuestos y envío</p>
+                                        </div>
+
+                                        <strong>{order?.total}</strong>
+                                    </div>
+                                </div>
+
+                                {/* footer */}
+                                <div className="modal-footer border-0 justify-content-center">
+                                    <button className="btn btn-purple" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,8 +1,7 @@
-
 .profile-menu {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .menu-link {
@@ -19,7 +18,7 @@
 .cart-container {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* 📦 ITEM */
@@ -67,7 +66,7 @@
     background: #fafafa;
 }
 
-.btn-purple {
+.btn-final {
     background: linear-gradient(135deg, #7b2ff7, #c778fb);
     border: none;
     color: white;
@@ -76,6 +75,15 @@
     transition: 0.3s;
 }
 
+.btn-final:hover {
+    background: linear-gradient(to right, #6c18f3, #b155ed);
+    color: white;
+}
+
 .btn-purple:hover {
     opacity: 0.9;
+}
+
+.text-product {
+    color: #7b2ff7;
 }

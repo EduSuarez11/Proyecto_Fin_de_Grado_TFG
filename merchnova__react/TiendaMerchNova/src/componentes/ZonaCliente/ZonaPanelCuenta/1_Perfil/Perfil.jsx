@@ -46,8 +46,6 @@ function PerfilCuenta() {
 
 
     function onChangeInputProfile(e) {
-        console.log('Validado perfil: ', validateProfile);
-        console.log('Form perfil: ', e.target.name, e.target.value);
         setFormProfile(() => ({
             ...formProfile,
             [e.target.name]: e.target.value
@@ -62,7 +60,7 @@ function PerfilCuenta() {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 imageRef.current.src = ev.target.result;
-                console.log('Archivo elegido: ', ev.target.result);
+                //console.log('Archivo elegido: ', ev.target.result);
                 setFormProfile(oldData => ({
                     ...oldData,
                     'imagenCuenta': ev.target.result
@@ -96,9 +94,9 @@ function PerfilCuenta() {
             <form>
                 <div className="row">
                     <div className="col-md-4 text-center mb-4 border-end">
-                        <div className="profile-img-container mx-auto">
-                            <img src={clientData.cuenta.imagenCuenta} ref={imageRef} alt="Previsualización" className="mb-3" style={{ width: '120px', height: '120px' }} />
-                            <label htmlFor="imageUpload" className={(!editProfile || clientData.cuenta.tipo === 'discord') ? `btn btn-purple btn-sm w-100 opacity` : `btn btn-purple btn-sm w-100`} >
+                        <div className="container mx-auto d-flex justify-content-center align-items-center flex-column">
+                            <img src={clientData.cuenta.imagenCuenta} ref={imageRef} alt="Previsualización" className="mb-3 img-avatar" />
+                            <label htmlFor="imageUpload" className={(!editProfile || clientData.cuenta.tipo === 'discord') ? `btn btn-save-img btn-sm w-75` : `btn btn-save btn-sm w-75`} >
                                 <i className="bi bi-camera me-2"></i>Cambiar Foto
                             </label>
                             <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData.cuenta.tipo !== 'discord' || clientData.cuenta.tipo === 'google') ? !editProfile : true} onChange={changeImagePreview} />

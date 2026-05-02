@@ -45,7 +45,7 @@ function CarritoCuenta() {
                                         />
 
                                         <div className="flex-grow-1">
-                                            <h6 className="mb-1 fw-semibold">{i.producto.nombre}</h6>
+                                            <h6 className="mb-1 fw-semibold text-product">{i.producto.nombre}</h6>
                                             <span className="text-muted small">
                                                 {i.producto.precio}€
                                             </span>
@@ -90,7 +90,7 @@ function CarritoCuenta() {
                                 </div>
 
                                 <Link to='/Portal/Pedido/DetallesEncargo'>
-                                    <button className="btn btn-purple w-100">Finalizar compra</button>
+                                    <button className="btn btn-final p-2 w-100">Finalizar compra</button>
                                 </Link>
                             </div>
                         </div>

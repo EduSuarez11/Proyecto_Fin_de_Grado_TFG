@@ -29,7 +29,7 @@ function Cuenta() {
                                 ]
                                     .filter(element => element.name !== 'Panel de Clientes' || clientData.cuenta.rol === 'ADMINISTRADOR')
                                     .map((element, index) =>
-                                        <Link to={element.route} key={index} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active fw-medium' : ''}`}>
+                                        <Link to={element.route} key={index} className={`list-group-item list-group-item-action border-0 py-3 sidebar-link ${location.pathname === element.route ? 'active-menu fw-medium' : ''}`}>
                                             <i className={element.icon}></i> {element.name}
                                         </Link>
                                     )

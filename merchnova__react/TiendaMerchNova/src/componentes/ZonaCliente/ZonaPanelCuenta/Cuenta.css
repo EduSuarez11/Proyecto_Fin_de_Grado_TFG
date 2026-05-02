@@ -27,12 +27,11 @@
     padding-left: 25px;
 }
 
-.active {
+.active-menu {
     background:linear-gradient(to right,#7b2ff7,#c778fb);
 	color: white;
     cursor: default;
 }
-
 
 .sticky-top {
     z-index: 1020;

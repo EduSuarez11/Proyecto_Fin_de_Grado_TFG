@@ -9,7 +9,7 @@
 .hero {
     height: 600px;
     /* background: linear-gradient(135deg, #7b2ff7, #c778fb); */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/banner/banner.png');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/banner/banner.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

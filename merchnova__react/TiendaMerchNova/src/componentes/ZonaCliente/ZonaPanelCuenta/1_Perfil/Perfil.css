@@ -29,8 +29,19 @@
 }
 
 .btn-save {
-    background:linear-gradient(to right,#7b2ff7,#c778fb);
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
+}
+
+.btn-save:hover {
+    background:linear-gradient(to right,#6c18f3,#b155ed);
 	color: white;
+}
+
+.btn-save-img {
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
+    opacity: 0.7;
 }
 
 .btn-cancel {
@@ -39,4 +50,14 @@
     border-radius: 8px;
     padding: 8px 16px;
     transition: 0.2s;
+}
+
+.img-avatar {
+    width: 50%;
+    height: 50%;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
 }

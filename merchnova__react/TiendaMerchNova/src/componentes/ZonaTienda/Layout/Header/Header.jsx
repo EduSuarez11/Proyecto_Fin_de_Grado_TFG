@@ -4,38 +4,43 @@ import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
 import { useEffect, useRef, useState } from 'react';
 import { request_category } from '../../../Servicios/peticiones_productos/request_products';
+import { useMemo } from 'react';
 
 function Header() {
     const route = useLocation();
     const { clientData, logOut, order, setClientData } = useGlobalState();
     const refPanel = useRef(null);
-    const [showPanel, setShowPanel] = useState(false);
+    const [showPanel, setShowPanel] = useState({
+        products: false,
+        offers: false,
+        info: false
+    });
     const [categories, setCategories] = useState([]);
 
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
 
-    function handleShowPanel() {
+    function handleShowPanel(ev) {
         if (refPanel.current) {
             clearTimeout(refPanel.current);
             refPanel.current = null;
         }
-        setShowPanel(true);
+        setShowPanel({ ...showPanel, [ev.target.id]: true });
     }
 
-    function handleHiddenPanel() {
+    function handleHiddenPanel(ev) {
         if (refPanel.current) {
             clearTimeout(refPanel.current);
             refPanel.current = null;
         }
         refPanel.current = setTimeout(() => {
-            setShowPanel(false);
+            setShowPanel({ ...showPanel, [ev.target.id]: false });
             refPanel.current = null;
-        }, 250);
+        }, 50);
     }
 
-    function handleShowPanelFromInside() {
+    function handleShowPanelFromInside(ev) {
         if (refPanel.current) clearTimeout(refPanel.current);
-        setShowPanel(true);
+        setShowPanel({ ...showPanel, [ev.target.id]: true });
     }
 
     useEffect(() => {
@@ -152,13 +157,13 @@ function Header() {
             <nav className="subnav">
                 <div className="subnav-container">
                     <Link to='/Portal/Productos?page=1&categoria=todos'>
-                        <div className="subnav-item has-dropdown" onMouseEnter={handleShowPanel} onMouseLeave={handleHiddenPanel}>Productos</div>
+                        <div className="subnav-item has-dropdown" id='products' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Productos</div>
                     </Link>
-                    {showPanel &&
-                        <div className="menu-panel" onMouseEnter={handleShowPanelFromInside} onMouseLeave={handleHiddenPanel}>
-                            <div className="grid-panel">
+                    {showPanel.products &&
+                        <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="grid-panel" style={showPanel.products && { gridTemplateColumns: 'repeat(3, 1fr)' }}>
                                 {categories.map((el, pos) =>
-                                    <Link className="text-decoration-none" style={{color: 'inherit'}} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`}>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`}>
                                         <div className="category fw-medium" key={pos}>{el.nombreCat}</div>
                                     </Link>
                                 )}
@@ -168,7 +173,20 @@ function Header() {
 
                     <div className="subnav-item">Ofertas</div>
 
-                    <div className="subnav-item">Más información</div>
+                    <Link to='/Portal/Informacion/SobreNosotros'>
+                        <div className="subnav-item has-dropdown" id='info' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Más información</div>
+                    </Link>
+                    {showPanel.info &&
+                        <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="grid-panel" style={showPanel.info && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                                {['Sobre Nosotros', "Como Funciona"].map((el, pos) =>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Informacion/${el.replace(/\s+/g, '')}`} key={pos}>
+                                        <div className="category fw-medium">{el}</div>
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    }
                 </div>
             </nav>
         </>

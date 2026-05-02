@@ -24,6 +24,7 @@ import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancela
 import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_productos/request_products";
 import request_external from "./componentes/Servicios/request_external_api";
 import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClientes/PanelCliente";
+import SobreNosotros from "./componentes/ZonaTienda/MasInformacion/SobreNosotros/SobreNosotros";
 
 
 const optionsPayPal = {
@@ -39,7 +40,7 @@ const requestHome = async () => {
 }
 
 const getChosenProduct = async ({ params }) => {
-   const response = await request_filter_products.get_chosen_product({params});
+   const response = await request_filter_products.get_chosen_product({ params });
    return response;
 }
 
@@ -76,7 +77,7 @@ const applicationRoutes = createBrowserRouter(
                         { path: 'Pedidos', element: <Pedidos /> },
                         { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
                         { path: 'MiCarrito', element: <CarritoCuenta /> },
-                        { path: 'PanelClientes', element: <PanelClientes/>}
+                        { path: 'PanelClientes', element: <PanelClientes /> }
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
@@ -95,9 +96,15 @@ const applicationRoutes = createBrowserRouter(
                   },
 
                   {
+                     path: 'Informacion', children: [
+                        { path: 'SobreNosotros', element: <SobreNosotros /> },
+                        { path: 'ComoFunciona', element: <SobreNosotros /> }
+                     ]
+                  },
+
+                  {
                      path: 'Productos',
                      element: <Productos />
-                     // loader: getAllProducts
                   },
 
                   {

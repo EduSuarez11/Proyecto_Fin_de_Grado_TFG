@@ -76,9 +76,13 @@ function MisDirecciones() {
                         <div className="address-card" title={`Dirección ${pos + 1}`}>
                             <div className='d-flex justify-content-between'>
                                 <p className="address-name">Dirección {pos === 0 ? `${pos + 1} (Principal)` : `${pos + 1}`}</p>
-                                <button className="delete-address-btn btn btn-sm btn-outline-danger ms-3" title="Eliminar dirección" data-bs-toggle="modal" data-bs-target="#removeAddress" onClick={() => setDirection(direccion)}>
-                                    <i className="bi bi-trash"></i>
-                                </button>
+                                {
+                                    pos !== 0 &&
+                                    <button className="delete-address-btn btn btn-sm btn-outline-danger ms-3" title="Eliminar dirección" data-bs-toggle="modal" data-bs-target="#removeAddress" onClick={() => setDirection(direccion)}>
+                                        <i className="bi bi-trash"></i>
+                                    </button>
+                                }
+
                             </div>
                             <p className="address-line">{direccion.domicilio}, {direccion.municipio}</p>
                             <p className="address-line">{direccion.provincia} ({direccion.codigoPostal}), {direccion.pais}</p>
