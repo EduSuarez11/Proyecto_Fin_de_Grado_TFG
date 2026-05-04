@@ -5,6 +5,7 @@ import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
 import { useEffect, useRef, useState } from 'react';
 import { request_category } from '../../../Servicios/peticiones_productos/request_products';
 import { useMemo } from 'react';
+import { request_auth, request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
 
 function Header() {
     const route = useLocation();
@@ -57,14 +58,7 @@ function Header() {
 
             if (token) {
                 const timeRes = setTimeout(async () => {
-                    const requestVerifyToken = await fetch('http://localhost:3000/api/auth/Verify/Token', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    const responseVT = await requestVerifyToken.json();
+                    const responseVT = await request_get_token.token_verify(token);
                     console.log('Respuesta: ', responseVT);
                     if (responseVT.code === 0) {
                         setClientData(responseVT.data.user);

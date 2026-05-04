@@ -98,7 +98,7 @@ function Productos() {
                         <div className="filter-box">
                             <h6>Categoría</h6>
                             {
-                                ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Pósteres"].map((element, index) =>
+                                ["Todos", "Camisetas", "Sudaderas", "Tazas", "Llaveros", "Peluches", "Posters"].map((element, index) =>
                                     <div className="form-check" key={index}>
                                         <input className="form-check-input" type="radio" name="category" id={element.toLowerCase()} onChange={(ev) => setTypeProduct(ev.target.id !== null ? ev.target.id : null)} />
                                         <label className="form-check-label">{element}</label>
@@ -155,7 +155,7 @@ function Productos() {
                                                         {handleValorations(product.valoraciones)} {product.valoraciones}
                                                     </div>
 
-                                                    <p className="price">{product.precio}</p>
+                                                    <p className="price">{product.precio} €</p>
                                                     <button className="btn btn-products fw-medium w-100">Ver detalles</button>
                                                 </div>
                                             </div>

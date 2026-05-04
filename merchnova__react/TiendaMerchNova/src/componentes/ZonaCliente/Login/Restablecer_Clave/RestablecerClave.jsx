@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import './RestablecerClave.css'
-import { redirect, useNavigate, useSearchParams } from 'react-router';
+import { redirect, useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
 import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 
 
 function RestablecerClave() {
-    const [params] = useSearchParams();
-    const clientId = params.get('clientId');
-    const token = params.get('tokenPasswd');
+    const {clientId, token} = useLoaderData();
     const navigate = useNavigate();
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -19,20 +17,20 @@ function RestablecerClave() {
         clientId: clientId
     });
 
-    useEffect(
-        () => {
-            const verifyUser = async () => {
-                const responseToken = await request_get_token.token_verify(token);
-                console.log('Token: ', token)
-                console.log('Respuesta de verificado token: ', responseToken)
-                if (responseToken.data?.user?._id !== clientId) return navigate('/');
+    // useEffect(
+    //     () => {
+    //         const verifyUser = async () => {
+    //             const responseToken = await request_get_token.token_verify(token);
+    //             console.log('Token: ', token)
+    //             console.log('Respuesta de verificado token: ', responseToken)
+    //             if (responseToken.data?.user?._id !== clientId) return navigate('/');
 
-                setErrorMsg('¡Mínimo entre 6 y 25 carácteres!');
-            }
-            verifyUser();
+    //             setErrorMsg('¡Mínimo entre 6 y 25 carácteres!');
+    //         }
+    //         verifyUser();
 
-        }, []
-    );
+    //     }, []
+    // );
 
     async function handlePassword() {
         //const email = params.get('email');

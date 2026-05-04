@@ -6,7 +6,7 @@ import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart
 function Item() {
     const { clientData, setClientData, order, setOrder } = useGlobalState();
 
-    
+
     async function deleteOnCart({ item }) {
         if (clientData != null) {
             const newCartAfter = await request_cart.cart_persistence({ clientData, order: item.producto, quantity: item.quantity }, '/Eliminar');
@@ -58,7 +58,7 @@ function Item() {
 
                                                 <div className="item-info">
                                                     <h3 className='text-title fw-bold'>{item.product.nombre}</h3>
-                                                    <p>Talla: {item.product.talla} </p>
+                                                    {item.producto.talla !== null && <p>Talla: {item.product.talla} </p>}
                                                     <p className="item-price">{item.product.precio} €</p>
                                                 </div>
 

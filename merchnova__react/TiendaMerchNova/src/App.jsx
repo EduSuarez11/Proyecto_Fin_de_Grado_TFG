@@ -25,6 +25,8 @@ import { request_filter_products, request_products } from "./componentes/Servici
 import request_external from "./componentes/Servicios/request_external_api";
 import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClientes/PanelCliente";
 import SobreNosotros from "./componentes/ZonaTienda/MasInformacion/SobreNosotros/SobreNosotros";
+import { request_get_token } from "./componentes/Servicios/peticiones_auth_frontend/request_auth";
+import { accountLogged, areaAdmin, securityApplication, securityChangePassword } from "./componentes/security/route_control";
 
 
 const optionsPayPal = {
@@ -49,11 +51,6 @@ const getAllProducts = async () => {
    return response;
 }
 
-const securityApplication = () => {
-   const token = sessionStorage.getItem('token');
-   if (!token) throw redirect('/Cliente/TipoLogin');
-}
-
 const applicationRoutes = createBrowserRouter(
    [
       {
@@ -68,20 +65,20 @@ const applicationRoutes = createBrowserRouter(
             {
                path: 'Cliente',
                children: [
-                  { path: 'Registro', element: <Registro /> },
-                  { path: 'Login', element: <Login /> },
-                  { path: 'TipoLogin', element: <TipoLogin /> },
+                  { path: 'Registro', element: <Registro />, loader: accountLogged },
+                  { path: 'Login', element: <Login />, loader: accountLogged },
+                  { path: 'TipoLogin', element: <TipoLogin />, loader: accountLogged },
                   {
                      path: 'Cuenta', element: <Cuenta />, loader: securityApplication, children: [
                         { path: 'Perfil', element: <PerfilCuenta />, loader: request_external.request_get_countries },
                         { path: 'Pedidos', element: <Pedidos /> },
                         { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
                         { path: 'MiCarrito', element: <CarritoCuenta /> },
-                        { path: 'PanelClientes', element: <PanelClientes /> }
+                        { path: 'PanelClientes', element: <PanelClientes />, loader: areaAdmin }
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
-                  { path: 'CambiarClave', element: <RestablecerClave /> }
+                  { path: 'CambiarClave', element: <RestablecerClave />, loader: securityChangePassword }
                ]
             },
 

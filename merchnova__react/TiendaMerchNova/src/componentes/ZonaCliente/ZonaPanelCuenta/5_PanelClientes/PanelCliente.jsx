@@ -13,7 +13,7 @@ function PanelClientes() {
         () => {
             const get_clients = async () => {
                 const clientsResponse = await request_clients.get_clients_with_orders();
-                //console.log(clientsResponse.data.users);
+                console.log(clientsResponse.data.users);
                 setClients(clientsResponse.data.users);
             }
 
