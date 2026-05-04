@@ -51,7 +51,7 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
         //console.log(parameter);
 
         const filterProducts = await mongoose.connection.collection('productos').find(parameter)
-            .sort({ nombre: 1 })
+            .sort({ path: 1 })
             .limit(LimitProductsForPage)
             .skip((parseInt(page) - 1) * LimitProductsForPage)
             .toArray();

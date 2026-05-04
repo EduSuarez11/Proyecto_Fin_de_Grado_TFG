@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const mailjetService = require('../../servicios/mailjetService');
+const jwtService = require('../../servicios/jwtService');
 
 const manage_profile_data = express.Router();
 
@@ -13,9 +14,9 @@ manage_profile_data.post('/ForgotPassword', async (req, res, next) => {
 
         if (existClient === null) throw new Error('Ese correo no se encuentra registrado.');
 
-        mailjetService.sendEmailForSetPassword(existClient, email);
+        const recuperationToken = mailjetService.sendEmailForSetPassword(existClient, email);
 
-        res.status(200).send({ code: 0, message: 'Recibirás un email para restablecer tu contraseña.' })
+        res.status(200).send({ code: 0, message: 'Recibirás un email para restablecer tu contraseña.', token: recuperationToken });
     } catch (error) {
         res.status(200).send({ code: 12, message: error.message })
     }

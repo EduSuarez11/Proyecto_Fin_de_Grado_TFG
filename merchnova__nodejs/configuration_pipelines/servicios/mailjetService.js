@@ -79,8 +79,8 @@ module.exports = {
 
     sendEmailForSetPassword: async (clientData, email) => {
         try {
-            const token = jwtService.generateToken({idCliente: clientData._id, email: email}, {expiresIn: '10min'});
-            const EnlaceComponent = `${process.env.URL_FRONTEND}Cliente/CambiarClave?clientId=${clientData._id}&tokenPasswd=${token}`;
+            const token = jwtService.generateToken({idCliente: clientData._id, email: email}, {expiresIn: '20min'});
+            const EnlaceComponent = `${process.env.URL_FRONTEND}Cliente/CambiarClave?clientId=${clientData._id}&token=${token}`;
             const BASE64_APIKEYS_COD = Buffer.from(`${process.env.MAILJET_PUBLIC_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64');
 
             const MailjetBody = JSON.stringify({
@@ -123,7 +123,7 @@ module.exports = {
 
             console.log('Respuesta de Mailjet:', bodyResponseMailjet);
             if (bodyResponseMailjet.Messages[0].Status !== 'success') throw new Error('No se pudo enviar el email de activación');
-            return bodyResponseMailjet;
+            return token;
         } catch (error) {
             console.log('Error al enviar email: ', error.message)
         }
