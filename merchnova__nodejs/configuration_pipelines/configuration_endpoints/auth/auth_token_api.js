@@ -22,4 +22,30 @@ manage_auth_token.get('/Verify/Token', async (req, res, next) => {
     }
 });
 
+
+manage_auth_token.get('/TokenChangePass/:id/:token', async (req, res, next) => {
+    try {
+        const { id, token } = req.params;
+
+        console.log('Parametros en node: ', req.params)
+
+        const user = await mongoose.connection.collection('clientes').findOne({
+            _id: new mongoose.Types.ObjectId(id)
+        })
+
+        const verifyToken = jwtService.verifyTokenChangePass(token, process.env.FIRMA_JWT + user.cuenta.password);
+
+        if (!user) throw new Error('Token no válido o expirado.');
+        //console.log('Usuario: ', user);
+        console.log('Token verificado para cambio de contraseña: ', verifyToken);
+
+        res.status(200).send({ code: 0, message: 'Token verificado.', dataToken: verifyToken });
+    } catch (error) {
+        console.log('Error en la verificación del token: ', error);
+        res.status(200).send({ code: 8, message: error.message });
+    }
+});
+
+
+
 module.exports = manage_auth_token;

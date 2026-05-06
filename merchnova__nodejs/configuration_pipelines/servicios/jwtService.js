@@ -6,6 +6,11 @@ module.exports = {
         return TokenCreated;
     },
 
+    verifyTokenChangePass: (token, firma) => {
+        const tokenCreated = jwt.verify(token, firma);
+        return tokenCreated;
+    },
+
     verifyToken: (token) => {
         const TokenVerify = jwt.verify(token, process.env.FIRMA_JWT);
         return TokenVerify;

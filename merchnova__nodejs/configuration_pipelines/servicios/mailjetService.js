@@ -16,7 +16,7 @@ const messageEmail = (data, url) => {
 const messageSetPassword = (data, url) => {
     return `
     <h1>Cambio de contraseña</h1>
-    <p>Este email ha sido enviado para poder restablecer tu contraseña: </p>
+    <p>Hola ${data.nombreCompleto}, este email ha sido enviado para poder restablecer tu contraseña: </p>
     <a href="${url}">Restablecer contraseña</a>
     <p>Si no has sido tu quien ha provocado esta acción, puedes ignorar este correo electrónico.</p>
     <p>Saludos,</p>
@@ -79,8 +79,8 @@ module.exports = {
 
     sendEmailForSetPassword: async (clientData, email) => {
         try {
-            const token = jwtService.generateToken({idCliente: clientData._id, email: email}, {expiresIn: '20min'});
-            const EnlaceComponent = `${process.env.URL_FRONTEND}Cliente/CambiarClave?clientId=${clientData._id}&token=${token}`;
+            const token = jwtService.generateToken({idCliente: clientData._id}, {expiresIn: '20min'});
+            const EnlaceComponent = `${process.env.URL_FRONTEND}Cliente/CambiarClave/${clientData._id}/${token}`;
             const BASE64_APIKEYS_COD = Buffer.from(`${process.env.MAILJET_PUBLIC_KEY}:${process.env.MAILJET_SECRET_KEY}`).toString('base64');
 
             const MailjetBody = JSON.stringify({
