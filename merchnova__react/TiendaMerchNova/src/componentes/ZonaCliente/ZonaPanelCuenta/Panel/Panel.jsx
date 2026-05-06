@@ -3,6 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 function Panel({ order, clientData, logOut }) {
     const navigate = useNavigate();
 
+    const getRuta = (elemento) => {
+        if (elemento === 'Mis Pedidos') return '/Cliente/Cuenta/Pedidos';
+        if (elemento === 'Panel de Clientes') return '/Cliente/Cuenta/PanelClientes';
+        if (elemento === 'Configuración') return '/Cliente/Configuración';
+        return `/Cliente/Cuenta/${elemento}`;
+    };
+
     //console.log('Cliente_ ', clientData);
     return (
         <div className="d-flex align-items-center gap-3 user-menu">
@@ -41,17 +48,23 @@ function Panel({ order, clientData, logOut }) {
                             .filter(elemento => elemento !== 'Panel de Clientes' || clientData.cuenta.rol === 'ADMINISTRADOR')
                             .map((elemento, index) =>
                                 <li key={index}>
-                                    {elemento !== 'Cerrar Sesión' ?
-                                        <Link className='dropdown-item' to={elemento === 'Mis Pedidos' ? '/Cliente/Cuenta/Pedidos' : (elemento === 'Panel de Clientes' ? '/Cliente/Cuenta/PanelClientes' : `/Cliente/Cuenta/${elemento.includes(" ") ? elemento.replace(/\s+/g, "") : elemento}`)}>
-                                            {elemento}
-                                        </Link>
-                                        :
-                                        <button className='dropdown-item text-danger' onClick={() => { logOut(); sessionStorage.removeItem("token"); navigate('/Cliente/TipoLogin', { state: { msg: 'Has cerrado sesión' } }) }}>
+                                    {elemento === 'Cerrar Sesión' ?
+                                        <button className='dropdown-item text-danger'
+                                            onClick={() => {
+                                                logOut();
+                                                sessionStorage.removeItem("token");
+                                                navigate('/Cliente/TipoLogin', { state: { msg: 'Has cerrado sesión' } });
+                                            }}>
                                             {elemento}
                                         </button>
+                                        :
+                                        <Link className='dropdown-item' to={getRuta(elemento)}>
+                                            {elemento}
+                                        </Link>
                                     }
                                     {elemento === 'Configuración' && <hr className="dropdown-divider" />}
                                 </li>
+
                             )
                     }
                 </ul>

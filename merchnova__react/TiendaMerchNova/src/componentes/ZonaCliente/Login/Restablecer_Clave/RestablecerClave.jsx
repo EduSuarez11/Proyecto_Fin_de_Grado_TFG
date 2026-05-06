@@ -6,7 +6,7 @@ import { request_profile } from '../../../Servicios/peticiones_perfil/request_pr
 
 
 function RestablecerClave() {
-    const {clientId, token} = useLoaderData();
+    const { clientId, token } = useLoaderData();
     const navigate = useNavigate();
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -17,20 +17,29 @@ function RestablecerClave() {
         clientId: clientId
     });
 
-    // useEffect(
-    //     () => {
-    //         const verifyUser = async () => {
-    //             const responseToken = await request_get_token.token_verify(token);
-    //             console.log('Token: ', token)
-    //             console.log('Respuesta de verificado token: ', responseToken)
-    //             if (responseToken.data?.user?._id !== clientId) return navigate('/');
+    const [validation, setValidation] = useState({
+        lengthPassword: false,
+        number: false,
+        symbol: false
+    });
 
-    //             setErrorMsg('¡Mínimo entre 6 y 25 carácteres!');
-    //         }
-    //         verifyUser();
+    const checkPassword = (password) => {
+        const passwordValidation = {
+            lengthPassword: password.length >= 8,
+            symbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            number: /[0-9]/.test(password)
+        };
 
-    //     }, []
-    // );
+        setValidation((prev) => ({
+            ...prev,
+            ...passwordValidation
+        }));
+    }
+
+    function onChangeInput(ev) {
+        setPassword({ ...password, [ev.target.name]: ev.target.value })
+        if (ev.target.name === 'password') checkPassword(ev.target.value);
+    }
 
     async function handlePassword() {
         //const email = params.get('email');
@@ -47,9 +56,9 @@ function RestablecerClave() {
 
 
     return (
-        <div className="register-wrapper mt-5">
+        <div className="register-wrapper d-flex justify-conter-center align-items-center mt-5">
             <div className="register-card">
-                <h2 className="text-center register-title mb-4">Cambiar contraseña</h2>
+                <h2 className="text-center  mb-4">Cambiar contraseña</h2>
                 <div className="d-flex justify-content-center">
                     {errorMsg != '' && <span className="alert alert-danger small">{errorMsg}</span>}
                 </div>
@@ -62,7 +71,10 @@ function RestablecerClave() {
                         return (
                             <div className="mb-3 input-password" key={pos}>
                                 <label className="form-label">{elemt}</label>
-                                <input type={typeInput} name={elemt === "Nueva contraseña" ? "password" : 'confirmPassword'} className="form-control" placeholder={elemt === "Nueva contraseña" ? 'Escribe tu nueva contraseña' : 'Repite tu contraseña'} onChange={(ev) => setPassword({ ...password, [ev.target.name]: ev.target.value })} />
+                                <div>
+
+                                </div>
+                                <input type={typeInput} name={elemt === "Nueva contraseña" ? "password" : 'confirmPassword'} className="form-control" placeholder={elemt === "Nueva contraseña" ? 'Escribe tu nueva contraseña' : 'Repite tu contraseña'} onChange={onChangeInput} />
                                 {
                                     showPassword ?
                                         <i className="fa-solid fa-eye eye-icon" onClick={() => setShowPassword(false)}></i>
@@ -73,9 +85,24 @@ function RestablecerClave() {
                         );
                     })
                 }
+                {password.password !== '' &&
+                    <ul className="small mx-2 mb-4 list-unstyled">
+                        <li className={validation.lengthPassword ? "text-success" : "text-danger"}>
+                            {validation.lengthPassword ? "✅ Mínimo 8 caracteres" : "❌ Mínimo 8 caracteres"}
+                        </li>
+
+                        <li className={validation.number ? "text-success" : "text-danger"}>
+                            {validation.number ? "✅ Contiene al menos 1 número" : "❌ Debe contener al menos 1 número"}
+                        </li>
+
+                        <li className={validation.symbol ? "text-success" : "text-danger"}>
+                            {validation.symbol ? "✅ Contiene al menos 1 símbolo" : "❌ Debe contener al menos 1 símbolo"}
+                        </li>
+                    </ul>
+                }
 
                 <div className="d-grid">
-                    <button type="button" className="btn btn-custom" onClick={handlePassword} >Actualizar contraseña</button>
+                    <button type="button" className="btn btn-custom" onClick={handlePassword} disabled={!validation.lengthPassword || !validation.number || !validation.symbol} >Actualizar contraseña</button>
                 </div>
             </div>
         </div>

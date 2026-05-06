@@ -1,0 +1,112 @@
+.expired-token-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: linear-gradient(180deg, #faf7ff 0%, #f4efff 100%);
+}
+
+.expired-token-card {
+    width: 100%;
+    max-width: 560px;
+    background: white;
+    border-radius: 28px;
+    padding: 45px;
+    text-align: center;
+    box-shadow: 0 10px 35px rgba(140, 82, 255, 0.12);
+    border: 1px solid #efe7ff;
+    position: relative;
+    overflow: hidden;
+}
+
+.expired-token-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #8c52ff, #c084fc);
+}
+
+.expired-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8c52ff, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.4rem;
+    box-shadow: 0 8px 20px rgba(140, 82, 255, 0.25);
+}
+
+.expired-token-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4b2995;
+    margin-bottom: 15px;
+}
+
+.expired-token-card p {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.expired-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.btn-outline-purple {
+    border: 2px solid #8c52ff;
+    color: #8c52ff;
+    background: transparent;
+    border-radius: 14px;
+    padding: 10px 22px;
+    font-weight: 600;
+    transition: all .25s ease;
+}
+
+.btn-outline-purple:hover {
+    background: #8c52ff;
+    color: white;
+}
+
+.expired-info {
+    background: #f6f1ff;
+    border: 1px solid #eadcff;
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #7c3aed;
+    font-size: 0.95rem;
+}
+
+.expired-info i {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 576px) {
+    .expired-token-card {
+        padding: 35px 25px;
+    }
+
+    .expired-actions {
+        flex-direction: column;
+    }
+
+    .expired-actions button {
+        width: 100%;
+    }
+}
