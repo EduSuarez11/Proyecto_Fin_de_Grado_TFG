@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const mailjetService = require('../../servicios/mailjetService');
 const jwtService = require('../../servicios/jwtService');
+const bcrypt = require('bcrypt');
 
 const manage_profile_data = express.Router();
 
@@ -27,7 +28,6 @@ manage_profile_data.post('/ResetPassword', async (req, res, next) => {
     try {
         const { password, confirmPassword } = req.body;
         console.log('Datos del req.body: ', req.body);
-        //        const existClient = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) });
 
         if (confirmPassword !== password) throw new Error('Las contraseñas deben coincidir');
         if (confirmPassword.length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres.');
@@ -89,6 +89,28 @@ manage_profile_data.post('/Remove-Direction', async (req, res, next) => {
     } catch (error) {
         console.log('Error al eliminar dirección: ', error);
         res.status(200).send({ code: 14, message: `${error.message}` });
+    }
+
+
+})
+
+manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
+    try {
+        const { clientData, privacity } = req.body;
+        console.log(req.body);
+        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) },
+            { $set: { 
+                'cuenta.visibilidad': privacity.visibility ? 'privado' : 'publico',
+                'cuenta.notificaciones': privacity.notificationes ? true : false
+            } },
+            { returnDocument: "after" }
+        );
+        if (updateData.modifiedCount === 0) throw new Error('No se pudo actualizar la visibilidad.');
+        res.status(200).send({ code: 0, message: 'Visibilidad cambiada', dataUpdate: updateData });
+    } catch (error) {
+        console.log('Error al cambiar la privacidad: ', error);
+        res.status(200).send({ code: 15, message: `${error.message}` });
     }
 
 
