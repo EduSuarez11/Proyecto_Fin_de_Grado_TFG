@@ -1,0 +1,179 @@
+/* CONTENEDOR */
+.delete-container{
+    padding:60px 0;
+}
+
+
+/* HEADER */
+.delete-header{
+    margin-bottom:35px;
+}
+
+.delete-header h2{
+    font-size:36px;
+    font-weight:800;
+    color:#2d1b46;
+}
+
+.delete-header p{
+    color:#777;
+    margin-top:8px;
+}
+
+
+/* CARD */
+.delete-card{
+    max-width:750px;
+    margin:auto;
+
+    background:white;
+
+    border-radius:26px;
+
+    padding:40px;
+
+    border:1px solid #eee;
+
+    box-shadow:
+      0 10px 30px rgba(0,0,0,.05);
+
+    position:relative;
+    overflow:hidden;
+}
+
+
+/* BORDE SUPERIOR ROJO */
+.delete-card::before{
+    content:'';
+
+    position:absolute;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:5px;
+
+    background:linear-gradient(90deg,#ef4444,#ff7b7b);
+}
+
+
+/* ICONO */
+.delete-icon{
+    width:70px;
+    height:70px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border-radius:50%;
+
+    background:#ffeaea;
+
+    color:#ef4444;
+
+    font-size:28px;
+
+    margin-bottom:20px;
+}
+
+
+/* CONTENIDO */
+.delete-content h4{
+    font-weight:800;
+    color:#3b2160;
+
+    margin-bottom:15px;
+}
+
+.delete-content p{
+    color:#6b7280;
+    line-height:1.7;
+    margin-bottom:12px;
+}
+
+
+/* WARNING */
+.delete-warning{
+    background:#fff1f1;
+
+    border:1px solid #ffd6d6;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    color:#ef4444;
+
+    font-weight:600;
+}
+
+
+/* BOTONES */
+.delete-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+
+    margin-top:30px;
+}
+
+
+/* BOTÓN ELIMINAR */
+.btn-delete{
+    background:linear-gradient(90deg,#ef4444,#ff7b7b);
+
+    color:white;
+
+    border:none;
+
+    padding:12px 20px;
+
+    border-radius:14px;
+
+    font-weight:700;
+
+    transition:.25s;
+}
+
+.btn-delete:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+      0 10px 25px rgba(239,68,68,.3);
+}
+
+
+/* BOTÓN CANCELAR */
+.btn-outline-purple{
+    border:2px solid #7b2ff7;
+
+    color:#7b2ff7;
+
+    border-radius:14px;
+
+    padding:12px 20px;
+
+    font-weight:600;
+
+    transition:.25s;
+}
+
+.btn-outline-purple:hover{
+    background:#7b2ff7;
+    color:white;
+}
+
+
+/* RESPONSIVE */
+@media(max-width:768px){
+
+    .delete-card{
+        padding:25px;
+    }
+
+    .delete-actions{
+        flex-direction:column;
+    }
+
+}

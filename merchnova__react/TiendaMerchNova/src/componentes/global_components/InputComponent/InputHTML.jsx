@@ -3,6 +3,7 @@ import './InputHTML.css';
 import { useState } from 'react';
 
 function InputHTMLComponent(props) {
+    const route = useLocation();
     const [showPassword, setShowPassword] = useState(false);
     const isPasswordInput = props.nameInput === 'password' || props.nameInput === 'confirmPassword';
     const inputType = isPasswordInput && showPassword ? 'text' : props.tipo;
@@ -29,7 +30,7 @@ function InputHTMLComponent(props) {
             </div>
 
             {/* Validacion de email */}
-            {props.nameInput === 'email' && props.form.email && (
+            {(props.nameInput === 'email' && props.form.email && route.pathname === '/Cliente/Registro') && (
                 <ul className="small mt-2 list-unstyled">
                     <li className={props.validation.email ? "text-success" : "text-danger"}>
                         {props.validation.email ? "✅ Formato de email correcto" : "❌ Formato de email incorrecto"}
@@ -38,7 +39,7 @@ function InputHTMLComponent(props) {
             )}
 
             {/* Validaciones de contraseña */}
-            {props.nameInput === 'password' && props.form.password && (
+            {(props.nameInput === 'password' && props.form.password && route.pathname === '/Cliente/Registro') && (
                 <ul className="small mt-2 list-unstyled">
                     <li className={props.validation.lengthPassword ? "text-success" : "text-danger"}>
                         {props.validation.lengthPassword ? "✅ Mínimo 8 caracteres" : "❌ Mínimo 8 caracteres"}

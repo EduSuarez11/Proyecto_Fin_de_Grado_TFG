@@ -27,6 +27,12 @@ import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClie
 import SobreNosotros from "./componentes/ZonaTienda/MasInformacion/SobreNosotros/SobreNosotros";
 import { request_get_token } from "./componentes/Servicios/peticiones_auth_frontend/request_auth";
 import { accountLogged, areaAdmin, securityApplication, securityChangePassword } from "./componentes/security/route_control";
+import ErrorToken from "./componentes/ZonaCliente/Login/Restablecer_Clave/TokenExpirado/ErrorToken";
+import Configuracion from "./componentes/ZonaTienda/Configuracion/Configuracion";
+import InfoPerfil from "./componentes/ZonaTienda/Configuracion/Info_perfil/InfoPerfil";
+import NuevaPassword from "./componentes/ZonaTienda/Configuracion/NuevaContraseña/NuevaPassword";
+import Privacidad from "./componentes/ZonaTienda/Configuracion/Privacidad/Privacidad";
+import EliminarCuenta from "./componentes/ZonaTienda/Configuracion/Eliminar_cuenta/EliminarCuenta";
 
 
 const optionsPayPal = {
@@ -42,6 +48,7 @@ const requestHome = async () => {
 }
 
 const getChosenProduct = async ({ params }) => {
+   console.log(params)
    const response = await request_filter_products.get_chosen_product({ params });
    return response;
 }
@@ -50,6 +57,8 @@ const getAllProducts = async () => {
    const response = await request_products.get_all_products();
    return response;
 }
+
+
 
 const applicationRoutes = createBrowserRouter(
    [
@@ -74,11 +83,20 @@ const applicationRoutes = createBrowserRouter(
                         { path: 'Pedidos', element: <Pedidos /> },
                         { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
                         { path: 'MiCarrito', element: <CarritoCuenta /> },
-                        { path: 'PanelClientes', element: <PanelClientes />, loader: areaAdmin }
+                        { path: 'PanelClientes', element: <PanelClientes />, loader: areaAdmin },
+                     ]
+                  },
+                  {
+                     path: 'Configuración', element: <Configuracion />, children: [
+                        { path: 'InfoPerfil', element: <InfoPerfil /> },
+                        { path: 'CambiarPassword', element: <NuevaPassword /> },
+                        { path: 'Privacidad', element: <Privacidad /> },
+                        { path: 'EliminarCuenta', element: <EliminarCuenta /> }
                      ]
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
-                  { path: 'CambiarClave', element: <RestablecerClave />, loader: securityChangePassword }
+                  { path: 'CambiarClave/:clientId/:token', element: <RestablecerClave />, loader: securityChangePassword },
+                  { path: 'ErrorCambioClave', element: <ErrorToken /> }
                ]
             },
 
