@@ -101,8 +101,8 @@ manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
         const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) },
             { $set: { 
-                'cuenta.visibilidad': privacity.visibility ? 'privado' : 'publico',
-                'cuenta.notificaciones': privacity.notificationes ? true : false
+                'cuenta.visibilidad': privacity.visibility ? 'publico' : 'privado',
+                'cuenta.notificaciones': privacity.notification
             } },
             { returnDocument: "after" }
         );
