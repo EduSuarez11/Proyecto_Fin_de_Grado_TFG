@@ -33,6 +33,7 @@ import InfoPerfil from "./componentes/ZonaTienda/Configuracion/Info_perfil/InfoP
 import NuevaPassword from "./componentes/ZonaTienda/Configuracion/NuevaContraseña/NuevaPassword";
 import Privacidad from "./componentes/ZonaTienda/Configuracion/Privacidad/Privacidad";
 import EliminarCuenta from "./componentes/ZonaTienda/Configuracion/Eliminar_cuenta/EliminarCuenta";
+import Chat from "./componentes/ZonaTienda/Chat/Chat";
 
 
 const optionsPayPal = {
@@ -87,7 +88,7 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
                   {
-                     path: 'Configuración', element: <Configuracion />, children: [
+                     path: 'Configuración', element: <Configuracion />, loader: securityApplication, children: [
                         { path: 'InfoPerfil', element: <InfoPerfil /> },
                         { path: 'CambiarPassword', element: <NuevaPassword /> },
                         { path: 'Privacidad', element: <Privacidad /> },
@@ -117,29 +118,17 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
 
-                  {
-                     path: 'Productos',
-                     element: <Productos />
-                  },
+                  { path: 'Soporte', element: <Chat /> },
 
-                  {
-                     path: 'Producto/:categoria/:slug',
-                     element: <InfoProducto />,
-                     loader: getChosenProduct
-                  },
+                  { path: 'Productos', element: <Productos /> },
 
-                  {
-                     path: 'Cart',
-                     element: <Carrito />,
-                     loader: getAllProducts
-                  },
+                  { path: 'Producto/:categoria/:slug', element: <InfoProducto />, loader: getChosenProduct },
+
+                  { path: 'Cart', element: <Carrito />, loader: getAllProducts },
                ]
             },
 
-            {
-               path: 'Proceso-Login-Discord',
-               element: <LoginCallback />
-            },
+            { path: 'Proceso-Login-Discord', element: <LoginCallback /> },
 
             { path: '*', element: <div className="container d-flex justify-content-center mt-4"><img src="../../logo_images/error.png" style={{ width: '800px' }} /></div> }
          ]

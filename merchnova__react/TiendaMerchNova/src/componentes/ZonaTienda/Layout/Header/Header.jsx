@@ -165,7 +165,9 @@ function Header() {
                         </div>
                     }
 
-                    <div className="subnav-item">Ofertas</div>
+                    <Link to='/Portal/Soporte'>
+                        <div className="subnav-item">Soporte</div>
+                    </Link>
 
                     <Link to='/Portal/Informacion/SobreNosotros'>
                         <div className="subnav-item has-dropdown" id='info' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Más información</div>
