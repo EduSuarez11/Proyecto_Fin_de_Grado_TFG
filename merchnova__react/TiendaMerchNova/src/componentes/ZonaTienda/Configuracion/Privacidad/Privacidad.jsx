@@ -1,23 +1,25 @@
 import './Privacidad.css'
 import useGlobalState from '../../../../global_state/globalState'
 import { useState } from 'react';
-import { request_auth } from '../../../Servicios/peticiones_auth_frontend/request_auth';
+import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 
 function Privacidad() {
     const { clientData, setClientData } = useGlobalState();
     const [privacity, setPrivacity] = useState({
-        visibility: clientData?.cuenta?.visibilidad ? clientData?.cuenta?.visibilidad : false,
-        notification: clientData?.cuenta?.notificaciones ? clientData?.cuenta?.notificationes : false
+        visibility: clientData?.cuenta?.visibilidad === 'publico' ? true : false,
+        notification: clientData?.cuenta?.notificaciones ? true : false
     });
 
     async function handlePrivacity(ev) {
-        setPrivacity({
+        console.log(ev.target.name, ev.target.checked);
+        const updatedPrivacity = {
             ...privacity,
-            visibility: ev.target.value,
-            notification: ev.target.value
-        });
-        const response = await request_auth.request_set_privacity(clientData, privacity);
-        console.log('Respuesta al cambiar privacidad: ', response);
+            [ev.target.name]: ev.target.checked
+        };
+        setPrivacity(updatedPrivacity);
+
+        const response = await request_profile.request_set_privacity(clientData, updatedPrivacity);
+        console.log('Respuesta al cambiar privacidad: ', response.dataUpdate.cuenta.visibilidad);
         setClientData(response.dataUpdate);
     }
 
@@ -39,7 +41,7 @@ function Privacidad() {
                     </div>
 
                     <div className="form-check form-switch">
-                        <input className="form-check-input" type="checkbox" checked={clientData?.cuenta?.visibilidad} onChange={handlePrivacity} />
+                        <input className="form-check-input" name='visibility' type="checkbox" checked={privacity.visibility} onChange={handlePrivacity} />
                     </div>
                 </div>
 
@@ -53,7 +55,7 @@ function Privacidad() {
                     </div>
 
                     <div className="form-check form-switch">
-                        <input className="form-check-input" type="checkbox" checked={clientData?.cuenta?.notificaciones} onChange={handlePrivacity} />
+                        <input className="form-check-input" name='notification' type="checkbox" checked={privacity.notification} onChange={handlePrivacity} />
                     </div>
                 </div>
 

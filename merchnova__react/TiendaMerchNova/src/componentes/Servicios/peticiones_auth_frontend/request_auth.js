@@ -31,17 +31,6 @@ export const request_auth = {
 
         const responseNewData = await requestNewData.json();
         return responseNewData;
-    },
-
-    request_set_privacity: async (clientData, privacity) => {
-        const requestUpdateData = await fetch('http://localhost:3000/api/auth/ChangeVisibility', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(clientData, privacity)
-        });
-
-        const responseUpdateData = await requestUpdateData.json();
-        return responseUpdateData;
     }
 }
 

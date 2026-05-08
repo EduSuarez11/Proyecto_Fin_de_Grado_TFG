@@ -12,14 +12,14 @@ export const securityApplication = async () => {
 export const accountLogged = async () => {
     const token = sessionStorage.getItem('token');
     const responseTokenVerify = await request_get_token.token_verify(token);
-    console.log('Respuesta token: ', responseTokenVerify);
+    //console.log('Respuesta token: ', responseTokenVerify);
     if (responseTokenVerify?.data?.user) return redirect('/');
 }
 
 export const areaAdmin = async () => {
     const token = sessionStorage.getItem('token');
     const responseTokenVerify = await request_get_token.token_verify(token);
-    console.log('Respuesta token: ', responseTokenVerify);
+    //console.log('Respuesta token: ', responseTokenVerify);
     if (responseTokenVerify?.data?.user?.cuenta?.rol !== 'ADMINISTRADOR') return redirect('/');
 }
 
