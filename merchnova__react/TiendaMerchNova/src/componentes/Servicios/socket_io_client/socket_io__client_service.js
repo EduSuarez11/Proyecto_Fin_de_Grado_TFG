@@ -17,18 +17,38 @@ export default {
         //}
     },
 
-    adminListen: function (adminId) {
+    adminListen: function (adminId, setRoom) {
         this.connectionServer.on(`notification_admin_${adminId}`, (data) => {
             console.log('Nuevo cliente desde admin: ', data.keyChat);
-            this.connectionServer.emit('adminJoinRoom', data.keyChat)
+            setRoom(data.keyChat);
+            this.connectionServer.emit('adminJoinRoom', data.keyChat);
         })
     },
 
-    joinRoom(clientId) {
+    joinRoom: function(clientId) {
         this.connectionServer.emit('joinRoom', clientId);
     },
 
-    listenMessages(callback) {
-        this.connectionServer.on('receiveMsg', callback);
+    listenMessages: function(callback) {
+        //this.connectionServer.off('receiveMsg');
+        this.connectionServer.on('receiveMsg', (data) => {
+            console.log('Recibiendo mensaje del servidor de socket.io');
+            const message = JSON.parse(data);
+            callback(message);
+        });
+    },
+
+    getHistoryChat: function(callback) {
+        this.connectionServer.on('historyChat', (data) => {
+            const messages = JSON.parse(data);
+            callback(messages);
+        });
+    },
+
+    getDataAdmin: function(callback) {
+        this.connectionServer.on('assignedAdmin', (data) => {
+            const adminData = JSON.parse(data);
+            callback(adminData);
+        });
     }
 }
