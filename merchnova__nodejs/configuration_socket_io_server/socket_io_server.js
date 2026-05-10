@@ -8,6 +8,11 @@ async function getAdmins() {
     return admins;
 }
 
+async function getClientById(clientId) {
+    const client = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) });
+    return client;
+}
+
 module.exports = (serverNode) => {
     const io = new Server(serverNode,
         {
@@ -24,12 +29,12 @@ module.exports = (serverNode) => {
             const keyChat = `sala-${clientId}`; // Nombre de la sala
             // Creación de la sala
             socket.join(keyChat);
-            console.log('Cliente se ha conectado en la sala: ', keyChat);
+            //console.log('Cliente se ha conectado en la sala: ', keyChat);
             if (!memoryStorage.has(keyChat)) {
                 // Obtener la lista de administradores de la base de datos
                 const admins = await getAdmins();
 
-                console.log('Administradores disponibles para asignar al cliente');
+                //console.log('Administradores disponibles para asignar al cliente');
 
                 // Asignar un administrador aleatorio
                 const assignedAdmin = admins[Math.floor(Math.random() * admins.length)];
@@ -68,9 +73,10 @@ module.exports = (serverNode) => {
         });
 
         // Enviar mensaje con la sala ya creada
-        socket.on('sendMsg', (data) => {
+        socket.on('sendMsg', async (data) => {
             const { keyChat, contenido, transmitterId, timestamp } = data;
             const session = memoryStorage.get(keyChat);
+            let dataClient; 
 
             console.log(`NUEVO MENSAJE de [${transmitterId}] para la sala [${keyChat}]: ${contenido}`);
             io.to(keyChat).emit('receiveMsg', JSON.stringify(data));
@@ -78,12 +84,17 @@ module.exports = (serverNode) => {
             if (session) {
                 const adminId = session.adminId;
                 session.messages.push({ contenido, transmitterId, timestamp });
-                console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
+                //console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
+
+                dataClient = await getClientById(session.clientId);
+                //console.log('Datos del cliente para el mensaje: ', dataClient);
 
                 io.emit(`notification_admin_${adminId}`, {
                     keyChat: keyChat,
                     ultimoMensaje: contenido,
-                    clientId: session.clientId
+                    clientId: session.clientId,
+                    timestamp,
+                    dataClient
                 });
             }
             // socket.emit(`notification_admin_${session.adminId}`, {
@@ -96,11 +107,11 @@ module.exports = (serverNode) => {
         // El administrador se une a la sala del cliente
         socket.on('adminJoinRoom', (keyChat) => {
             socket.join(keyChat);
-            console.log('Administrador se ha unido a la sala de soporte: ', keyChat);
+            //console.log('Administrador se ha unido a la sala de soporte: ', keyChat);
 
             const session = memoryStorage.get(keyChat);
             if (session && session.messages.length > 0 && session.messages.length <= 1) {
-                console.log('Enviando historial de mensajes al administrador para la sala: ', keyChat);
+                //console.log('Enviando historial de mensajes al administrador para la sala: ', keyChat);
                 socket.emit('historyChat', JSON.stringify(session.messages));
             }
         })
