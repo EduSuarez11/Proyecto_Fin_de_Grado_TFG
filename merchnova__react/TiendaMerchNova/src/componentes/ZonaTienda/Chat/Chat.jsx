@@ -9,6 +9,7 @@ function Chat() {
     const [message, setMessage] = useState('');
     const [room, setRoom] = useState('');
     const [historial, setHistorial] = useState([]);
+    const [chosenChat, setChosenChat] = useState(null);
     const [adminInfo, setAdminInfo] = useState({ id: '', nombre: '', imagenCuenta: '' });
     const [chatUsers, setChatUsers] = useState({
         sala: `sala-${clientData._id}`,
@@ -19,6 +20,8 @@ function Chat() {
         },
         mensajes: []
     });
+    const [chatList, setChatList] = useState([]); // <--- Para almacenar la lista de chats activos para el admin con objeto: { sala: '...', contenido: '...', transmitterId: '...', timestamp: '...' }
+    const [selectedChat, setSelectedChat] = useState(chatList?.find(chat => chat.sala === chosenChat))
     const [adminChatRooms, setAdminChatRooms] = useState([]);
 
     useEffect(
@@ -42,6 +45,32 @@ function Chat() {
                     console.log('Nuevo mensaje recibido en el cliente administrador: ', data);
                     const newMessage = data;
                     setHistorial([...historial, newMessage]);
+                    // Actualizar el último mensaje en la lista de chats activos para el admin
+                    setChatList((oldData) => {
+                        const indexChat = oldData.findIndex(chat => chat.sala === newMessage.keyChat);
+                        console.log('Index: ', indexChat)
+
+                        if (indexChat !== -1) {
+                            const updateList = [...oldData];
+                            const actualChat = updateList[indexChat];
+
+                            updateList[indexChat] = {
+                                ...actualChat.mensajes,
+                                mensajes: [...(actualChat.contenido), newMessage]
+                            }
+                            console.log(`✅ Sala ${newMessage.keyChat}: Ahora tiene ${updateList[indexChat].mensajes.length} mensajes.`);
+                            return updateList;
+                        } else {
+                            // Si el chat no existe, lo creamos con su primer mensaje
+                            const nuevoChat = {
+                                sala: newMessage.keyChat,
+                                datosCliente: newMessage.datosCliente,
+                                mensajes: [newMessage]
+                            };
+                            return oldData;
+                        }
+                        
+                    });
                 })
 
                 socket_io__client_service.getHistoryChat((messages) => {
@@ -49,7 +78,7 @@ function Chat() {
                     setHistorial(messages);
                 });
 
-                socket_io__client_service.adminListen(clientData?._id, setRoom);
+                socket_io__client_service.adminListen(clientData?._id, setRoom, setChatList);
 
             }
             //return () => {
@@ -59,7 +88,10 @@ function Chat() {
         }, []
     )
 
-    //console.log('Mensajes en el historial: ', chatUsers.mensajes[2].contenido);
+    console.log('Mensajes en el historial: ', chatList);
+    //console.log('Chat elegido: ', chosenChat)
+    //console.log('Chat: ', selectedChat)
+    //console.log('True o false: ', chatList.find(chat => chat.sala === chosenChat));
 
     function sendMessage() {
         //setMessage({...message, transmitterId: clientData._id, timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '), keyChat: `sala-${clientData._id}`});
@@ -80,14 +112,14 @@ function Chat() {
             });
         }
 
-        setMessage({contenido: ''}); // Limpiar el input después de enviar
+        setMessage({ contenido: '' }); // Limpiar el input después de enviar
     }
 
     return (
-        <div className="support-wrapper container-fluid">
+        <div className="container-fluid p-4">
             <div className="support-layout">
                 {/* SIDEBAR */}
-                {clientData.cuenta.rol === 'ADMIN' &&
+                {clientData.cuenta.rol === 'ADMINISTRADOR' &&
                     <div className="support-sidebar">
 
                         {/* HEADER */}
@@ -102,140 +134,80 @@ function Chat() {
                             <input type="text" placeholder="Buscar chat..." className="form-control" />
                         </div>
 
-                        <div className="chat-user active-chat">
-                            <div className="chat-user-left">
-                                <div className="chat-avatar-wrapper">
-                                    <img src="/images/avatar1.jpg" alt="" className="chat-user-avatar" />
-                                    <span className="online-dot"></span>
+
+                        {chatList?.map((chat, pos) =>
+                            <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => setChosenChat(chat.sala)}>
+                                <div className="chat-user-left">
+                                    <div className="chat-avatar-wrapper">
+                                        <img src={chat?.datosCliente?.cuenta?.imagenCuenta} alt={chat?.datosCliente?.nombreCompleto} className="chat-user-avatar" />
+                                        <span className="online-dot"></span>
+                                    </div>
+
+                                    <div>
+                                        <h6>{chat?.datosCliente?.nombreCompleto}</h6>
+                                        <p>{chat?.mensajes}</p>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <h6>Carlos Martínez</h6>
-                                    <p>Tengo un problema con mi pedido...</p>
+                                <div className="chat-meta">
+                                    <small>{chat?.timestamp}</small>
+                                    <span className="unread-badge">2</span>
                                 </div>
                             </div>
+                        )}
+                    </div>
+                }
 
-                            <div className="chat-meta">
-                                <small>16:42</small>
-                                <span className="unread-badge">2</span>
+                {(selectedChat !== null && selectedChat || clientData.cuenta.rol === 'CLIENTE') &&
+                    <div className="support-main-chat">
+                        <div className="chat-main-header">
+                            {/* DATOS ADMIN */}
+                            <div className="main-user-info">
+                                <img src={clientData?._id === adminInfo?.id ? clientData?.cuenta?.imagenCuenta : adminInfo?.imagenCuenta} alt={clientData?._id === adminInfo?.id ? clientData?.nombreCompleto : adminInfo?.nombre} className="main-chat-avatar" />
+                                <div>
+                                    <h6>{clientData?._id === adminInfo?.id ? clientData?.nombreCompleto : adminInfo?.nombre}</h6>
+                                    <span>{clientData?._id !== adminInfo?.id ? 'Administrador' : 'Cliente'}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="chat-user">
-                            <div className="chat-user-left">
-                                <div className="chat-avatar-wrapper">
-                                    <img src="/images/avatar2.jpg" alt="" className="chat-user-avatar" />
-                                    <span className="online-dot"></span>
-                                </div>
+                        <div className="chat-messages">
+                            {chatUsers.mensajes.map((msg, pos) =>
+                                <div className={msg?.transmitterId === clientData?._id ? "message-row user" : "message-row support"} key={pos}>
+                                    {msg?.transmitterId !== clientData?._id &&
+                                        <img src={adminInfo?.imagenCuenta} alt={adminInfo?.nombre} className="message-avatar" />
+                                    }
+                                    <div className={msg?.transmitterId === clientData._id ? "message-content user-content" : "message-content"}>
+                                        <div className="message-bubble">{msg?.contenido}</div>
 
-                                <div>
-                                    <h6>Laura Sánchez</h6>
-                                    <p>¿Cuándo llegará mi pedido?</p>
-                                </div>
-                            </div>
+                                        <div className={msg?.transmitterId === clientData?._id ? "message-info user-info" : "message-info"}>
+                                            <span>{msg?.transmitterId === clientData?._id ? clientData?.nombreCompleto : ''}</span>
+                                            <small>{msg?.timestamp}</small>
 
-                            <div className="chat-meta">
-                                <small>15:10</small>
-                            </div>
+                                            {msg?.transmitterId === clientData?._id &&
+                                                <span className="message-seen">
+                                                    <i className="bi bi-check2-all"></i>Visto
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    {msg?.transmitterId === clientData?._id &&
+                                        <img src={`${clientData?.cuenta?.imagenCuenta}`} alt={clientData?.nombreCompleto} className="message-avatar" />
+                                    }
+                                </div>
+                            )}
                         </div>
 
-                        <div className="chat-user">
-                            <div className="chat-user-left">
-                                <div className="chat-avatar-wrapper">
-                                    <img src="/images/avatar3.jpg" alt="" className="chat-user-avatar" />
-
-                                    <span className="offline-dot"></span>
-                                </div>
-
-                                <div>
-                                    <h6>David Gómez</h6>
-                                    <p>No puedo realizar el pago.</p>
-                                </div>
-                            </div>
-
-                            <div className="chat-meta">
-                                <small>Ayer</small>
-                            </div>
+                        <div className="chat-input-zone">
+                            <input type="text" className="form-control support-input" onChange={(e) => setMessage({ ...message, contenido: e.target.value })} placeholder="Escribe un mensaje..." />
+                            <button className="btn btn-send" onClick={sendMessage} >
+                                <i className="bi bi-send-fill"></i>
+                            </button>
                         </div>
                     </div>
                 }
 
-                <div className="support-main-chat">
-                    <div className="chat-main-header">
-                        {/* DATOS ADMIN */}
-                        <div className="main-user-info">
-                            <img src={clientData._id === adminInfo.id ? clientData.cuenta.imagenCuenta : adminInfo.imagenCuenta} alt={clientData._id === adminInfo.id ? clientData.nombreCompleto : adminInfo.nombre} className="main-chat-avatar" />
-                            <div>
-                                <h6>{clientData._id === adminInfo.id ? clientData.nombreCompleto : adminInfo.nombre}</h6>
-                                <span>{clientData._id !== adminInfo.id ? 'Administrador' : 'Cliente'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="chat-messages">
-                        {chatUsers.mensajes.map((msg, pos) =>
-                            <div className={msg?.transmitterId === clientData._id ? "message-row user" : "message-row support"} key={pos}>
-                                {msg?.transmitterId !== clientData._id &&
-                                    <img src={adminInfo.imagenCuenta} alt={adminInfo.nombre} className="message-avatar" />
-                                }
-                                <div className={msg?.transmitterId === clientData._id ? "message-content user-content" : "message-content"}>
-                                    <div className="message-bubble">{msg?.contenido}</div>
-
-                                    <div className={msg?.transmitterId === clientData._id ? "message-info user-info" : "message-info"}>
-                                        <span>{msg?.transmitterId === clientData._id ? clientData.nombreCompleto : ''}</span>
-                                        <small>{msg?.timestamp}</small>
-
-                                        {msg?.transmitterId === clientData._id &&
-                                            <span className="message-seen">
-                                                <i className="bi bi-check2-all"></i>Visto
-                                            </span>
-                                        }
-                                    </div>
-                                </div>
-
-                                {msg?.transmitterId === clientData._id &&
-                                    <img src={`${clientData.cuenta.imagenCuenta}`} alt={clientData.nombreCompleto} className="message-avatar" />
-                                }
-                            </div>
-                        )}
-
-                        {/* <div className="message-row support">
-                            <img src="/images/support-avatar.png" alt="" className="message-avatar" />
-
-                            <div className="message-content">
-                                <div className="message-bubble">Hola 👋 ¿En qué podemos ayudarte?</div>
-
-                                <div className="message-info">
-                                    <span>Soporte</span>
-                                    <small>16:40</small>
-                                </div>
-                            </div>
-                        </div> */}
-
-                        {/* <div className="message-row user">
-                            <div className="message-content user-content">
-                                <div className="message-bubble">Tengo un problema con mi pedido.</div>
-
-                                <div className="message-info user-info">
-                                    <small>16:42</small>
-
-                                    <span className="message-seen">
-                                        <i className="bi bi-check2-all"></i>Visto
-                                    </span>
-                                </div>
-                            </div>
-
-                            <img src="/images/avatar1.jpg" alt="" className="message-avatar" />
-                        </div> */}
-                    </div>
-
-                    <div className="chat-input-zone">
-                        <input type="text" className="form-control support-input" onChange={(e) => setMessage({ ...message, contenido: e.target.value })} placeholder="Escribe un mensaje..." />
-                        <button className="btn btn-send" onClick={sendMessage} >
-                            <i className="bi bi-send-fill"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     )

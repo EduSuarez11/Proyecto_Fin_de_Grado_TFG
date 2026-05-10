@@ -431,267 +431,267 @@
 }
 
 /* LAYOUT */
-.support-layout{
-    display:flex;
+.support-layout {
+    display: flex;
 
-    height:85vh;
+    height: 85vh;
 
-    background:white;
+    background: white;
 
-    border-radius:28px;
+    border-radius: 28px;
 
-    overflow:hidden;
+    overflow: hidden;
 
     box-shadow:
-      0 12px 35px rgba(0,0,0,.05);
+        0 12px 35px rgba(0, 0, 0, .05);
 }
 
 
 /* SIDEBAR */
-.support-sidebar{
-    width:360px;
+.support-sidebar {
+    width: 360px;
 
-    border-right:1px solid #f1f1f1;
+    border-right: 1px solid #f1f1f1;
 
-    background:#fcfbff;
+    background: #fcfbff;
 
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
 }
 
 
 /* HEADER */
-.sidebar-header{
-    padding:25px;
+.sidebar-header {
+    padding: 25px;
 
-    border-bottom:1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f1f1;
 }
 
-.sidebar-header h5{
-    margin:0;
+.sidebar-header h5 {
+    margin: 0;
 
-    font-weight:800;
+    font-weight: 800;
 
-    color:#351c57;
+    color: #351c57;
 }
 
-.sidebar-header span{
-    font-size:13px;
-    color:#888;
+.sidebar-header span {
+    font-size: 13px;
+    color: #888;
 }
 
 
 /* SEARCH */
-.sidebar-search{
-    padding:20px;
+.sidebar-search {
+    padding: 20px;
 }
 
-.sidebar-search input{
-    height:48px;
+.sidebar-search input {
+    height: 48px;
 
-    border-radius:14px;
+    border-radius: 14px;
 
-    border:1px solid #e5d8ff;
+    border: 1px solid #e5d8ff;
 }
 
 
 /* USER */
-.chat-user{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.chat-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    padding:18px 20px;
+    padding: 18px 20px;
 
-    cursor:pointer;
+    cursor: pointer;
 
-    transition:.25s;
+    transition: .25s;
 
-    border-bottom:1px solid #f7f7f7;
+    border-bottom: 1px solid #f7f7f7;
 }
 
-.chat-user:hover{
-    background:#f7f2ff;
+.chat-user:hover {
+    background: #f7f2ff;
 }
 
 
 /* ACTIVO */
-.active-chat{
-    background:#f3ebff;
+.active-chat {
+    background: #f3ebff;
 }
 
 
 /* LEFT */
-.chat-user-left{
-    display:flex;
-    align-items:center;
-    gap:14px;
+.chat-user-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 
 /* AVATAR */
-.chat-user-avatar{
-    width:52px;
-    height:52px;
+.chat-user-avatar {
+    width: 52px;
+    height: 52px;
 
-    border-radius:50%;
+    border-radius: 50%;
 
-    object-fit:cover;
+    object-fit: cover;
 }
 
 
 /* WRAPPER */
-.chat-avatar-wrapper{
-    position:relative;
+.chat-avatar-wrapper {
+    position: relative;
 }
 
 
 /* ONLINE */
 .online-dot,
-.offline-dot{
-    position:absolute;
+.offline-dot {
+    position: absolute;
 
-    bottom:2px;
-    right:2px;
+    bottom: 2px;
+    right: 2px;
 
-    width:12px;
-    height:12px;
+    width: 12px;
+    height: 12px;
 
-    border-radius:50%;
+    border-radius: 50%;
 
-    border:2px solid white;
+    border: 2px solid white;
 }
 
-.online-dot{
-    background:#22c55e;
+.online-dot {
+    background: #22c55e;
 }
 
-.offline-dot{
-    background:#9ca3af;
+.offline-dot {
+    background: #9ca3af;
 }
 
 
 /* TEXT */
-.chat-user h6{
-    margin:0;
+.chat-user h6 {
+    margin: 0;
 
-    font-size:15px;
+    font-size: 15px;
 
-    font-weight:700;
+    font-weight: 700;
 
-    color:#351c57;
+    color: #351c57;
 }
 
-.chat-user p{
-    margin:0;
+.chat-user p {
+    margin: 0;
 
-    font-size:13px;
+    font-size: 13px;
 
-    color:#888;
+    color: #888;
 
-    max-width:160px;
+    max-width: 160px;
 
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
 /* META */
-.chat-meta{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    gap:6px;
+.chat-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
 }
 
-.chat-meta small{
-    color:#999;
+.chat-meta small {
+    color: #999;
 }
 
 
 /* BADGE */
-.unread-badge{
-    width:22px;
-    height:22px;
+.unread-badge {
+    width: 22px;
+    height: 22px;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    border-radius:50%;
+    border-radius: 50%;
 
     background:
-      linear-gradient(90deg,#7b2ff7,#c778fb);
+        linear-gradient(90deg, #7b2ff7, #c778fb);
 
-    color:white;
+    color: white;
 
-    font-size:12px;
+    font-size: 12px;
 
-    font-weight:700;
+    font-weight: 700;
 }
 
 
 /* MAIN */
-.support-main-chat{
-    flex:1;
+.support-main-chat {
+    flex: 1;
 
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
 }
 
 
 /* HEADER MAIN */
-.chat-main-header{
-    padding:20px 25px;
+.chat-main-header {
+    padding: 20px 25px;
 
-    border-bottom:1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f1f1;
 
-    background:white;
+    background: white;
 }
 
 
 /* USER INFO */
-.main-user-info{
-    display:flex;
-    align-items:center;
-    gap:14px;
+.main-user-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.main-chat-avatar{
-    width:54px;
-    height:54px;
+.main-chat-avatar {
+    width: 54px;
+    height: 54px;
 
-    border-radius:50%;
+    border-radius: 50%;
 
-    object-fit:cover;
+    object-fit: cover;
 }
 
-.main-user-info h6{
-    margin:0;
+.main-user-info h6 {
+    margin: 0;
 
-    font-weight:700;
+    font-weight: 700;
 
-    color:#351c57;
+    color: #351c57;
 }
 
-.main-user-info span{
-    font-size:13px;
-    color:#888;
+.main-user-info span {
+    font-size: 13px;
+    color: #888;
 }
 
 
 /* RESPONSIVE */
-@media(max-width:992px){
+@media(max-width:992px) {
 
-    .support-layout{
-        flex-direction:column;
-        height:auto;
+    .support-layout {
+        flex-direction: column;
+        height: auto;
     }
 
-    .support-sidebar{
-        width:100%;
-        border-right:none;
-        border-bottom:1px solid #f1f1f1;
+    .support-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #f1f1f1;
     }
 }

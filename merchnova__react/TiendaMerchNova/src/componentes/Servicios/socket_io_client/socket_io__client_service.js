@@ -4,23 +4,39 @@ export default {
     connectionServer: io('http://localhost:3000'),
 
     sendMessage: function (eventName, data) {
-        console.log('Enviado la siguiente info: ', data);
+        //console.log('Enviado la siguiente info: ', data);
         // Enviamos la información al servidor
         this.connectionServer.emit(eventName, data);
     },
 
     getMessage: function (nombreEvento, funcionHandler) {
         //if (this.connectionServer.hasListeners()) {
-            console.log('Configurando recepción de mensajes del servidor de socket.io para el evento:', nombreEvento, 'con funcion handler:', funcionHandler);
+            //console.log('Configurando recepción de mensajes del servidor de socket.io para el evento:', nombreEvento, 'con funcion handler:', funcionHandler);
             this.connectionServer.on(nombreEvento, funcionHandler);
 
         //}
     },
 
-    adminListen: function (adminId, setRoom) {
+    adminListen: function (adminId, setRoom, setChatList) {
         this.connectionServer.on(`notification_admin_${adminId}`, (data) => {
-            console.log('Nuevo cliente desde admin: ', data.keyChat);
+            //console.log('Nuevo cliente desde admin: ', data.keyChat);
             setRoom(data.keyChat);
+            setChatList((oldData) => {
+                // Comprobamos si el chat ya existe en nuestra lista para no duplicar
+                const index = oldData?.find(chat => chat?.sala === data.keyChat);
+                console.log('Datos antiguos: ', oldData);
+                
+                if (!index) {
+                    const chat = {
+                        sala: data.keyChat,
+                        datosCliente: data.dataClient,
+                        timestamp: data.timestamp,
+                        mensajes: data.ultimoMensaje
+                    };
+                    return [...oldData, chat];
+                }
+                return oldData;
+            });
             this.connectionServer.emit('adminJoinRoom', data.keyChat);
         })
     },
@@ -32,7 +48,7 @@ export default {
     listenMessages: function(callback) {
         //this.connectionServer.off('receiveMsg');
         this.connectionServer.on('receiveMsg', (data) => {
-            console.log('Recibiendo mensaje del servidor de socket.io');
+            //console.log('Recibiendo mensaje del servidor de socket.io');
             const message = JSON.parse(data);
             callback(message);
         });
