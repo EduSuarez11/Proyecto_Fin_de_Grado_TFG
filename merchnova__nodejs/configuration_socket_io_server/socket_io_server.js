@@ -68,7 +68,6 @@ module.exports = (serverNode) => {
 
                 socket.emit('assignedAdmin', JSON.stringify(adminData));
                 memoryStorage.set(keyChat, { clientId, adminId: session.adminId, messages: [], adminData });
-
             }
         });
 
@@ -76,14 +75,14 @@ module.exports = (serverNode) => {
         socket.on('sendMsg', async (data) => {
             const { keyChat, contenido, transmitterId, timestamp } = data;
             const session = memoryStorage.get(keyChat);
-            let dataClient; 
+            let dataClient;
 
             console.log(`NUEVO MENSAJE de [${transmitterId}] para la sala [${keyChat}]: ${contenido}`);
             io.to(keyChat).emit('receiveMsg', JSON.stringify(data));
-            //socket.emit('adminJoinRoom', keyChat);
+            // Guardar el mensaje en la sesión correspondiente
             if (session) {
                 const adminId = session.adminId;
-                session.messages.push({ contenido, transmitterId, timestamp });
+                messages = { contenido, transmitterId, timestamp, keyChat };
                 //console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
 
                 dataClient = await getClientById(session.clientId);
@@ -91,17 +90,12 @@ module.exports = (serverNode) => {
 
                 io.emit(`notification_admin_${adminId}`, {
                     keyChat: keyChat,
+                    dataClient,
+                    horaUltimoMensaje: timestamp,
                     ultimoMensaje: contenido,
-                    clientId: session.clientId,
-                    timestamp,
-                    dataClient
+                    mensajes: [...session.messages, messages]
                 });
             }
-            // socket.emit(`notification_admin_${session.adminId}`, {
-            //     keyChat,
-            //     transmitterId
-            // });
-
         });
 
         // El administrador se une a la sala del cliente
