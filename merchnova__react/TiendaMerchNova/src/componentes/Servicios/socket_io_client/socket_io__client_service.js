@@ -24,14 +24,15 @@ export default {
             setChatList((oldData) => {
                 // Comprobamos si el chat ya existe en nuestra lista para no duplicar
                 const index = oldData?.find(chat => chat?.sala === data.keyChat);
-                console.log('Datos antiguos: ', oldData);
+                console.log('Datos antiguos: ', index);
                 
                 if (!index) {
                     const chat = {
                         sala: data.keyChat,
                         datosCliente: data.dataClient,
-                        timestamp: data.timestamp,
-                        mensajes: data.ultimoMensaje
+                        horaUltimoMensaje: data.horaUltimoMensaje,
+                        ultimoMensaje: data.ultimoMensaje,
+                        mensajes: data.mensajes
                     };
                     return [...oldData, chat];
                 }
