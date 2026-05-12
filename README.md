@@ -360,3 +360,278 @@ Compatibilidad
 Dsponibilidad
 - La aplicación deberá estar accesible siempre que el servidor se encuentre operativo.
 - El sistema deberá minimizar errores críticos que afecten al uso de la plataforma como la pérdida de datos.
+
+---
+
+### 2.5 Estructura de navegación
+
+---
+
+### 2.6 Organización de la lógica de negocio
+La lógica de negocio de la aplicación se encuentra implementada principalmente en el backend, encargado de procesar las solicitudes realizadas por los usuarios, gestionar la información almacenada en la base de datos y controlar el funcionamiento general del sistema.
+Para facilitar el mantenimiento y la escalabilidad del proyecto, el backend se ha organizado siguiendo una estructura modular, separando cada responsabilidad en diferentes carpetas y módulos independientes.
+
+- Estructura general del backend
+    La aplicación backend se organiza en distintas capas con funciones específicas:
+    Rutas: las rutas definen los endpoints de la API RESTful y gestionan las solicitudes HTTP enviadas desde el frontend.
+    Cada conjunto de rutas se encuentra separado según la funcionalidad correspondiente, por ejemplo:
+    - Rutas de autentificación (usuarios y tokens).
+    - Rutas de productos (`filtrado`o por `categorías`).
+    - Rutas del carrito.
+    - Rutas de la pasarela de pago.
+    - Rutas del perfil del usuario.
+
+    > Estas rutas reciben las peticiones del cliente y las redirigen hacia la lógica correspondiente.
+
+
+- Servicios
+    Algunas funcionalidades auxiliares se encuentran separadas en módulos independientes para facilitar la reutilización del código. También destacan las peticiones a APIs externas. Entre ellas destacan:
+
+    - Gestión de JsonWebToken.
+    - Envío de emails con la API de Mailjet.
+    - Gestión de la pasarela de pago.
+
+
+- Conexión con APIs de terceros y servicios externos
+    La aplicación puede integrarse con distintos servicios externos para ampliar funcionalidades y mejorar la experiencia del usuario. Entre ellas podemos encontrar:
+    
+    - Pasarelas de pago
+        La tienda online puede conectarse con plataformas de pago externas para permitir la realización de compras de forma segura y eficaz. Esto permite procesar pagos online, validar transacciones, gestionar el método de pago, etc. La comunicación con estos servicios se realiza mediante APIs proporcionadas por las propias plataformas.
+
+    - Servicios de autenticación
+        La aplicación cuenta con autentificación de Google o Discord, que permiten iniciar sesión sin introducir ningún dato, recogiendo su información a través de las plataformas anteriormente mencionadas. Para ello, se requiere de la comunicación de la API tanto de Google como de Discord que ponen a disposición en sus aplicaciones. Por ello, permite al usuario a mantener su sesión activa, como un usuario normal, evita introducir cualquier dato al recogerlo de las plataformas que el usuario haya utilizado para el registro.
+
+    - Servicios de email
+        Otra plataforma con la que podemos comunicar es con la API de Mailjet, un proveedor de servicios de correo electrónico que permite enviar emails transaccionales de forma automática dentro de nuestra aplicación con el objetivo de activar las cuentas que se quieran registrar, recuperación de contraseña, confirmar el pago de los pedidos, notificaciones, entre otros posibles usos.
+
+    - Servicios de ubicación
+        Este servicio nos permite obtener todos los países del mundo (`nombre`, `bandera`, `idiomas`, ...), que posteriormente se utilizan a la hora de configurar nuestro perfil.
+
+    Gracias a esta estructura flexible, la aplicación puede ampliarse y adaptarse fácilmente a nuevas necesidades o funcionalidades que se implementarán en el futuro, permitiendo reutilizar código.
+
+---
+
+### 2.7 Modelo de datos simplificado
+La aplicación utiliza una base de datos NoSQL basada en documentos JSON mediante MongoDB. La información se organiza en colecciones que almacenan distintos tipos de datos relacionados con el funcionamiento de la tienda online.
+Cada colección agrupa documentos con estructuras flexibles adaptadas a las necesidades de la aplicación. Esta organización facilita la escalabilidad y la gestión de la información.
+
+#### Colección de clientes
+En primer lugar, tenemos la colección `clientes` que almacena toda la información relacionada con los usuarios registrados en la plataforma.
+Cada documento representa un usuario e incluye información personal, datos de autenticación, pedidos realizados, carrito de compra y direcciones guardadas, además cuenta con un identificador que lo diferencia de otros usuarios. Ejemplo de una colección con estructura reducida:
+```
+    {
+        "nombreCompleto": "...",
+        "cuenta": {},
+        "pedidos": [],
+        "carrito": {},
+        "direcciones": [],
+        "chat": {} / []
+    }
+
+```
+
+##### Cuenta
+Poco a poco vamos describiendo cada propiedad (propiedades con `objetos` y `arrays`). Para empezar tenemos la propiedad `cuenta` donde se almacenan los datos relacionados con el acceso y configuración del usuario. Sus datos principales son:
+
+- Correo electrónico.
+- Contraseña (cifrada).
+- Género (Generalmente puede ser `Masculino`, `Femenino`, `Neutro`, `Prefiero no decirlo`).
+- Estado de activación de la cuenta.
+- Imagen de perfil (Serializada en `Base64`).
+- Fecha de creación (Formato `Date`).
+- Información personal adicional (`Sobre mi`).
+- Número de teléfono.
+- Tipo de autenticación.
+- Rol del usuario.
+- Configuración de privacidad y notificaciones.
+
+Ejemplo de visualización: 
+```
+    {
+        "cuenta": {
+            "email": "...",
+            "password": "...$",
+            "imagenCuenta": "data:image...",
+            "fechaCreacion": 1219031290
+            "rol": "ADMINISTRADOR",
+            "visibilidad": "publico"
+            ...
+        }
+    }
+```
+
+##### Pedidos
+Cada cliente dispone de un array de `pedidos` donde se almacena el historial de compras realizadas dentro de la plataforma. Cada pedido contiene información relacionada con:
+
+- Productos comprados (#productos-seccion) -> consta de un array y tiene relación con el producto y contiene todos los datos del producto, que comentaremos posteriormente.
+- Cantidad de productos.
+- Estado del pedido.
+- Fecha de pago y de envío.
+- Método de pago.
+- Dirección de envío.
+- Dirección de facturación.
+- Costes y total del pedido.
+- Otros datos (información del `pagador`)
+
+Ejemplo de visualización:
+```
+    {
+        "pedidos": [
+            {
+                "items": [
+                    {
+                        "producto": {
+                            "_id": "...",
+                            "nombre": "...",
+                            "precio": 20.99
+                        },
+                        "quantity": 1
+                    }
+                ],
+                "estado": "COMPLETED",
+                "subtotal": 20.99,
+                "gastosEnvio": 1.03,
+                "total": 22.02,
+                ...
+            }
+        ]
+    }
+```
+
+##### Carrito
+El documento del usuario también contiene un objeto `carrito` que almacena temporalmente los productos seleccionados antes de finalizar una compra. Cada usuario tendrá su propio carrito con sus respectivos productos.
+
+- Información del producto añadido -> Cantidades seleccionadas.
+- Total.
+- Subtotal.
+- Gastos de envío (por defecto será de `1.03 €`).
+- Precio total.
+
+Ejemplo visualizado:
+```
+    {
+        "carrito": {
+            "itemsPedido": [], <--- Información de los productos añadidos
+            "subtotal": 0,
+            "total": 1.03
+        }
+    }
+```
+
+##### Direcciones
+La colección también almacena múltiples direcciones asociadas a cada cliente para facilitar futuros pedidos. Como máximo, el usuario podrá disponer de tan solo 3 direcciones.
+
+- Domicilio.
+- Provincia.
+- Municipio.
+- Código postal.
+- País.
+
+Ejemplo de visualización:
+```
+    {
+        "direcciones": [
+            {
+                "domicilio": "...",
+                "provincia": "...",
+                "municipio": "...",
+                "codigoPostal": "...",
+                "pais": "Spain"
+            }
+        ]
+    }
+```
+> Las relaciones principales de la colección `clientes` son las siguientes:
+>   `Productos` — mediante los pedidos y carrito de compra.
+>   `Pedidos` — almacenados directamente dentro del usuario.
+>   `Direcciones` — asociadas al cliente para envíos y facturación.
+
+Esta estructura permite centralizar casi toda parte de la información relacionada con el usuario dentro de un único documento, facilitando consultas rápidas y reduciendo la complejidad de algunas operaciones en la base de datos.
+
+#### Colección de productos
+La colección `productos` almacena toda la información relacionada con los artículos disponibles dentro de la tienda online.
+Cada documento representa un producto individual y contiene información necesaria para su visualización, clasificación y gestión dentro de la plataforma. Como en la coleccion descrita anteriormente, esta también se identifica con un id (`identificador`) que diferencia de las demás.
+
+Esta colección es una de las principales de la aplicación, ya que se encuentra directamente relacionada con funcionalidades como el catálogo de productos, el carrito de compra y los pedidos realizados por los usuarios.
+
+##### Propiedades de la tienda {#productos-seccion}
+En esta colección podemos encontrar una variedad de propiedades que describen el producto, además tendran una relación con pedidos (`clientes`). Dentro de cada pedido se almacena información del producto adquirido, incluyendo datos como:
+
+- Nombre y descripción del producto (propiedades separadas).
+- Precio del producto.
+- Rebaja del producto.
+- Imagen.
+- Categoría.
+- Talla (dependiendo de la categoría, puede ser `null`).
+- Valoraciones.
+- Stock (si es 0, no se puede adquirir).
+- Fecha de subida por parte del administrador.
+- Slug (formado por categoría-nombre).
+- Path (utilizado para numerar los productos).
+
+Ejemplo de visualización:
+```
+    {
+        "nombre": "...",
+        "descripcion": "...",
+        "precio": 15.99,
+        "rebaja": 0,
+        "imagen": "...",
+        "categoria": "...",
+        "talla": [], <--- null dependiendo de la categoría
+        "stock": 25,
+        "valoraciones": 4.1,
+        "slug": "taza-mia",
+        "path": "1",
+        "createdAt": 1232109391
+    }
+```
+El campo categoria permite clasificar los productos según el tipo de artículo disponible en la tienda. Algunas categorías utilizadas pueden ser: camisetas (con talla), sudaderas (con talla), tazas, llaveros, peluches y pósters. Por ello, permite una organización del catálogo y filtrado de forma eficiente.
+
+> La colección productos mantiene relación principalmente con la coleccion clientes:
+>   `Carrito` — mediante el carrito y los pedidos.
+>   `Pedidos` — los productos comprados se almacenan dentro de cada pedido.
+>   `Categoría` — utilizadas para calcular la puntuación media de cada producto.
+
+
+#### Colección de categorías
+La colección `categorías` almacena las diferentes categorías disponibles dentro de la tienda online. Su función principal es organizar los productos del catálogo y facilitar la navegación y búsqueda de artículos por parte de los usuarios.
+
+Cada documento representa una categoría individual y contiene la información necesaria para identificarla dentro de la aplicación. En este caso, lo utilizaremos para mostrar todas las categorías y según el usuario clickea en una, directamente le redirige al catálogo de productos filtrado solamente por la categoría escogida.
+
+Ejemplo de visualizacion:
+```
+[
+    {
+        "nombreCat": "Tazas",
+        "pathCat": "1"
+    },
+
+    {
+        "nombreCat": "Camisetas",
+        "pathCat": "2"
+    },
+    ...
+]
+```
+
+## 3. Bibliotecas y fuentes de información
+Durante el desarrollo del proyecto he utilizado diferentes fuentes de información, documentaciones oficiales, APIs y herramientas de apoyo que han servido como referencia tanto para la implementación técnica como para la resolución de problemas encontrados durante el desarrollo.
+
+### Documentación oficial y de tecnologías
+#### React
+[React](https://es.react.dev/reference/react) — Documentación oficial utilizada para el desarrollo del frontend basado en componentes y gestión de estados.
+
+#### Node.js
+[Node.js](https://nodejs.org/docs/latest/api/) — Configuramos un entorno de ejecución utilizado para el desarrollo del backend.
+
+#### MongoDB
+[MongoDB](https://www.mongodb.com/es/docs/) — He revisado la Documentación y recursos relacionados con la base de datos NoSQL utilizada en el proyecto. Como por ejemplo, a la hora de realizar consultas en la base de datos.
+
+#### MDN Web Docs
+[MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript) — Fuente de consulta para HTML, CSS, JavaScript. Sobretodo utilizado para JavaScript.
+
+#### Bootstrap
+[BootStrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) — Framework CSS utilizado como apoyo para estilos y diseño responsive de la aplicación.
+
+### APIs
