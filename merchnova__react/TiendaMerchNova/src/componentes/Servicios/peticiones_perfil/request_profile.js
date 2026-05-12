@@ -43,13 +43,23 @@ export const request_profile = {
     },
 
     request_set_privacity: async (clientData, privacity) => {
-            const requestUpdateData = await fetch('http://localhost:3000/api/profile/ChangeVisibility', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({clientData, privacity})
-            });
-    
-            const responseUpdateData = await requestUpdateData.json();
-            return responseUpdateData;
-        }
+        const requestUpdateData = await fetch('http://localhost:3000/api/profile/ChangeVisibility', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientData, privacity })
+        });
+
+        const responseUpdateData = await requestUpdateData.json();
+        return responseUpdateData;
+    },
+
+    request_create_chat: async (newChat) => {
+        const requestCreateChat = await fetch('http://localhost:3000/api/profile/CreateChat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newChat)
+        });
+        const responseCreateChat = await requestCreateChat.json();
+        return responseCreateChat;
+    }
 }
