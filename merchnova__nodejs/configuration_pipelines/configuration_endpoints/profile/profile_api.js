@@ -100,10 +100,12 @@ manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
         console.log(req.body);
         const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) },
-            { $set: { 
-                'cuenta.visibilidad': privacity.visibility ? 'publico' : 'privado',
-                'cuenta.notificaciones': privacity.notification
-            } },
+            {
+                $set: {
+                    'cuenta.visibilidad': privacity.visibility ? 'publico' : 'privado',
+                    'cuenta.notificaciones': privacity.notification
+                }
+            },
             { returnDocument: "after" }
         );
         if (updateData.modifiedCount === 0) throw new Error('No se pudo actualizar la visibilidad.');
@@ -112,8 +114,58 @@ manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
         console.log('Error al cambiar la privacidad: ', error);
         res.status(200).send({ code: 15, message: `${error.message}` });
     }
+})
 
 
+manage_profile_data.post('/CreateChat', async (req, res, next) => {
+    try {
+        /*
+            sala: `sala-${clientData._id}`,
+            datosCliente: {idCliente, nombreCliente, imagenCuenta},
+            datosAdmin: {id, nombre, imagenCuenta}
+            mensajes: [], <-- { contenido: string, timestamp: number, transmitterId: string, }
+            fechaInicioChat: Date
+        */
+        const newChat = req.body;
+
+        const admins = await mongoose.connection.collection('clientes').find({ 'cuenta.rol': 'ADMINISTRADOR' }).toArray();
+        const assignedAdmin = admins[Math.floor(Math.random() * admins.length)];
+
+        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente) },
+            {
+                $push: {
+                    chats: {
+                        _id: newChat.sala,
+                        datosCliente: {
+                            idCliente: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente),
+                            nombreCliente: newChat.datosCliente.nombreCliente,
+                            imagenCuenta: newChat.datosCliente.imagenCuenta
+                        },
+                        datosAdmin: {
+                            idAdmin: new mongoose.Types.ObjectId(assignedAdmin._id),
+                            nombreAdmin: assignedAdmin.nombreCompleto,
+                            imagenCuenta: assignedAdmin.cuenta.imagenCuenta
+                        },
+                        mensajes: [
+                            {
+                                contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.', 
+                                timestamp: new Date(Date.now().toLocaleString()), 
+                                transmitterId: assignedAdmin._id.toString()
+                            }
+                        ],
+                        fechaInicioChat: Date.now()
+                    }
+                }
+            },
+            { returnDocument: "after" }
+        );
+        if (updateData.modifiedCount === 0) throw new Error('No se pudo crear el chat.');
+        res.status(200).send({ code: 0, message: 'Chat creado con éxito', data: { idChat: newChat.sala, datosAdmin } });
+    } catch (error) {
+        console.log('Error al crear el chat: ', error);
+        res.status(200).send({ code: 16, message: `${error.message}` });
+    }
 })
 
 module.exports = manage_profile_data;
