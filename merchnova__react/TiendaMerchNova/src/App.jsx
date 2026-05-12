@@ -118,7 +118,7 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
 
-                  { path: 'Soporte', element: <Chat /> },
+                  { path: 'Soporte/:salaId', element: <Chat /> },
 
                   { path: 'Productos', element: <Productos /> },
 
