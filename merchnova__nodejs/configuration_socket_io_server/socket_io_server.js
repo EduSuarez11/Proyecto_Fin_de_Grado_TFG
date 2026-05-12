@@ -73,22 +73,19 @@ module.exports = (serverNode) => {
 
         // Enviar mensaje con la sala ya creada
         socket.on('sendMsg', async (data) => {
-            const { keyChat, contenido, transmitterId, timestamp } = data;
-            const session = memoryStorage.get(keyChat);
-            let dataClient;
-
-            console.log(`NUEVO MENSAJE de [${transmitterId}] para la sala [${keyChat}]: ${contenido}`);
+            const { salaId, mensaje, datosCliente, datosAdmin } = data;
+            
+            console.log(`NUEVO MENSAJE de [${mensaje.transmitterId}] para la sala [${salaId}]: ${mensaje.contenido}`);
             io.to(keyChat).emit('receiveMsg', JSON.stringify(data));
             // Guardar el mensaje en la sesión correspondiente
-            if (session) {
-                const adminId = session.adminId;
-                messages = { contenido, transmitterId, timestamp, keyChat };
+            if (!memoryStorage.has(salaId)) {
+                memoryStorage.set(salaId, { datosCliente, datosAdmin, messages: [mensaje] });
+                //messages = { contenido, transmitterId, timestamp, keyChat };
                 //console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
 
-                dataClient = await getClientById(session.clientId);
                 //console.log('Datos del cliente para el mensaje: ', dataClient);
 
-                io.emit(`notification_admin_${adminId}`, {
+                io.emit(`notification_admin_${datosAdmin.idAdmin}`, {
                     keyChat: keyChat,
                     dataClient,
                     horaUltimoMensaje: timestamp,
