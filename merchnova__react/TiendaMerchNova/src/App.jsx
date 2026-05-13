@@ -34,6 +34,7 @@ import NuevaPassword from "./componentes/ZonaTienda/Configuracion/NuevaContrase√
 import Privacidad from "./componentes/ZonaTienda/Configuracion/Privacidad/Privacidad";
 import EliminarCuenta from "./componentes/ZonaTienda/Configuracion/Eliminar_cuenta/EliminarCuenta";
 import Chat from "./componentes/ZonaTienda/Chat/Chat";
+import DescripcionSoporte from "./componentes/ZonaTienda/Chat/DescripcionSoporte/DescripcionSoporte";
 
 
 const optionsPayPal = {
@@ -118,7 +119,13 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
 
-                  { path: 'Soporte/:salaId', element: <Chat /> },
+
+                  {
+                     path: 'Soporte', children: [
+                        { path: 'Ayuda', element: <DescripcionSoporte /> },
+                        { path: 'Chat/:salaId?', element: <Chat /> }
+                     ]
+                  },
 
                   { path: 'Productos', element: <Productos /> },
 

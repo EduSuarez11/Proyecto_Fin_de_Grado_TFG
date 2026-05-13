@@ -17,27 +17,27 @@ export default {
         //}
     },
 
-    adminListen: function (adminId, setRoom, setChatList) {
+    adminListen: function (adminId) {
         this.connectionServer.on(`notification_admin_${adminId}`, (data) => {
             //console.log('Nuevo cliente desde admin: ', data.keyChat);
-            setRoom(data.keyChat);
-            setChatList((oldData) => {
-                // Comprobamos si el chat ya existe en nuestra lista para no duplicar
-                const index = oldData?.find(chat => chat?.sala === data.keyChat);
-                console.log('Datos antiguos: ', index);
+            // setChatList((oldData) => {
+            //     // Comprobamos si el chat ya existe en nuestra lista para no duplicar
+            //     const index = oldData?.find(chat => chat?.sala === data.keyChat);
+            //     console.log('Datos antiguos: ', index);
                 
-                if (!index) {
-                    const chat = {
-                        sala: data.keyChat,
-                        datosCliente: data.dataClient,
-                        horaUltimoMensaje: data.horaUltimoMensaje,
-                        ultimoMensaje: data.ultimoMensaje,
-                        mensajes: data.mensajes
-                    };
-                    return [...oldData, chat];
-                }
-                return oldData;
-            });
+            //     if (!index) {
+            //         const chat = {
+            //             sala: data.keyChat,
+            //             datosCliente: data.dataClient,
+            //             datosAdmin: data.datosAdmin,
+            //             horaUltimoMensaje: data.horaUltimoMensaje,
+            //             ultimoMensaje: data.ultimoMensaje,
+            //             mensajes: data.mensajes
+            //         };
+            //         return [...oldData, chat];
+            //     }
+            //     return oldData;
+            // });
             this.connectionServer.emit('adminJoinRoom', data.keyChat);
         })
     },

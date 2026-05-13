@@ -4,46 +4,48 @@ import './Chat.css'
 import { useState } from "react";
 import socket_io__client_service from '../../Servicios/socket_io_client/socket_io__client_service';
 import { request_profile } from '../../Servicios/peticiones_perfil/request_profile';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 function Chat() {
-    const { clientData } = useGlobalState();
+    const { clientData, setClientData } = useGlobalState();
     const { salaId } = useParams();
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
-    const [room, setRoom] = useState('');
     const [historial, setHistorial] = useState([]);
     const [chats, setChats] = useState(clientData.cuenta.rol === 'ADMINISTRADOR' ? clientData.chats : []);
     const [chosenChat, setChosenChat] = useState(null);
     const [adminInfo, setAdminInfo] = useState({ id: '', nombre: '', imagenCuenta: '' });
-    const [chatUsers, setChatUsers] = useState({
-        sala: `sala-${clientData._id}`,
-        datosAdmin: {
-            _id: adminInfo.id,
-            nombreCompleto: adminInfo.nombre,
-            imagenCuenta: adminInfo.imagenCuenta
-        },
-        mensajes: []
-    });
     const [chatSelected, setChatSelected] = useState(salaId ?
         (clientData.cuenta.rol === 'ADMINISTRADOR'
-            ? clientData.chats.find(chat => chat._id === salaId) : clientData.chats._id === salaId
+            ? clientData.chats.find(chat => chat._id === salaId)
+            : clientData.chats._id === salaId ? clientData.chats : null
         ) : null); // <--- Para almacenar la lista de chats activos para el admin con objeto: { sala: '...', mensajes: '...', transmitterId: '...', horaUltimoMensaje: '...' }
-    const selectedChat = chatList.find(chat => chat.sala === chosenChat);
+    const selectedChat = chats.find(chat => chat._id === chosenChat);
     const [adminChatRooms, setAdminChatRooms] = useState([]);
+
+
 
     useEffect(
         () => {
             if (clientData.cuenta.rol === 'CLIENTE') {
                 // Conectar al servidor de Socket.IO
-                console.log('Datos del admin: ', adminInfo);
+                //console.log('Datos del admin: ', adminInfo);
                 socket_io__client_service.listenMessages((data) => {
                     console.log('Nuevo mensaje recibido en el cliente user: ', data);
                     const newMessage = data;
+                    setChatSelected({
+                        ...chatSelected,
+                        mensajes: [...chatSelected.mensajes, newMessage.mensaje]
+                    })
                     setHistorial([...historial, newMessage]);
                 });
-                socket_io__client_service.joinRoom(clientData?._id);
+                socket_io__client_service.joinRoom(clientData);
                 socket_io__client_service.getDataAdmin((data) => {
                     console.log("Datos del admin recibidos:", data);
+                    setChatSelected({
+                        ...chatSelected,
+                        mensajes: [...chatSelected.mensajes, newMessage.mensaje]
+                    })
                     setAdminInfo(data);
                 })
 
@@ -84,19 +86,17 @@ function Chat() {
                     setHistorial(messages);
                 });
 
-                socket_io__client_service.adminListen(clientData?._id, setRoom, setChatList);
+                socket_io__client_service.adminListen(clientData?._id);
 
             }
         }, []
     )
 
-    console.log('Mensajes en el historial: ', chatList);
-    //console.log('Chat elegido: ', chosenChat)
-    //console.log('Chat: ', selectedChat)
-    //console.log('True o false: ', chatList.find(chat => chat.sala === chosenChat));
+    console.log('Chat seleccionado: ', chatSelected);
+    console.log('Datos del chats: ', chats);
 
     function sendMessage() {
-        if (!message) return; // No enviar mensajes vacíos
+        if (!message.trim()) return; // No enviar mensajes vacíos
         //const sala = clientData.cuenta.rol === 'CLIENTE' ? `sala-${clientData._id}` : room
         console.log('Enviando mensaje a la sala: ', salaId);
         const messageToSend = {
@@ -104,52 +104,41 @@ function Chat() {
             mensaje: {
                 transmitterId: clientData?._id,
                 contenido: message,
-                timestamp: new Date(Date.now().toLocaleString())
+                timestamp: Date.now()
             },
             datosCliente: {
-                idCliente: selectedChat.datosCliente.idCliente,
-                nombreCliente: selectedChat.datosCliente.nombreCliente,
-                imagenCuenta: selectedChat.datosCliente.imagenCuenta
+                idCliente: chatSelected.datosCliente.idCliente,
+                nombreCliente: chatSelected.datosCliente.nombreCliente,
+                imagenCuenta: chatSelected.datosCliente.imagenCuenta
             },
             datosAdmin: {
-                idAdmin: selectedChat.datosAdmin.idAdmin,
-                nombreAdmin: selectedChat.datosAdmin.nombreAdmin,
-                imagenCuenta: selectedChat.datosAdmin.imagenCuenta
+                idAdmin: chatSelected.datosAdmin.idAdmin,
+                nombreAdmin: chatSelected.datosAdmin.nombreAdmin,
+                imagenCuenta: chatSelected.datosAdmin.imagenCuenta
             }
         };
-        
+
         socket_io__client_service.sendMessage('sendMsg', messageToSend);
         if (clientData.cuenta.rol === 'CLIENTE') {
-            setChatUsers({
-                ...chatUsers,
-                mensajes: [...chatUsers.mensajes, messageToSend], // agregamos el nuevo mensaje al historial del cliente
+            setChatSelected({
+                ...chatSelected,
+                mensajes: [...chatSelected.mensajes, messageToSend.mensaje]
             });
         } else {
-            // Para el admin, actualizamos la lista de chats activos con el nuevo mensaje
-            // Comprobar el chat al que se le ha enviado el mensaje para actualizar su historial
-            // setChatList((oldData) => {
-            //     const indexChat = oldData.findIndex(chat => chat.sala === messageToSend.keyChat);
-
-            //     if (indexChat !== -1) {
-            //         const updateList = [...oldData];
-            //         const actualChat = updateList[indexChat];
-
-            //         updateList[indexChat] = {
-            //             ...actualChat,
-            //             ultimoMensaje: messageToSend.contenido,
-            //             horaUltimoMensaje: messageToSend.timestamp,
-            //             mensajes: [...actualChat.mensajes, messageToSend]
-            //         }
-            //         console.log(`✅ Sala ${newMessage.keyChat}: Ahora tiene ${updateList[indexChat].mensajes.length} mensajes.`);
-            //         setMessage(''); // Limpiar el input después de enviar
-            //         return updateList;
-            //     } 
-            //     setMessage(''); 
-            //     return oldData;
-
-            // });
+            const updatedChats = chats.map(chat =>
+                chat._id === selectedChat._id
+                    ? {
+                        ...chat,
+                        mensajes: [...chat.mensajes, messageToSend.mensaje],
+                    }
+                    : chat
+            );
+            setChats(updatedChats);
+            setChatSelected(updatedChats.find(chat => chat._id === selectedChat._id));
         }
 
+
+        setMessage(''); // Limpiar el input después de enviar
     }
 
     return (
@@ -173,7 +162,7 @@ function Chat() {
 
 
                         {chats?.map((chat, pos) =>
-                            <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat.sala); setChatSelected(chat) }} key={pos}>
+                            <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
                                 <div className="chat-user-left">
                                     <div className="chat-avatar-wrapper">
                                         <img src={chat?.datosCliente?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
@@ -200,32 +189,32 @@ function Chat() {
                         <div className="chat-main-header">
                             {/* DATOS ADMIN */}
                             <div className="main-user-info">
-                                <img src={clientData?._id === (adminInfo?.id || clientData._id) ? selectedChat?.datosCliente?.cuenta?.imagenCuenta : adminInfo?.imagenCuenta} alt={clientData?._id === adminInfo?.id ? clientData?.nombreCompleto : adminInfo?.nombre} className="main-chat-avatar" />
+                                <img src={clientData?._id !== (adminInfo?.id || clientData._id) ? chatSelected?.datosCliente?.imagenCuenta : chatSelected?.datosAdmin?.imagenCuenta} alt={clientData?._id === adminInfo?.id ? clientData?.nombreCompleto : chatSelected.datosAdmin?.nombreAdmin} className="main-chat-avatar" />
                                 <div>
-                                    <h6>{clientData?._id === (adminInfo?.id || clientData._id) ? selectedChat?.datosCliente?.nombreCompleto : adminInfo?.nombre}</h6>
-                                    <span>{clientData?._id !== (adminInfo?.id || clientData._id) ? 'Administrador' : 'Cliente'}</span>
+                                    <h6>{clientData?._id !== (adminInfo?.id || clientData._id) ? chatSelected?.datosCliente?.nombreCompleto : chatSelected?.datosAdmin?.nombreAdmin}</h6>
+                                    <span>{clientData?._id === (adminInfo?.id || clientData._id) ? 'Administrador' : 'Cliente'}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="chat-messages">
-                            {selectedChat?.mensajes?.map((msg, pos) =>
+                            {chatSelected?.mensajes?.map((msg, pos) =>
                                 <div className={msg?.transmitterId === clientData?._id ? "message-row user" : "message-row support"} key={pos}>
                                     {msg?.transmitterId !== clientData?._id &&
-                                        <img src={chatList.datosAdmin?.imagenCuenta} alt={adminInfo?.datosAdmin?.nombreAdmin} className="message-avatar" />
+                                        <img src={chatSelected?.datosAdmin?.imagenCuenta} alt={chatSelected?.datosAdmin?.nombreAdmin} className="message-avatar" />
                                     }
                                     <div className={msg?.transmitterId === clientData._id ? "message-content user-content" : "message-content"}>
-                                        <div className="message-bubble">{msg?.contenido}</div>
+                                        <div className={msg?.transmitterId === clientData._id ? "message-bubble user-msg" : "message-bubble admin-info"}>{msg?.contenido}</div>
 
                                         <div className={msg?.transmitterId === clientData?._id ? "message-info user-info" : "message-info"}>
-                                            <span>{msg?.transmitterId === clientData?._id ? clientData?.nombreCompleto : chatList.datosAdmin.nombreAdmin}</span>
-                                            <small>{msg?.timestamp}</small>
+                                            <span>{msg?.transmitterId === clientData?._id ? clientData?.nombreCompleto : chatSelected.datosAdmin.nombreAdmin}</span>
+                                            <small>{new Date(msg?.timestamp).toLocaleString()}</small>
 
-                                            {msg?.transmitterId === clientData?._id &&
+                                            {/* {msg?.transmitterId === clientData?._id &&
                                                 <span className="message-seen">
                                                     <i className="bi bi-check2-all"></i>Visto
                                                 </span>
-                                            }
+                                            } */}
                                         </div>
                                     </div>
 
@@ -235,38 +224,9 @@ function Chat() {
                                 </div>
                             )}
                         </div>
-                        {/* 
-                        <div className="message-row support">
-                            <img src="/images/support-avatar.png" alt="" className="message-avatar"/>
-
-                            <div className="message-content">
-                                <div className="message-bubble">Hola 👋 ¿En qué podemos ayudarte?</div>
-
-                                <div className="message-info">
-                                    <span>Soporte</span>
-                                    <small>16:40</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="message-row user">
-                            <div className="message-content user-content">
-                                <div className="message-bubble">Tengo un problema con mi pedido.</div>
-
-                                <div className="message-info user-info">
-                                    <small>16:42</small>
-                                    <span className="message-seen">
-                                        <i className="bi bi-check2-all"></i>Visto
-                                    </span>
-                                </div>
-                            </div>
-
-                            <img src="/images/avatar1.jpg" alt="" className="message-avatar" />
-                        </div> 
-                        */}
 
                         <div className="chat-input-zone">
-                            <input type="text" className="form-control support-input" onChange={(e) => setMessage(e.target.value)} placeholder="Escribe un mensaje..." />
+                            <input type="text" className="form-control support-input" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Escribe un mensaje..." />
                             <button className="btn btn-send" onClick={sendMessage} >
                                 <i className="bi bi-send-fill"></i>
                             </button>

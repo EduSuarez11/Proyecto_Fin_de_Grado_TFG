@@ -171,8 +171,6 @@
 
 
 .message-row.support .message-bubble {
-    background: white;
-
     border: 1px solid #ececec;
 
     color: #444;
@@ -363,7 +361,6 @@
 
 
 .message-row.support .message-bubble {
-    background: white;
 
     border: 1px solid #ececec;
 
@@ -398,12 +395,22 @@
     padding: 0 6px;
     font-size: 12px;
     color: #888;
+    
 }
 
 
 
 .user-info {
     justify-content: flex-end;
+}
+
+
+.user-msg {
+    background: #0F0094;
+    color: white;
+}
+.admin-info {
+    background: #F5E251;
 }
 
 

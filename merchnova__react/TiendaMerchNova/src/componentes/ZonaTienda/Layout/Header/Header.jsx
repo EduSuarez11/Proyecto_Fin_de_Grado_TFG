@@ -13,7 +13,7 @@ function Header() {
     const refPanel = useRef(null);
     const [showPanel, setShowPanel] = useState({
         products: false,
-        offers: false,
+        soporte: false,
         info: false
     });
     const [categories, setCategories] = useState([]);
@@ -53,30 +53,8 @@ function Header() {
 
     }, []);
 
-    useEffect(() => {
-        // No hace falta comprobar si el cliente no es null, porque se protegera la ruta
-        if (clientData.cuenta.rol === 'CLIENTE' && !clientData) {
-            const chatExists = clientData.chats._id === `sala-${clientData._id}`;
 
-            if (!chatExists) {
-                const createChat = {
-                    datosCliente: {
-                        idCliente: clientData._id,
-                        nombreCliente: clientData.nombreCompleto,
-                        imagenCuenta: clientData.cuenta.imagenCuenta
-                    },
-                    mensajes: [], // Inicialmente el historial de mensajes estará vacío al crear el chat, aunque se le añade un mensaje de bienvenida desde el servidor de Socket.IO al crear la sala.
-                }
-                const getDataResponse = await request_profile.request_create_chat(createChat);
 
-                if (getDataResponse.code !== 0) {
-                    console.log('Error al crear el chat: ', getDataResponse.message);
-                    alert('Error al iniciar el chat. Por favor, inténtalo de nuevo más tarde.');
-                    return;
-                }
-            }
-        }
-    }, []);
 
     useEffect(
         () => {
@@ -191,13 +169,22 @@ function Header() {
                         </div>
                     }
 
-                    <Link to='/Portal/Soporte'>
-                        <div className="subnav-item">Soporte</div>
-                    </Link>
 
-                    <Link to='/Portal/Informacion/SobreNosotros'>
-                        <div className="subnav-item has-dropdown" id='info' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Más información</div>
-                    </Link>
+                    <div className="subnav-item has dropdown" id="soporte" onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Soporte</div>
+                    {showPanel.soporte &&
+                        <div className="menu-panel"  onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="grid-panel" style={showPanel.soporte && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                                {['Ayuda', "Chat"].map((el, pos) =>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Soporte/${(clientData?.cuenta?.rol === 'CLIENTE' && !clientData?.chats) ? el + `/${clientData?.chats?._id}` : el}`} key={pos}>
+                                        <div className="category fw-medium">{el}</div>
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    }
+
+
+                    <div className="subnav-item has-dropdown" id='info' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Más información</div>
                     {showPanel.info &&
                         <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                             <div className="grid-panel" style={showPanel.info && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
