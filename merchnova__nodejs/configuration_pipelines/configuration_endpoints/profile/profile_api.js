@@ -134,9 +134,9 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
         const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente) },
             {
-                $push: {
+                $set: {
                     chats: {
-                        _id: newChat.sala,
+                        _id: `sala-${newChat.datosCliente.idCliente}`,
                         datosCliente: {
                             idCliente: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente),
                             nombreCliente: newChat.datosCliente.nombreCliente,
@@ -150,7 +150,7 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
                         mensajes: [
                             {
                                 contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.', 
-                                timestamp: new Date(Date.now().toLocaleString()), 
+                                timestamp: Date.now(), 
                                 transmitterId: assignedAdmin._id.toString()
                             }
                         ],
@@ -161,7 +161,8 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
             { returnDocument: "after" }
         );
         if (updateData.modifiedCount === 0) throw new Error('No se pudo crear el chat.');
-        res.status(200).send({ code: 0, message: 'Chat creado con éxito', data: { idChat: newChat.sala, datosAdmin } });
+        console.log('Chat creado');
+        res.status(200).send({ code: 0, message: 'Chat creado con éxito', data: { userUpdate: updateData} });
     } catch (error) {
         console.log('Error al crear el chat: ', error);
         res.status(200).send({ code: 16, message: `${error.message}` });
