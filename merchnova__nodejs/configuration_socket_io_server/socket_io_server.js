@@ -25,73 +25,89 @@ module.exports = (serverNode) => {
 
     io.on('connection', (socket) => {
         // Unir al cliente al chat
-        socket.on('joinRoom', async (clientId) => {
-            const keyChat = `sala-${clientId}`; // Nombre de la sala
+        socket.on('joinRoom', async (clientData) => {
             // Creación de la sala
-            socket.join(keyChat);
+            socket.join(`sala-${clientData._id}`);
             //console.log('Cliente se ha conectado en la sala: ', keyChat);
-            if (!memoryStorage.has(keyChat)) {
-                // Obtener la lista de administradores de la base de datos
-                const admins = await getAdmins();
-
+            if (!memoryStorage.has(`sala-${clientData._id}`)) {
                 //console.log('Administradores disponibles para asignar al cliente');
 
-                // Asignar un administrador aleatorio
-                const assignedAdmin = admins[Math.floor(Math.random() * admins.length)];
-                const assignedAdminId = assignedAdmin._id.toString();
+                //socket.emit('assignedAdmin', JSON.stringify(adminData));
+                memoryStorage.set(clientData._id, { datosCliente: clientData.chats.datosCliente, adminData: clientData.chats.datosAdmin, messages: clientData.chats.mensajes });
 
-                const adminData = {
-                    id: assignedAdminId,
-                    nombre: assignedAdmin.nombreCompleto,
-                    imagenCuenta: assignedAdmin.cuenta.imagenCuenta
-                }
-
-                socket.emit('assignedAdmin', JSON.stringify(adminData));
-                memoryStorage.set(keyChat, { clientId, adminId: assignedAdminId, messages: [], adminData });
-
-                const defaultMsg = {
-                    contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.',
-                    transmitterId: assignedAdminId,
-                    timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
-                }
                 // Realizar el emit al cliente para que reciba el mensaje de bienvenida
-                io.to(keyChat).emit('receiveMsg', JSON.stringify(defaultMsg));
+                //io.to(keyChat).emit('receiveMsg', JSON.stringify(defaultMsg));
             } else {
-                const session = memoryStorage.get(keyChat);
+                const session = memoryStorage.get(clientData.chats._id);
                 //console.log('Datos de la sesión encontrada para el cliente: ', session);
 
                 const adminData = {
-                    id: session.adminId,
-                    nombre: session.adminData.nombre,
-                    imagenCuenta: session.adminData.imagenCuenta
+                    id: session.datosAdmin.idAdmin,
+                    nombre: session.datosAdmin.nombreAdmin,
+                    imagenCuenta: session.datosAdmin.imagenCuenta
                 }
 
                 socket.emit('assignedAdmin', JSON.stringify(adminData));
-                memoryStorage.set(keyChat, { clientId, adminId: session.adminId, messages: [], adminData });
+                memoryStorage.set(clientData.chats._id, { ...session, datosCliente: clientData.chats.datosCliente, datosAdmin: adminData, messages: session.messages });
             }
         });
 
         // Enviar mensaje con la sala ya creada
         socket.on('sendMsg', async (data) => {
             const { salaId, mensaje, datosCliente, datosAdmin } = data;
-            
-            console.log(`NUEVO MENSAJE de [${mensaje.transmitterId}] para la sala [${salaId}]: ${mensaje.contenido}`);
-            io.to(keyChat).emit('receiveMsg', JSON.stringify(data));
+
+            const session = memoryStorage.get(salaId);
+            //console.log('Mensajes: ', mensaje);
+            console.log(`NUEVO MENSAJE de [${mensaje.transmitterId}] para la [${salaId}]: ${mensaje.contenido} mandado en ${mensaje.timestamp}`);
+            io.to(salaId).emit('receiveMsg', JSON.stringify(data));
             // Guardar el mensaje en la sesión correspondiente
-            if (!memoryStorage.has(salaId)) {
+            if (!session) {
                 memoryStorage.set(salaId, { datosCliente, datosAdmin, messages: [mensaje] });
                 //messages = { contenido, transmitterId, timestamp, keyChat };
                 //console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
 
                 //console.log('Datos del cliente para el mensaje: ', dataClient);
+                // Realizar peticion al backend para actualizar el cliente admin y crear el chat en la base de datos
+                const adminUpdate = await mongoose.connection.collection('clientes').findOneAndUpdate(
+                    { _id: new mongoose.Types.ObjectId(datosAdmin.idAdmin) },
+                    {
+                        $push: {
+                            chats: {
+                                _id: salaId,
+                                datosCliente: {
+                                    idCliente: new mongoose.Types.ObjectId(datosCliente.idCliente),
+                                    nombreCliente: datosCliente.nombreCliente,
+                                    imagenCuenta: datosCliente.imagenCuenta
+                                },
+                                datosAdmin: {
+                                    idAdmin: new mongoose.Types.ObjectId(datosAdmin.idAdmin),
+                                    nombreAdmin: datosAdmin.nombreAdmin,
+                                    imagenCuenta: datosAdmin.imagenCuenta
+                                },
+                                mensajes: [
+                                    {
+                                        contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.',
+                                        timestamp: Date.now(),
+                                        transmitterId: datosAdmin.idAdmin.toString()
+                                    }
+                                ],
+                                fechaInicioChat: Date.now()
+                            }
+                        }
+                    },
+                    { returnDocument: "after" }
+                );
 
                 io.emit(`notification_admin_${datosAdmin.idAdmin}`, {
-                    keyChat: keyChat,
-                    dataClient,
-                    horaUltimoMensaje: timestamp,
-                    ultimoMensaje: contenido,
-                    mensajes: [...session.messages, messages]
+                    keyChat: salaId
+                    // dataClient: datosCliente,
+                    // dataAdmin: datosAdmin,
+                    // horaUltimoMensaje: mensaje.timestamp,
+                    // ultimoMensaje: mensaje.contenido,
+                    // mensajes: [...messages, mensaje]
                 });
+
+
             }
         });
 
