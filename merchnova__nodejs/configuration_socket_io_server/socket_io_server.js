@@ -24,33 +24,6 @@ module.exports = (serverNode) => {
     )
 
     io.on('connection', (socket) => {
-        // Unir al cliente al chat
-        socket.on('joinRoom', async (clientData) => {
-            // Creación de la sala
-            socket.join(`sala-${clientData._id}`);
-            //console.log('Cliente se ha conectado en la sala: ', keyChat);
-            if (!memoryStorage.has(`sala-${clientData._id}`)) {
-                //console.log('Administradores disponibles para asignar al cliente');
-
-                //socket.emit('assignedAdmin', JSON.stringify(adminData));
-                memoryStorage.set(clientData._id, { datosCliente: clientData.chats.datosCliente, adminData: clientData.chats.datosAdmin, messages: clientData.chats.mensajes });
-
-                // Realizar el emit al cliente para que reciba el mensaje de bienvenida
-                //io.to(keyChat).emit('receiveMsg', JSON.stringify(defaultMsg));
-            } else {
-                const session = memoryStorage.get(clientData.chats._id);
-                //console.log('Datos de la sesión encontrada para el cliente: ', session);
-
-                const adminData = {
-                    id: session.datosAdmin.idAdmin,
-                    nombre: session.datosAdmin.nombreAdmin,
-                    imagenCuenta: session.datosAdmin.imagenCuenta
-                }
-
-                socket.emit('assignedAdmin', JSON.stringify(adminData));
-                memoryStorage.set(clientData.chats._id, { ...session, datosCliente: clientData.chats.datosCliente, datosAdmin: adminData, messages: session.messages });
-            }
-        });
 
         // Enviar mensaje con la sala ya creada
         socket.on('sendMsg', async (data) => {
@@ -61,15 +34,14 @@ module.exports = (serverNode) => {
             console.log(`NUEVO MENSAJE de [${mensaje.transmitterId}] para la [${salaId}]: ${mensaje.contenido} mandado en ${mensaje.timestamp}`);
             io.to(salaId).emit('receiveMsg', JSON.stringify(data));
             // Guardar el mensaje en la sesión correspondiente
-            if (!session) {
+            if (!memoryStorage.has(salaId)) {
                 memoryStorage.set(salaId, { datosCliente, datosAdmin, messages: [mensaje] });
-                //messages = { contenido, transmitterId, timestamp, keyChat };
-                //console.log(`Avisando al admin ${adminId} que hay un mensaje nuevo en ${keyChat}`);
 
-                //console.log('Datos del cliente para el mensaje: ', dataClient);
+                // Unir al cliente al chat
+                socket.join(salaId);
                 // Realizar peticion al backend para actualizar el cliente admin y crear el chat en la base de datos
                 const adminUpdate = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                    { _id: new mongoose.Types.ObjectId(datosAdmin.idAdmin) },
+                    { _id: new mongoose.Types.ObjectId(datosAdmin.idAdmin), 'chats._id': { $ne: salaId } },
                     {
                         $push: {
                             chats: {
@@ -98,29 +70,24 @@ module.exports = (serverNode) => {
                     { returnDocument: "after" }
                 );
 
-                io.emit(`notification_admin_${datosAdmin.idAdmin}`, {
-                    keyChat: salaId
-                    // dataClient: datosCliente,
-                    // dataAdmin: datosAdmin,
-                    // horaUltimoMensaje: mensaje.timestamp,
-                    // ultimoMensaje: mensaje.contenido,
-                    // mensajes: [...messages, mensaje]
-                });
-
-
+                io.emit('adminJoinRoom', JSON.stringify({ keyChat: salaId, datosCliente, datosAdmin, firstMsg: mensaje }));
             }
         });
 
         // El administrador se une a la sala del cliente
-        socket.on('adminJoinRoom', (keyChat) => {
-            socket.join(keyChat);
-            //console.log('Administrador se ha unido a la sala de soporte: ', keyChat);
+        socket.on('adminJoinRoom', (data) => {
+            const { keyChat, datosAdmin } = JSON.parse(data);
 
-            const session = memoryStorage.get(keyChat);
-            if (session && session.messages.length > 0 && session.messages.length <= 1) {
-                //console.log('Enviando historial de mensajes al administrador para la sala: ', keyChat);
-                socket.emit('historyChat', JSON.stringify(session.messages));
+            if (memoryStorage.has(keyChat)) {
+                console.log('Admin uniendose a la sala');
+                socket.join(keyChat);
             }
+
+            // const session = memoryStorage.get(keyChat);
+            // if (session && session.messages.length > 0 && session.messages.length <= 1) {
+            //     //console.log('Enviando historial de mensajes al administrador para la sala: ', keyChat);
+            //     socket.emit('historyChat', JSON.stringify(session.messages));
+            // }
         })
     })
 }
