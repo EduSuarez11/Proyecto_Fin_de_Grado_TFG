@@ -33,8 +33,9 @@ function DescripcionSoporte() {
                     setCode(getDataResponse.code);
                     return;
                 }
-                setMsgChat(getDataResponse.message)
                 setClientData(getDataResponse.data.userUpdate);
+                setMsgChat(getDataResponse.message);
+                
             }
         }
     }
@@ -67,12 +68,12 @@ function DescripcionSoporte() {
 
                 {/* ACCIONES */}
                 <div className="support-actions">
-                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={!!clientData?.chats?._id}>
+                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={!!clientData?.chats}>
                         <i className="bi bi-chat-dots me-2"></i>Iniciar conversación
                     </button>
 
 
-                    <button className="btn btn-support-outline" type='button' disabled={!clientData?.chats?._id} onClick={() => navigate(`/Portal/Soporte/Chat/sala-${clientData._id}`)}>
+                    <button className="btn btn-support-outline" type='button' disabled={!clientData?.chats} onClick={() => navigate(`/Portal/Soporte/Chat`)}>
                         <i className="bi bi-clock-history me-2"></i>Ver conversación
                     </button>
 

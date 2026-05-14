@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { request_category } from '../../../Servicios/peticiones_productos/request_products';
 import { useMemo } from 'react';
 import { request_auth, request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
+import socket_io__client_service from '../../../Servicios/socket_io_client/socket_io__client_service';
 
 function Header() {
     const route = useLocation();
@@ -55,7 +56,6 @@ function Header() {
 
 
 
-
     useEffect(
         () => {
             const token = sessionStorage.getItem("token");
@@ -72,6 +72,28 @@ function Header() {
             }
         }, []
     );
+
+    useEffect(
+        () => {
+            socket_io__client_service.getMessage('adminJoinRoom', (data) => {
+                const { keyChat, datosCliente, datosAdmin, firstMsg } = JSON.parse(data);
+                const clientUp = useGlobalState.getState().clientData;
+                console.log('Cliente: ', clientUp);
+
+                if (clientUp._id && clientUp._id === datosAdmin.idAdmin) {
+                    console.log('Admin uniendose al chat');
+                    socket_io__client_service.sendMessage('adminJoinRoom', JSON.stringify({ keyChat, datosAdmin }));
+                    useGlobalState.getState().setClientData({
+                        ...clientUp,
+                        chats: [
+                            ...clientUp?.chats,
+                            { _id: keyChat, datosCliente, datosAdmin, mensajes: [firstMsg] }
+                        ]
+                    });
+                }
+            })
+        }, []
+    )
 
     //console.log('Cliente: ', clientData)
     /** #region ------------------- Datos cliente ---------------------------
@@ -172,10 +194,10 @@ function Header() {
 
                     <div className="subnav-item has dropdown" id="soporte" onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Soporte</div>
                     {showPanel.soporte &&
-                        <div className="menu-panel"  onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                        <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                             <div className="grid-panel" style={showPanel.soporte && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                                 {['Ayuda', "Chat"].map((el, pos) =>
-                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Soporte/${(clientData?.cuenta?.rol === 'CLIENTE' && !clientData?.chats) ? el + `/${clientData?.chats?._id}` : el}`} key={pos}>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Soporte/${el}`} key={pos}>
                                         <div className="category fw-medium">{el}</div>
                                     </Link>
                                 )}

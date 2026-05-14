@@ -12,83 +12,35 @@ function Chat() {
     const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [historial, setHistorial] = useState([]);
-    const [chats, setChats] = useState(clientData.cuenta.rol === 'ADMINISTRADOR' ? clientData.chats : []);
+    const [chats, setChats] = useState(clientData?.chats);
     const [chosenChat, setChosenChat] = useState(null);
-    const [adminInfo, setAdminInfo] = useState({ id: '', nombre: '', imagenCuenta: '' });
-    const [chatSelected, setChatSelected] = useState(salaId ?
-        (clientData.cuenta.rol === 'ADMINISTRADOR'
-            ? clientData.chats.find(chat => chat._id === salaId)
-            : clientData.chats._id === salaId ? clientData.chats : null
-        ) : null); // <--- Para almacenar la lista de chats activos para el admin con objeto: { sala: '...', mensajes: '...', transmitterId: '...', horaUltimoMensaje: '...' }
-    const selectedChat = chats.find(chat => chat._id === chosenChat);
-    const [adminChatRooms, setAdminChatRooms] = useState([]);
-
-
+    const [chatSelected, setChatSelected] = useState(salaId ? clientData?.chats?.find(chat => chat?._id === salaId) : null); // <--- Para almacenar la lista de chats activos para el admin con objeto: { sala: '...', mensajes: '...', transmitterId: '...', horaUltimoMensaje: '...' }
+    const selectedChat = chats?.find(chat => chat._id === chosenChat);
 
     useEffect(
         () => {
-            if (clientData.cuenta.rol === 'CLIENTE') {
-                // Conectar al servidor de Socket.IO
-                //console.log('Datos del admin: ', adminInfo);
-                socket_io__client_service.listenMessages((data) => {
-                    console.log('Nuevo mensaje recibido en el cliente user: ', data);
-                    const newMessage = data;
-                    setChatSelected({
-                        ...chatSelected,
-                        mensajes: [...chatSelected.mensajes, newMessage.mensaje]
-                    })
-                    setHistorial([...historial, newMessage]);
-                });
-                socket_io__client_service.joinRoom(clientData);
-                socket_io__client_service.getDataAdmin((data) => {
-                    console.log("Datos del admin recibidos:", data);
-                    setChatSelected({
-                        ...chatSelected,
-                        mensajes: [...chatSelected.mensajes, newMessage.mensaje]
-                    })
-                    setAdminInfo(data);
-                })
 
-            } else {
-                socket_io__client_service.listenMessages((data) => {
-                    console.log('Nuevo mensaje recibido en el cliente administrador: ', data);
-                    // Mensaje del cliente: {sala, trasmitterId, contenido, timestamp}
-                    const newMessage = data;
-                    setHistorial([...historial, newMessage]);
+            // Conectar al servidor de Socket.IO
+            socket_io__client_service.listenMessages((data) => {
+                console.log('Nuevo mensaje recibido: ', data);
+                const updatedChatSelected = chatSelected.map(chat =>
+                    chat?._id === salaId
+                        ? {
+                            ...chat,
+                            mensajes: [...chat?.mensajes, data?.mensaje]
+                        }
+                        : chat
+                );
+                setChatSelected(updatedChatSelected);
+                //setHistorial([...historial, data]);
+            });
 
-                    // setChatList((oldData) => {
-                    //     const indexChat = oldData.findIndex(chat => chat.sala === newMessage.keyChat);
 
-                    //     if (indexChat !== -1) {
-                    //         const updateList = [...oldData];
+            // socket_io__client_service.getHistoryChat((messages) => {
+            //     console.log('Historial de mensajes recibido en el cliente administrador: ', messages);
+            //     setHistorial(messages);
+            // });                
 
-                    //         updateList[indexChat] = {
-                    //             ...updateList[indexChat],
-                    //             ultimoMensaje: newMessage.contenido,
-                    //             horaUltimoMensaje: newMessage.timestamp,
-                    //             mensajes: [...updateList[indexChat].mensajes, newMessage]
-                    //         }
-                    //         return updateList;
-                    //     } else {
-                    //         const newChat = {
-                    //             sala: newMessage.keyChat,
-                    //             ultimoMensaje: newMessage.contenido,
-                    //             horaUltimoMensaje: newMessage.timestamp,
-                    //             mensajes: [newMessage]
-                    //         };
-                    //         return [...oldData, newChat];
-                    //     }
-                    // })
-                })
-
-                socket_io__client_service.getHistoryChat((messages) => {
-                    console.log('Historial de mensajes recibido en el cliente administrador: ', messages);
-                    setHistorial(messages);
-                });
-
-                socket_io__client_service.adminListen(clientData?._id);
-
-            }
         }, []
     )
 
@@ -119,81 +71,98 @@ function Chat() {
         };
 
         socket_io__client_service.sendMessage('sendMsg', messageToSend);
-        if (clientData.cuenta.rol === 'CLIENTE') {
-            setChatSelected({
-                ...chatSelected,
-                mensajes: [...chatSelected.mensajes, messageToSend.mensaje]
-            });
-        } else {
-            const updatedChats = chats.map(chat =>
-                chat._id === selectedChat._id
-                    ? {
-                        ...chat,
-                        mensajes: [...chat.mensajes, messageToSend.mensaje],
-                    }
-                    : chat
-            );
-            setChats(updatedChats);
-            setChatSelected(updatedChats.find(chat => chat._id === selectedChat._id));
-        }
 
+        setClientData(
+            {
+                ...clientData,
+                chats: clientData.chats.map(chat =>
+                    chat._id === chatSelected._id ?
+                        { ...chat, mensajes: [...chat.mensajes, { transmitterId: clientData._id, contenido: message, timestamp: Date.now() }] }
+                        :
+                        chat
+                )
+            }
+        );
+
+        const updatedChats = chats.map(chat =>
+            chat._id === selectedChat._id
+                ? {
+                    ...chat,
+                    mensajes: [...chat.mensajes, messageToSend?.mensaje],
+                }
+                : chat
+        );
+        setChats(updatedChats);
+        setChatSelected(updatedChats.find(chat => chat._id === selectedChat._id));
 
         setMessage(''); // Limpiar el input después de enviar
     }
+
 
     return (
         <div className="container-fluid p-4">
             <div className="support-layout">
                 {/* SIDEBAR */}
-                {clientData.cuenta.rol === 'ADMINISTRADOR' &&
-                    <div className="support-sidebar">
+                <div className="support-sidebar">
 
-                        {/* HEADER */}
-                        <div className="sidebar-header">
-                            <h5>Chats activos</h5>
-                            <span>3 conversaciones</span>
-                        </div>
-
-
-                        {/* BUSCADOR */}
-                        <div className="sidebar-search">
-                            <input type="text" placeholder="Buscar chat..." className="form-control" />
-                        </div>
+                    {/* HEADER */}
+                    <div className="sidebar-header">
+                        <h5>Chats activos</h5>
+                        <span>{clientData?.chats?.length || 0} conversaciones</span>
+                    </div>
 
 
-                        {chats?.map((chat, pos) =>
-                            <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
-                                <div className="chat-user-left">
-                                    <div className="chat-avatar-wrapper">
-                                        <img src={chat?.datosCliente?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
-                                        <span className="online-dot"></span>
-                                    </div>
+                    {/* BUSCADOR */}
+                    <div className="sidebar-search">
+                        <input type="text" placeholder="Buscar chat..." className="form-control" />
+                    </div>
 
-                                    <div>
-                                        <h6>{chat?.datosCliente?.nombreCliente}</h6>
-                                        <p>{chat?.mensajes[chat?.mensajes.length - 1].contenido}</p>
-                                    </div>
+
+                    {chats?.map((chat, pos) =>
+                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
+                            <div className="chat-user-left">
+                                <div className="chat-avatar-wrapper">
+                                    <img src={chat.datosAdmin.idAdmin === clientData._id ? chat?.datosCliente?.imagenCuenta : chat?.datosAdmin?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
+                                    <span className="online-dot"></span>
                                 </div>
 
-                                <div className="chat-meta">
-                                    <small>{chat?.mensajes[chat?.mensajes?.length - 1].timestamp}</small>
-                                    <span className="unread-badge">2</span>
+                                <div>
+                                    <h6>{chat.datosAdmin.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente : chat?.datosAdmin?.nombreAdmin}</h6>
+                                    <p>{chat?.mensajes[chat?.mensajes.length - 1].contenido}</p>
                                 </div>
                             </div>
-                        )}
-                    </div>
-                }
 
-                {(selectedChat !== null && selectedChat || clientData.cuenta.rol === 'CLIENTE') &&
+                            <div className="chat-meta">
+                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1].timestamp).toLocaleString()}</small>
+                                <span className="unread-badge">2</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+
+                {(selectedChat !== null && selectedChat) &&
                     <div className="support-main-chat">
                         <div className="chat-main-header">
                             {/* DATOS ADMIN */}
                             <div className="main-user-info">
-                                <img src={clientData?._id !== (adminInfo?.id || clientData._id) ? chatSelected?.datosCliente?.imagenCuenta : chatSelected?.datosAdmin?.imagenCuenta} alt={clientData?._id === adminInfo?.id ? clientData?.nombreCompleto : chatSelected.datosAdmin?.nombreAdmin} className="main-chat-avatar" />
-                                <div>
-                                    <h6>{clientData?._id !== (adminInfo?.id || clientData._id) ? chatSelected?.datosCliente?.nombreCompleto : chatSelected?.datosAdmin?.nombreAdmin}</h6>
-                                    <span>{clientData?._id === (adminInfo?.id || clientData._id) ? 'Administrador' : 'Cliente'}</span>
-                                </div>
+                                {clientData.cuenta.rol === 'ADMINISTRADOR' ? (
+                                    <>
+                                        <img src={chatSelected?.datosCliente?.imagenCuenta} alt={chatSelected?.datosCliente?.nombreCliente} className="main-chat-avatar" />
+                                        <div>
+                                            <h6>{chatSelected?.datosCliente?.nombreCliente}</h6>
+                                            <span>Cliente</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <img src={chatSelected?.datosAdmin?.imagenCuenta} alt={chatSelected?.datosAdmin?.nombreAdmin} className="main-chat-avatar" />
+                                        <div>
+                                            <h6>{chatSelected?.datosAdmin?.nombreAdmin}</h6>
+                                            <span>Administrador</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
