@@ -131,12 +131,14 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
         const admins = await mongoose.connection.collection('clientes').find({ 'cuenta.rol': 'ADMINISTRADOR' }).toArray();
         const assignedAdmin = admins[Math.floor(Math.random() * admins.length)];
 
+        const chatId = `sala-${new mongoose.Types.ObjectId()}`;
+
         const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente) },
             {
-                $set: {
+                $push: {
                     chats: {
-                        _id: `sala-${newChat.datosCliente.idCliente}`,
+                        _id: chatId,
                         datosCliente: {
                             idCliente: new mongoose.Types.ObjectId(newChat.datosCliente.idCliente),
                             nombreCliente: newChat.datosCliente.nombreCliente,
