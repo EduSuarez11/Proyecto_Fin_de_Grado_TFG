@@ -150,11 +150,11 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
                             imagenCuenta: assignedAdmin.cuenta.imagenCuenta
                         },
                         mensajes: [
-                            {
-                                contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.', 
-                                timestamp: Date.now(), 
-                                transmitterId: assignedAdmin._id.toString()
-                            }
+                            // {
+                            //     contenido: 'Bienvenido al soporte técnico, ¿necesitas ayuda?. Aquí podrás resolver tus dudas.',
+                            //     timestamp: Date.now(),
+                            //     transmitterId: assignedAdmin._id.toString()
+                            // }
                         ],
                         fechaInicioChat: Date.now()
                     }
@@ -164,7 +164,7 @@ manage_profile_data.post('/CreateChat', async (req, res, next) => {
         );
         if (updateData.modifiedCount === 0) throw new Error('No se pudo crear el chat.');
         console.log('Chat creado');
-        res.status(200).send({ code: 0, message: 'Chat creado con éxito', data: { userUpdate: updateData} });
+        res.status(200).send({ code: 0, message: 'Chat creado con éxito', data: { userUpdate: updateData, salaId: chatId} });
     } catch (error) {
         console.log('Error al crear el chat: ', error);
         res.status(200).send({ code: 16, message: `${error.message}` });
