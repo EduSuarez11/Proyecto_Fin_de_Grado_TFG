@@ -17,16 +17,21 @@ export default {
     listenMessages: function (callback) {
         //this.connectionServer.off('receiveMsg');
         this.connectionServer.on('receiveMsg', (data) => {
-            //console.log('Recibiendo mensaje del servidor de socket.io');
+            console.log('Recibiendo mensaje del servidor de socket.io');
             const message = JSON.parse(data);
             callback(message);
         });
     },
 
-    getHistoryChat: function (callback) {
-        this.connectionServer.on('historyChat', (data) => {
-            const messages = JSON.parse(data);
-            callback(messages);
-        });
+    joinRoom: function (data) {
+        this.connectionServer.emit('joinRoom', JSON.stringify(data));
     },
+
+    adminListen: function(adminId, callback) {
+        this.connectionServer.on(`notification_admin_${adminId}`, callback);
+    },
+
+    closeEvent: function () {
+        this.connectionServer.off('receiveMsg');
+    }
 }

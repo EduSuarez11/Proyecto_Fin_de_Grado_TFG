@@ -4,6 +4,7 @@ import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeS
 import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 import './DescripcionSoporte.css'
 import { Link, useNavigate } from 'react-router';
+import socket_io__client_service from '../../../Servicios/socket_io_client/socket_io__client_service';
 
 function DescripcionSoporte() {
     const { clientData, setClientData } = useGlobalState();
@@ -14,7 +15,7 @@ function DescripcionSoporte() {
     async function createChat() {
         console.log('Cliente find: ', clientData);
         if (clientData?.cuenta?.rol === 'CLIENTE') {
-            const chatExists = clientData?.chats?._id === `sala-${clientData?._id}`;
+            const chatExists = clientData?.chats?.find(chat => chat.datosCliente.idCliente === clientData._id);
             console.log('¿Existe el chat para el cliente?: ', chatExists);
             if (!chatExists) {
                 const createChat = {
@@ -33,6 +34,8 @@ function DescripcionSoporte() {
                     setCode(getDataResponse.code);
                     return;
                 }
+                socket_io__client_service.joinRoom({salaId: getDataResponse.data.salaId});
+                //setClientData({...clientData, chats: [...clientData?.chats, {...createChat, _id: getDataResponse.data.salaId}]});
                 setClientData(getDataResponse.data.userUpdate);
                 setMsgChat(getDataResponse.message);
                 
@@ -68,12 +71,12 @@ function DescripcionSoporte() {
 
                 {/* ACCIONES */}
                 <div className="support-actions">
-                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={!!clientData?.chats}>
+                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={!!clientData?.chats?._id}>
                         <i className="bi bi-chat-dots me-2"></i>Iniciar conversación
                     </button>
 
 
-                    <button className="btn btn-support-outline" type='button' disabled={!clientData?.chats} onClick={() => navigate(`/Portal/Soporte/Chat`)}>
+                    <button className="btn btn-support-outline" type='button' disabled={!clientData?.chats?._id} onClick={() => navigate(`/Portal/Soporte/Chat`)}>
                         <i className="bi bi-clock-history me-2"></i>Ver conversación
                     </button>
 

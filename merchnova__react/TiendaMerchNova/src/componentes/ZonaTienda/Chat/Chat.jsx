@@ -13,39 +13,59 @@ function Chat() {
     const [message, setMessage] = useState('');
     const [historial, setHistorial] = useState([]);
     const [chats, setChats] = useState(clientData?.chats);
-    const [chosenChat, setChosenChat] = useState(null);
-    const [chatSelected, setChatSelected] = useState(salaId ? clientData?.chats?.find(chat => chat?._id === salaId) : null); // <--- Para almacenar la lista de chats activos para el admin con objeto: { sala: '...', mensajes: '...', transmitterId: '...', horaUltimoMensaje: '...' }
+    const [chosenChat, setChosenChat] = useState();
+    const chatSelected = salaId ? clientData?.chats?.find(chat => chat?._id === salaId) : null;
     const selectedChat = chats?.find(chat => chat._id === chosenChat);
 
     useEffect(
         () => {
-
             // Conectar al servidor de Socket.IO
+            //console.log("🟢 [FRONTEND] El componente se montó. Activando listener receiveMsg...");
             socket_io__client_service.listenMessages((data) => {
                 console.log('Nuevo mensaje recibido: ', data);
-                const updatedChatSelected = chatSelected.map(chat =>
-                    chat?._id === salaId
+                const updatedChatSelected = clientData?.chats?.map(chat =>
+                    chat?._id === chatSelected?._id
                         ? {
                             ...chat,
                             mensajes: [...chat?.mensajes, data?.mensaje]
                         }
                         : chat
                 );
-                setChatSelected(updatedChatSelected);
-                //setHistorial([...historial, data]);
+                //setChatSelected(updatedChatSelected);
             });
-
-
-            // socket_io__client_service.getHistoryChat((messages) => {
-            //     console.log('Historial de mensajes recibido en el cliente administrador: ', messages);
-            //     setHistorial(messages);
-            // });                
-
+            return () => {
+                //console.log("🔴 [FRONTEND] El componente se desmontó. Apagando listener...");
+                socket_io__client_service.closeEvent;
+            }
         }, []
     )
 
-    console.log('Chat seleccionado: ', chatSelected);
-    console.log('Datos del chats: ', chats);
+    useEffect(
+        () => {
+            if (clientData.cuenta.rol === 'ADMINISTRADOR') {
+                socket_io__client_service.adminListen(clientData._id, (data) => {
+                    const { salaId, datosCliente, datosAdmin, firstMsg } = data;
+                    console.log('Nuevo chat en: ', salaId);
+                    useGlobalState.setState().setClientData(
+                        {
+                            ...useGlobalState.getState().clientData,
+                            chats: clientData?.chats?.map(chat =>
+                                chat._id === salaId ?
+                                    { ...chat, _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg] }
+                                    :
+                                    chat
+                            )
+                        }
+                    );
+                    console.log('Cliente: ', useGlobalState.getState().clientData);
+                    socket_io__client_service.joinRoom(salaId);
+                })
+            }
+        },[clientData._id]
+    )
+
+    //console.log('Chat seleccionado: ', chatSelected);
+    //console.log('Datos del chats: ', chats);
 
     function sendMessage() {
         if (!message.trim()) return; // No enviar mensajes vacíos
@@ -72,10 +92,10 @@ function Chat() {
 
         socket_io__client_service.sendMessage('sendMsg', messageToSend);
 
-        setClientData(
+        useGlobalState.getState().setClientData(
             {
                 ...clientData,
-                chats: clientData.chats.map(chat =>
+                chats: clientData?.chats?.map(chat =>
                     chat._id === chatSelected._id ?
                         { ...chat, mensajes: [...chat.mensajes, { transmitterId: clientData._id, contenido: message, timestamp: Date.now() }] }
                         :
@@ -84,17 +104,14 @@ function Chat() {
             }
         );
 
-        const updatedChats = chats.map(chat =>
-            chat._id === selectedChat._id
-                ? {
-                    ...chat,
-                    mensajes: [...chat.mensajes, messageToSend?.mensaje],
-                }
-                : chat
+        setChats(
+            clientData?.chats?.map(
+                chat => chat._id === chatSelected._id
+                    ? { ...chat, mensajes: [...chat.mensajes, messageToSend.mensaje] }
+                    : chat
+            )
         );
-        setChats(updatedChats);
-        setChatSelected(updatedChats.find(chat => chat._id === selectedChat._id));
-
+        //setChatSelected(chatSelected ? { ...chatSelected, mensajes: [...chatSelected.mensajes, messageToSend.mensaje] } : chatSelected);
         setMessage(''); // Limpiar el input después de enviar
     }
 
@@ -119,21 +136,21 @@ function Chat() {
 
 
                     {chats?.map((chat, pos) =>
-                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
+                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
                             <div className="chat-user-left">
                                 <div className="chat-avatar-wrapper">
-                                    <img src={chat.datosAdmin.idAdmin === clientData._id ? chat?.datosCliente?.imagenCuenta : chat?.datosAdmin?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
+                                    <img src={chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.imagenCuenta : chat?.datosAdmin?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
                                     <span className="online-dot"></span>
                                 </div>
 
                                 <div>
-                                    <h6>{chat.datosAdmin.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente : chat?.datosAdmin?.nombreAdmin}</h6>
-                                    <p>{chat?.mensajes[chat?.mensajes.length - 1].contenido}</p>
+                                    <h6>{chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente : chat?.datosAdmin?.nombreAdmin}</h6>
+                                    <p>{chat?.mensajes[chat?.mensajes?.length - 1]?.contenido}</p>
                                 </div>
                             </div>
 
                             <div className="chat-meta">
-                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1].timestamp).toLocaleString()}</small>
+                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1]?.timestamp).toLocaleString()}</small>
                                 <span className="unread-badge">2</span>
                             </div>
                         </div>
@@ -170,13 +187,13 @@ function Chat() {
                             {chatSelected?.mensajes?.map((msg, pos) =>
                                 <div className={msg?.transmitterId === clientData?._id ? "message-row user" : "message-row support"} key={pos}>
                                     {msg?.transmitterId !== clientData?._id &&
-                                        <img src={chatSelected?.datosAdmin?.imagenCuenta} alt={chatSelected?.datosAdmin?.nombreAdmin} className="message-avatar" />
+                                        <img src={clientData.cuenta.rol === 'ADMINISTRADOR' ? chatSelected?.datosCliente?.imagenCuenta : chatSelected?.datosAdmin?.imagenCuenta} alt="" className="message-avatar" />
                                     }
                                     <div className={msg?.transmitterId === clientData._id ? "message-content user-content" : "message-content"}>
                                         <div className={msg?.transmitterId === clientData._id ? "message-bubble user-msg" : "message-bubble admin-info"}>{msg?.contenido}</div>
 
                                         <div className={msg?.transmitterId === clientData?._id ? "message-info user-info" : "message-info"}>
-                                            <span>{msg?.transmitterId === clientData?._id ? clientData?.nombreCompleto : chatSelected.datosAdmin.nombreAdmin}</span>
+                                            <span>{msg?.transmitterId === clientData?._id ? clientData?.nombreCompleto : (clientData.cuenta.rol === 'ADMINISTRADOR' ? chatSelected?.datosCliente?.nombreCliente : chatSelected?.datosAdmin?.nombreAdmin)}</span>
                                             <small>{new Date(msg?.timestamp).toLocaleString()}</small>
 
                                             {/* {msg?.transmitterId === clientData?._id &&
@@ -187,6 +204,7 @@ function Chat() {
                                         </div>
                                     </div>
 
+                                    {/* MIO */}
                                     {msg?.transmitterId === clientData?._id &&
                                         <img src={`${clientData?.cuenta?.imagenCuenta}`} alt={clientData?.nombreCompleto} className="message-avatar" />
                                     }
