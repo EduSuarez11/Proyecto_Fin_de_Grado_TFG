@@ -38,16 +38,20 @@ manage_auth_email.post('/Registro', async (req, resp, next) => {
                     cuentaActiva: false,
                     imagenCuenta: '',
                     creacionCuenta: Date.now(),
+                    tipo: 'email',
+                    rol: 'CLIENTE',
+                    visibilidad: 'publico',
+                    notificaciones: false
                 },
                 pedidos: [],
                 carrito: {
                     itemsPedido: [],
-                    cuponDescuento: [],
                     gastosEnvio: 0,
                     subtotal: 0,
                     total: 0
                 },
-                direcciones: []
+                direcciones: [],
+                chats: []
             }
         )
 
