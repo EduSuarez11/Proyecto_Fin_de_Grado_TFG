@@ -4,9 +4,12 @@ const mongoose = require('mongoose');
 
 const memoryStorage = new Map();
 
-async function createChatAdmin(data) {
-    // Realizar peticion al backend para actualizar el cliente admin y crear el chat en el admin en la base de datos
-
+async function setChatWithNewMessages(salaId, mensaje) {
+    // Realizar peticion al backend para actualizar el cliente y admin con los nuevos mensajes
+    await mongoose.connection.collection('clientes').updateMany(
+        { 'chats._id': salaId },
+        { $push: { "chats.$.mensajes": mensaje } }
+    );
 }
 
 module.exports = (serverNode) => {
@@ -26,13 +29,13 @@ module.exports = (serverNode) => {
             const { salaId, mensaje, datosCliente, datosAdmin } = data;
 
             const session = memoryStorage.get(salaId);
-            //console.log('Mensajes: ', mensaje);
 
             console.log(`NUEVO MENSAJE de [${mensaje.transmitterId}] para la [${salaId}]: ${mensaje.contenido} mandado en ${mensaje.timestamp}`);
             // Guardar el mensaje en la sesión correspondiente
             if (!memoryStorage.has(salaId)) {
                 memoryStorage.set(salaId, { datosCliente, datosAdmin, messages: [mensaje] });
 
+                // Crear chat en el usuario administrador
                 const adminUpdate = await mongoose.connection.collection('clientes').findOneAndUpdate(
                     { _id: new mongoose.Types.ObjectId(datosAdmin.idAdmin), 'chats._id': { $ne: salaId } },
                     {
@@ -63,33 +66,24 @@ module.exports = (serverNode) => {
                     { returnDocument: "after" }
                 );
 
-                io.emit(`notification_admin_${datosAdmin.idAdmin}`, {
+                io.emit('adminJoinRoom', JSON.stringify({
                     salaId,
                     datosCliente,
                     datosAdmin,
                     firstMsg: mensaje
-                });
-
-                await mongoose.connection.collection('clientes').updateMany(
-                    { 'chats._id': salaId },
-                    { $push: { "chats.$.mensajes": mensaje } }
-                );
+                }));
+                await setChatWithNewMessages(salaId, mensaje);
 
             } else {
                 memoryStorage.get(salaId).messages.push(mensaje);
-
-                await mongoose.connection.collection('clientes').updateMany(
-                    { 'chats._id': salaId },
-                    { $push: { "chats.$.mensajes": mensaje } }
-                );
+                await setChatWithNewMessages(salaId, mensaje);
+                socket.to(salaId).emit('receiveMsg', JSON.stringify({ salaId, mensaje }));
             }
-
-            io.to(salaId).emit('receiveMsg', JSON.stringify(data));
         });
 
         // El administrador se une a la sala del cliente
         socket.on('adminJoinRoom', async (data) => {
-            const { keyChat, datosAdmin, datosCliente, firstMsg } = JSON.parse(data);
+            const { keyChat, datosAdmin } = JSON.parse(data);
 
             if (memoryStorage.has(keyChat)) {
                 console.log('Admin uniendose a la sala');
@@ -97,6 +91,7 @@ module.exports = (serverNode) => {
             }
         })
 
+        // El usuario normal se une a la sala
         socket.on('joinRoom', async (data) => {
             const { salaId } = JSON.parse(data);
             // Unir al cliente normal a la sala
