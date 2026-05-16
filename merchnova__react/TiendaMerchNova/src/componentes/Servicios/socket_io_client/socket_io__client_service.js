@@ -8,7 +8,7 @@ export default {
         this.connectionServer.emit(eventName, data);
     },
 
-    getMessage: function (nombreEvento, funcionHandler) {
+    receiveEvent: function (nombreEvento, funcionHandler) {
         if (this.connectionServer.hasListeners()) return;
         this.connectionServer.on(nombreEvento, funcionHandler);
     },
@@ -31,7 +31,7 @@ export default {
         this.connectionServer.on(`notification_admin_${adminId}`, callback);
     },
 
-    closeEvent: function () {
-        this.connectionServer.off('receiveMsg');
+    closeEvent: function (setData) {
+        this.connectionServer.off('receiveMsg', setData);
     }
 }

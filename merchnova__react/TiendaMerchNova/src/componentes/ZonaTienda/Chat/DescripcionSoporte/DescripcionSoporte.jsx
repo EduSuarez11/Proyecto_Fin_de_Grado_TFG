@@ -38,7 +38,7 @@ function DescripcionSoporte() {
                 //setClientData({...clientData, chats: [...clientData?.chats, {...createChat, _id: getDataResponse.data.salaId}]});
                 setClientData(getDataResponse.data.userUpdate);
                 setMsgChat(getDataResponse.message);
-                
+                console.log('Cliente desde descripcion: ', clientData);
             }
         }
     }

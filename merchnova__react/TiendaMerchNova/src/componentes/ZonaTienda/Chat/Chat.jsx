@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 import useGlobalState from '../../../global_state/globalState';
 import './Chat.css'
 import { useState } from "react";
@@ -14,54 +14,51 @@ function Chat() {
     const [historial, setHistorial] = useState([]);
     const [chats, setChats] = useState(clientData?.chats);
     const [chosenChat, setChosenChat] = useState();
-    const chatSelected = salaId ? clientData?.chats?.find(chat => chat?._id === salaId) : null;
+    const [chatSelected, setChatSelected] = useState(salaId ? clientData?.chats?.find(chat => chat?._id === salaId) : null);
     const selectedChat = chats?.find(chat => chat._id === chosenChat);
 
-    useEffect(
-        () => {
-            // Conectar al servidor de Socket.IO
-            //console.log("🟢 [FRONTEND] El componente se montó. Activando listener receiveMsg...");
-            socket_io__client_service.listenMessages((data) => {
-                console.log('Nuevo mensaje recibido: ', data);
-                const updatedChatSelected = clientData?.chats?.map(chat =>
-                    chat?._id === chatSelected?._id
-                        ? {
-                            ...chat,
-                            mensajes: [...chat?.mensajes, data?.mensaje]
-                        }
-                        : chat
-                );
-                //setChatSelected(updatedChatSelected);
-            });
-            return () => {
-                //console.log("🔴 [FRONTEND] El componente se desmontó. Apagando listener...");
-                socket_io__client_service.closeEvent;
-            }
-        }, []
-    )
+    function updateChats(chatId, msg) {
+        const update = chats.map(chat => chat._id === chatId ? { ...chat, mensajes: [...chat.mensajes, msg] } : chat);
+        setChats(update);
+
+        if (chatSelected && chatSelected._id === chatId) {
+            setChatSelected({ ...chatSelected, mensajes: [...chatSelected.mensajes, msg] });
+        }
+
+        useGlobalState.getState().setClientData({ ...clientData, chats: chats });
+    }
+
+    // useEffect(
+    //     () => {
+    //         // Conectar al servidor de Socket.IO
+    //         socket_io__client_service.listenMessages((data) => {
+    //             console.log('Nuevo mensaje recibido: ', data);
+    //             const updatedChatSelected = clientData?.chats?.map(chat =>
+    //                 chat?._id === chatSelected?._id
+    //                     ? {
+    //                         ...chat,
+    //                         mensajes: [...chat?.mensajes, data?.mensaje]
+    //                     }
+    //                     : chat
+    //             );
+    //             //setChatSelected(updatedChatSelected);
+    //         });
+    //     }, []
+    // )
+
+    const setData = useEffectEvent((data) => {
+        const { salaId, mensaje } = JSON.parse(data);
+        console.log('Mensaje recibido: ', mensaje);
+        updateChats(salaId, mensaje);
+    })
 
     useEffect(
         () => {
-            if (clientData.cuenta.rol === 'ADMINISTRADOR') {
-                socket_io__client_service.adminListen(clientData._id, (data) => {
-                    const { salaId, datosCliente, datosAdmin, firstMsg } = data;
-                    console.log('Nuevo chat en: ', salaId);
-                    useGlobalState.setState().setClientData(
-                        {
-                            ...useGlobalState.getState().clientData,
-                            chats: clientData?.chats?.map(chat =>
-                                chat._id === salaId ?
-                                    { ...chat, _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg] }
-                                    :
-                                    chat
-                            )
-                        }
-                    );
-                    console.log('Cliente: ', useGlobalState.getState().clientData);
-                    socket_io__client_service.joinRoom(salaId);
-                })
+            socket_io__client_service.receiveEvent('receiveMsg', setData);
+            return () => {
+                socket_io__client_service.closeEvent(setData);
             }
-        },[clientData._id]
+        }, []
     )
 
     //console.log('Chat seleccionado: ', chatSelected);
@@ -69,7 +66,8 @@ function Chat() {
 
     function sendMessage() {
         if (!message.trim()) return; // No enviar mensajes vacíos
-        //const sala = clientData.cuenta.rol === 'CLIENTE' ? `sala-${clientData._id}` : room
+        
+        // Enviar mensaje con los datos de ambos usuarios de la sala para mostrarlo en chat posteriormente
         console.log('Enviando mensaje a la sala: ', salaId);
         const messageToSend = {
             salaId: salaId,
@@ -90,28 +88,11 @@ function Chat() {
             }
         };
 
+        
+        updateChats(chatSelected._id, messageToSend.mensaje);
+
         socket_io__client_service.sendMessage('sendMsg', messageToSend);
 
-        useGlobalState.getState().setClientData(
-            {
-                ...clientData,
-                chats: clientData?.chats?.map(chat =>
-                    chat._id === chatSelected._id ?
-                        { ...chat, mensajes: [...chat.mensajes, { transmitterId: clientData._id, contenido: message, timestamp: Date.now() }] }
-                        :
-                        chat
-                )
-            }
-        );
-
-        setChats(
-            clientData?.chats?.map(
-                chat => chat._id === chatSelected._id
-                    ? { ...chat, mensajes: [...chat.mensajes, messageToSend.mensaje] }
-                    : chat
-            )
-        );
-        //setChatSelected(chatSelected ? { ...chatSelected, mensajes: [...chatSelected.mensajes, messageToSend.mensaje] } : chatSelected);
         setMessage(''); // Limpiar el input después de enviar
     }
 
@@ -136,7 +117,7 @@ function Chat() {
 
 
                     {chats?.map((chat, pos) =>
-                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
+                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
                             <div className="chat-user-left">
                                 <div className="chat-avatar-wrapper">
                                     <img src={chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.imagenCuenta : chat?.datosAdmin?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
@@ -145,12 +126,12 @@ function Chat() {
 
                                 <div>
                                     <h6>{chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente : chat?.datosAdmin?.nombreAdmin}</h6>
-                                    <p>{chat?.mensajes[chat?.mensajes?.length - 1]?.contenido}</p>
+                                    <p>{chat?.mensajes[chat?.mensajes?.length - 1]?.contenido || ''}</p>
                                 </div>
                             </div>
 
                             <div className="chat-meta">
-                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1]?.timestamp).toLocaleString()}</small>
+                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1]?.timestamp).toLocaleString() || ''}</small>
                                 <span className="unread-badge">2</span>
                             </div>
                         </div>

@@ -12,6 +12,8 @@ function Header() {
     const route = useLocation();
     const { clientData, logOut, order, setClientData } = useGlobalState();
     const refPanel = useRef(null);
+    const [newMessages, setNewMessages] = useState(false);
+    const [chatId, setChatId] = useState('');
     const [showPanel, setShowPanel] = useState({
         products: false,
         soporte: false,
@@ -75,21 +77,23 @@ function Header() {
 
     useEffect(
         () => {
-            socket_io__client_service.getMessage('adminJoinRoom', (data) => {
-                const { keyChat, datosCliente, datosAdmin, firstMsg } = JSON.parse(data);
+            socket_io__client_service.receiveEvent('adminJoinRoom', (data) => {
+                const { salaId, datosCliente, datosAdmin, firstMsg } = JSON.parse(data);
                 const clientUp = useGlobalState.getState().clientData;
-                console.log('Cliente: ', clientUp);
 
                 if (clientUp._id && clientUp._id === datosAdmin.idAdmin) {
+                    setNewMessages(true);
+                    console.log('Cliente: ', clientUp);
                     console.log('Admin uniendose al chat');
-                    socket_io__client_service.sendMessage('adminJoinRoom', JSON.stringify({ keyChat, datosAdmin }));
+                    socket_io__client_service.sendMessage('adminJoinRoom', JSON.stringify({ keyChat: salaId, datosAdmin }));
                     useGlobalState.getState().setClientData({
                         ...clientUp,
                         chats: [
                             ...clientUp?.chats,
-                            { _id: keyChat, datosCliente, datosAdmin, mensajes: [firstMsg] }
+                            { _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg] }
                         ]
                     });
+                    setChatId(salaId);
                 }
             })
         }, []
@@ -197,8 +201,10 @@ function Header() {
                         <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                             <div className="grid-panel" style={showPanel.soporte && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                                 {['Ayuda', "Chat"].map((el, pos) =>
-                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Soporte/${el}`} key={pos}>
-                                        <div className="category fw-medium">{el}</div>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={!newMessages ? `/Portal/Soporte/${el}` : `/Portal/Soporte/${el}/${chatId}`} key={pos}>
+                                        <div className="category fw-medium" onClick={(ev) => el === 'Chat' && setNewMessages(false)}>
+                                            {el} {(newMessages && el === 'Chat') && <span className="badge bg-danger" style={{  top: '0', right: '0', transform: 'translate(50%, -50%)' }}>!</span>}
+                                        </div>
                                     </Link>
                                 )}
                             </div>
