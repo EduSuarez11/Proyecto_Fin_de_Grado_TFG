@@ -8,6 +8,7 @@ import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart
 function InfoProducto() {
 
     const resp = useLoaderData();
+    const navigate = useNavigate();
     const { order, setOrder, clientData, setClientData } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
@@ -47,7 +48,7 @@ function InfoProducto() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         if (clientData != null) {
-            const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio, talla:talla }, '/Agregar');
+            const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio, talla: talla }, '/Agregar');
 
             if (response.code !== 0) throw new Error('Fallo al obtener la respuesta');
 
@@ -75,7 +76,12 @@ function InfoProducto() {
                 <Link to='/Portal/Productos'>Tienda</Link>
                 <span className="mx-2">/</span>
                 <span className="current-product">{resp.product.nombre}</span>
+
             </nav>
+            <div className='mb-4 icon-color-d d-flex justify-content-center rounded-circle' onClick={() => navigate(-1)}>
+                <i className="bi bi-arrow-left"></i>
+            </div>
+
             <div className="product-container">
                 <div className="product-image">
                     <img src={`http://localhost:3000${resp.product.imagen}`} alt="producto" />

@@ -19,6 +19,13 @@
     color: #555;
 }
 
+.icon-color-d {
+    width: 25px;
+    background:linear-gradient(to right,#7b2ff7,#c778fb);
+	color: white;
+    cursor: pointer;
+}
+
 .product-container {
     display: grid;
     grid-template-columns: 1fr 1fr;

@@ -49,15 +49,22 @@ function Productos() {
         setParams(params);
     };
 
-    const handleFilter = (nuevaCategoria, minPrice, maxPrice) => {
-        if (minPrice > maxPrice) {
-            setErrorPrice('El precio mínimo no puede ser mayor que el de máximo');
-            return;
-        }
 
-        if (minPrice || maxPrice || minPrice !== 0 || maxPrice !== 0) {
-            params.set("minPrice", minPrice);
-            params.set("maxPrice", maxPrice);
+
+    const handleFilter = (nuevaCategoria, minPrice, maxPrice) => {
+        // Si ambos precios están vacíos, eliminar los parámetros de precio de la URL porque se quedan colgando vacios
+        if (!minPrice && !maxPrice) {
+            params.delete('minPrice');
+            params.delete('maxPrice');
+        } else {
+            // Validar que el precio minimo no sea mayor que el maximo
+            if (minPrice > maxPrice && minPrice !== 0 && maxPrice !== 0) {
+                setErrorPrice('El precio mínimo no puede ser mayor que el de máximo');
+                return;
+            }
+
+            if (minPrice) params.set("minPrice", minPrice);
+            if (maxPrice) params.set("maxPrice", maxPrice);
         }
 
         params.set('categoria', nuevaCategoria);
@@ -137,7 +144,7 @@ function Productos() {
                 {/* PRODUCTOS A MOSTRAR */}
                 <div className="col-lg-9">
                     <div className="row">
-                        {dataProducts.products  ?
+                        {dataProducts.products ?
                             <>
                                 {
                                     (dataProducts.products?.map((product, index) =>
@@ -150,7 +157,7 @@ function Productos() {
                                                 )}
                                                 <img src={`http://localhost:3000${product.imagen}`} className="card-img-top p-2" />
                                                 <div className="card-body">
-                                                    <h6 className="title-product">{product.nombre}</h6>
+                                                    <h6 className="title-product">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...': product.nombre}</h6>
                                                     <div className="rating">
                                                         {handleValorations(product.valoraciones)} {product.valoraciones}
                                                     </div>
@@ -161,6 +168,8 @@ function Productos() {
                                             </div>
                                         </Link>
                                     ))}
+
+                                {/* Paginacion de los productos */}
                                 <div className="shop-pagination-wrapper mb-4">
                                     <div className="pagination-results">{Math.min(page * dataProducts?.limit, dataProducts?.totalProducts)} de {dataProducts?.totalProducts} productos</div>
                                     <nav className="shop-pagination">
