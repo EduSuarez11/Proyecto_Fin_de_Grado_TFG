@@ -82,6 +82,18 @@ manage_payment.post('/order-update', async (req, res, next) => {
             pais: clientData.direcciones[0].pais
         }
 
+        // ACTUALIZAR EL STOCK DE LOS PRODUCTOS DEL PEDIDO
+        if (clientData.carrito.itemsPedido && clientData.carrito.itemsPedido.length > 0) {
+            for (const item of clientData.carrito.itemsPedido) {
+                const updateProductStock = await mongoose.connection.collection('productos').updateOne(
+                    { _id: new mongoose.Types.ObjectId(item.producto._id), stock: { $gte: item.quantity } },
+                    { $inc: { stock: -item.quantity } }
+                );
+
+                if (updateProductStock.modifiedCount === 0) throw new Error('No se pudo actualizar el stock del producto: ' + item.producto.nombre);
+            }
+        }
+
         const newPayData = await mongoose.connection.collection('clientes').updateOne(
             { _id: new mongoose.Types.ObjectId(clientData._id) },
             { $push: { pedidos: order } }
@@ -103,6 +115,9 @@ manage_payment.post('/order-update', async (req, res, next) => {
             },
             { returnDocument: 'after' }
         )
+
+        if (updatePayData === 0) throw new Error('No se pudieron actualizar los datos de pago del cliente');
+
 
         res.status(200).send({ code: 0, message: 'Orden actualizada correctamente', newUser: updatePayData, orderId: order._id });
     } catch (error) {
@@ -198,13 +213,18 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
         if (!capturaPago) throw new Error('No se pudo capturar el pago de PayPal.');
 
         // Verificar que el pago se completó correctamente
-        if (capturaPago.status !== 'COMPLETED') {
-            throw new Error(`El pago no se completó. Estado: ${capturaPago.status}`);
-        }
+        if (capturaPago.status !== 'COMPLETED') throw new Error(`El pago no se completó. Estado: ${capturaPago.status}`);
 
-        const fecha = new Date();
-        const fechaPago = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        if (clientData.carrito.itemsPedido && clientData.carrito.itemsPedido.length > 0) {
+            for (const item of clientData.carrito.itemsPedido) {
+                const updateProductStock = await mongoose.connection.collection('productos').updateOne(
+                    { _id: new mongoose.Types.ObjectId(item.producto._id), stock: { $gte: item.quantity } },
+                    { $inc: { stock: -item.quantity } }
+                );
+
+                if (updateProductStock.modifiedCount === 0) throw new Error('No se pudo actualizar el stock del producto: ' + item.producto.nombre);
+            }
+        }
 
         // Guardar el resto de datos de pago del cliente
         const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
@@ -236,9 +256,9 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
                             },
                         }
                     },
-                    'pedidos.$.estado': 'COMPLETADO',
-                    'pedidos.$.fechaPago': fechaPago,
-                    'pedidos.$.fechaEnvio': fechaEnvio,
+                    'pedidos.$.estado': 'COMPLETED',
+                    'pedidos.$.fechaPago': Date.now(),
+                    'pedidos.$.fechaEnvio': Date.now() + 2 * 24 * 60 * 60 * 1000,
                     'carrito.itemsPedido': [],
                     'carrito.subtotal': 0,
                     'carrito.gastosEnvio': 0,
@@ -248,13 +268,9 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
             { returnDocument: 'after' }
         );
 
-        // const updateProductStock = await mongoose.connection.collection('productos').updateMany(
-        //     { _id: { $in: clientData.carrito.itemsPedido.map(item => new mongoose.Types.ObjectId(item._id)) } },
-        //     { $inc: { stock: -1 } }
-        // );
 
         console.log('Actualización de datos de pago en cliente: ', updatePayData);
-        if (updatePayData.modifiedCount === 0) throw new Error('No se pudo actualizar los datos de pago del cliente.');
+        if (!updatePayData) throw new Error('No se pudo actualizar los datos de pago del cliente.');
 
         res.status(200).send({ code: 0, message: 'Pago correcto', orderCapture: capturaPago, newUser: updatePayData });
     } catch (error) {
