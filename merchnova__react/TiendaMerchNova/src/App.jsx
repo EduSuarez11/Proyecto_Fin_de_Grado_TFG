@@ -35,6 +35,7 @@ import Privacidad from "./componentes/ZonaTienda/Configuracion/Privacidad/Privac
 import EliminarCuenta from "./componentes/ZonaTienda/Configuracion/Eliminar_cuenta/EliminarCuenta";
 import Chat from "./componentes/ZonaTienda/Chat/Chat";
 import DescripcionSoporte from "./componentes/ZonaTienda/Chat/DescripcionSoporte/DescripcionSoporte";
+import ComoFunciona from "./componentes/ZonaTienda/MasInformacion/Funcionamiento/ComoFunciona";
 
 
 const optionsPayPal = {
@@ -115,7 +116,7 @@ const applicationRoutes = createBrowserRouter(
                   {
                      path: 'Informacion', children: [
                         { path: 'SobreNosotros', element: <SobreNosotros /> },
-                        { path: 'ComoFunciona', element: <SobreNosotros /> }
+                        { path: 'ComoFunciona', element: <ComoFunciona /> }
                      ]
                   },
 

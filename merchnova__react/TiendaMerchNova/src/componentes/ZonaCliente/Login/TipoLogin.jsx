@@ -43,7 +43,7 @@ function TipoLogin() {
 
     function getDataGoogle(ev) {
         console.log('Datos de google: ', ev.data);
-        setClientData(ev.data.dataUser.client);
+        setClientData(ev.data?.dataUser?.client);
         sessionStorage.setItem("token", ev.data.dataUser.accessToken);
         window.removeEventListener('message', getDataGoogle);
         navigate('/', {state: {msg: 'Has iniciado sesión con Google'}})

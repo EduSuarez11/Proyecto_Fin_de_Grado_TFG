@@ -14,7 +14,7 @@ function ProductosValorados({ products }) {
                                         <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} className="card-img-top p-3"/>
 
                                         <div className="card-body text-center">
-                                            <h5 className="">{product.nombre}</h5>
+                                            <h5 className="">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...': product.nombre}</h5>
                                             <p className="fs-5 fw-medium text-paragraph">{product.precio} €</p>
 
                                             <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>

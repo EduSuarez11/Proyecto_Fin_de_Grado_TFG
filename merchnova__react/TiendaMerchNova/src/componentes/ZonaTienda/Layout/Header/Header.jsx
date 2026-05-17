@@ -34,7 +34,6 @@ function Header() {
     function handleHiddenPanel(ev) {
         if (refPanel.current) {
             clearTimeout(refPanel.current);
-            refPanel.current = null;
         }
         refPanel.current = setTimeout(() => {
             setShowPanel({ ...showPanel, [ev.target.id]: false });
@@ -119,7 +118,7 @@ function Header() {
      #endregion --------------------------------*/
 
     return (
-        <>
+        <div className='h-100'>
             <nav className="navbar navbar-expand-lg navbar-dark navbar-merchnova px-4">
                 <div className="container-fluid">
                     <Link to="/" className="navbar-brand d-flex align-items-center fw-bold logo-mn">
@@ -187,7 +186,7 @@ function Header() {
                         <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                             <div className="grid-panel" style={showPanel.products && { gridTemplateColumns: 'repeat(3, 1fr)' }}>
                                 {categories.map((el, pos) =>
-                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`}>
+                                    <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`} key={pos}>
                                         <div className="category fw-medium" key={pos}>{el.nombreCat}</div>
                                     </Link>
                                 )}
@@ -203,7 +202,7 @@ function Header() {
                                 {['Ayuda', "Chat"].map((el, pos) =>
                                     <Link className="text-decoration-none" style={{ color: 'inherit' }} to={!newMessages ? `/Portal/Soporte/${el}` : `/Portal/Soporte/${el}/${chatId}`} key={pos}>
                                         <div className="category fw-medium" onClick={(ev) => el === 'Chat' && setNewMessages(false)}>
-                                            {el} {(newMessages && el === 'Chat') && <span className="badge bg-danger" style={{  top: '0', right: '0', transform: 'translate(50%, -50%)' }}>!</span>}
+                                            {el} {(newMessages && el === 'Chat') && <span className="badge bg-danger" style={{ top: '0', right: '0', transform: 'translate(50%, -50%)' }}>!</span>}
                                         </div>
                                     </Link>
                                 )}
@@ -226,7 +225,7 @@ function Header() {
                     }
                 </div>
             </nav>
-        </>
+        </div>
     );
 }
 

@@ -7,7 +7,7 @@ function SobreNosotros() {
             {/* HERO */}
             <section className="about-hero mt-4">
                 <div className="about-hero-content">
-                    <span className="about-badge">✨ Sobre MerchNova</span>
+                    <span className="about-badge"><i class="fa-solid fa-circle-info me-1"></i> Sobre MerchNova</span>
 
                     <h1 className='title-info'>Productos únicos creados para fans</h1>
 
@@ -19,7 +19,7 @@ function SobreNosotros() {
                 {/* IMAGEN */}
                 <div className="about-hero-image">
                     {/* TU IMAGEN */}
-                    <div className="image-placeholder">Imagen de la tienda</div>
+                    <img src='/info/merchandising.png' className="image-placeholder"/>
                 </div>
             </section>
 

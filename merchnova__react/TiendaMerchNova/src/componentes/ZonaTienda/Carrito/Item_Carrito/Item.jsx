@@ -46,7 +46,7 @@ function Item() {
 
                                         <p className="empty-cart-text">Parece que todavía no has añadido ningún producto.</p>
 
-                                        <Link to='/Portal/Productos' className="empty-cart-btn">Ver productos</Link>
+                                        <Link to='/Portal/Productos?page=1&categoria=todos' className="empty-cart-btn">Ver productos</Link>
                                     </div>
                                 </div>
                                 :
@@ -58,7 +58,7 @@ function Item() {
 
                                                 <div className="item-info">
                                                     <h3 className='text-title fw-bold'>{item.product.nombre}</h3>
-                                                    {item.producto.talla !== null && <p>Talla: {item.product.talla} </p>}
+                                                    {item.producto.talla.length !== 0 && <p>Talla: {item.product.talla} </p>}
                                                     <p className="item-price">{item.product.precio} €</p>
                                                 </div>
 
@@ -87,7 +87,7 @@ function Item() {
 
                                         <div className="item-info">
                                             <h3 className='text-title fw-bold'>{item.producto.nombre}</h3>
-                                            <p><strong>Talla: </strong>{item.producto.talla.join(', ')}</p>
+                                            {item.producto.talla.length !== 0 && <p><strong>Talla: </strong>{item.producto.talla.join(', ')}</p>}
                                             <p className="item-price">{item.producto.precio}</p>
                                         </div>
 
@@ -99,7 +99,7 @@ function Item() {
                                             <button className="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" onClick={() => updateOnCart({ item, quantity: item.quantity + 1 })} style={{ width: "32px", height: "32px" }}>+</button>
                                         </div>
 
-                                        <div className="item-total">{item.producto.precio * item.quantity} €</div>
+                                        <div className="item-total">{((item.producto.precio - (item.producto.precio * item.producto.rebaja / 100)) * item.quantity).toFixed(2)} €</div>
 
                                         <button className="remove-item" onClick={() => deleteOnCart({ item })}>✕</button>
                                     </div>
@@ -111,7 +111,7 @@ function Item() {
 
                                         <p className="empty-cart-text">Parece que todavía no has añadido ningún producto.</p>
 
-                                        <Link to='/Portal/Productos' className="empty-cart-btn">Ver productos</Link>
+                                        <Link to='/Portal/Productos?page=1&categoria=todos' className="empty-cart-btn">Ver productos</Link>
                                     </div>
                                 </div>
                         )
@@ -155,18 +155,20 @@ function Item() {
 
                             <div className="summary-line">
                                 <span>Subtotal</span>
-                                <span>{Math.round(subtotal * 100) / 100} €</span>
+                                {/* <span>{Math.round(subtotal * 100) / 100} €</span> */}
+                                <span>{(subtotal + order.gastosEnvio).toFixed(2)} €</span>
                             </div>
 
                             <div className="summary-line">
                                 <span>Envío</span>
-                                <span>{order.gastosEnvio} €</span>
+                                <span>{(order.gastosEnvio).toFixed(2)} €</span>
                             </div>
 
                             <div className="summary-total">
                                 <span>Total</span>
                                 <span>
-                                    {Math.round((subtotal + order.gastosEnvio) * 100) / 100} €
+                                    {/* {Math.round((subtotal + order.gastosEnvio) * 100) / 100} € */}
+                                    {(subtotal + order.gastosEnvio).toFixed(2)} €
                                 </span>
                             </div>
 

@@ -77,7 +77,7 @@ function Home() {
             <div className="py-5">
                 <div className="container">
                     <h2 className="text-center mb-3 fw-bold text-title">Productos destacados</h2>
-                    <p className="mb-4 text-paragraph text-center fw-medium">Aquí puedes encontrar los productos más destacados en la tienda.</p>
+                    <p className="mb-4 text-center fw-medium">Aquí puedes encontrar los productos más destacados en la tienda.</p>
 
                     <ProductosValorados products={products}/>
                     

@@ -41,7 +41,7 @@ function Privacidad() {
                     </div>
 
                     <div className="form-check form-switch">
-                        <input className="form-check-input" name='visibility' type="checkbox" checked={privacity.visibility} onChange={handlePrivacity} />
+                        <input className="form-check-input input-privacity" name='visibility' type="checkbox" checked={privacity.visibility} onChange={handlePrivacity} />
                     </div>
                 </div>
 
@@ -55,7 +55,7 @@ function Privacidad() {
                     </div>
 
                     <div className="form-check form-switch">
-                        <input className="form-check-input" name='notification' type="checkbox" checked={privacity.notification} onChange={handlePrivacity} />
+                        <input className="form-check-input input-privacity" name='notification' type="checkbox" checked={privacity.notification} onChange={handlePrivacity} />
                     </div>
                 </div>
 
