@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import useGlobalState from '../../../../global_state/globalState';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
-import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 import './DescripcionSoporte.css'
 import { Link, useNavigate } from 'react-router';
 import socket_io__client_service from '../../../Servicios/socket_io_client/socket_io__client_service';
+import { request_chat } from '../../../Servicios/peticiones_chat/request_chat';
 
 function DescripcionSoporte() {
     const { clientData, setClientData } = useGlobalState();
@@ -26,7 +26,7 @@ function DescripcionSoporte() {
                     },
                     mensajes: [], // Inicialmente el historial de mensajes estará vacío al crear el chat, aunque se le añade un mensaje de bienvenida desde el servidor de Socket.IO al crear la sala.
                 }
-                const getDataResponse = await request_profile.request_create_chat(createChat);
+                const getDataResponse = await request_chat.request_create_chat(createChat);
                 console.log('Respuesta al crear el chat: ', getDataResponse);
 
                 if (getDataResponse.code !== 0) {
@@ -47,10 +47,6 @@ function DescripcionSoporte() {
         <div className="support-info-container">
             <div className="support-info-card">
 
-                <div className='d-flex justify-content-center align-items-center'>
-                    {msgChat !== '' && <span className={code !== 0 ? 'alert alert-success' : 'alert alert-danger'}>{msgChat}</span>}
-                </div>
-
                 {/* ICONO */}
                 <div className="support-icon">
                     <i className="bi bi-headset"></i>
@@ -69,9 +65,11 @@ function DescripcionSoporte() {
                     </p>
                 </div>
 
+                {msgChat !== '' && <span className={code === 0 ? 'text-danger small' : 'text-success small'} >{msgChat}</span>}
+
                 {/* ACCIONES */}
                 <div className="support-actions">
-                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={!!clientData?.chats?._id}>
+                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={clientData?.chats?.find(chat => chat.estado !== 'ACTIVO')}>
                         <i className="bi bi-chat-dots me-2"></i>Iniciar conversación
                     </button>
 
