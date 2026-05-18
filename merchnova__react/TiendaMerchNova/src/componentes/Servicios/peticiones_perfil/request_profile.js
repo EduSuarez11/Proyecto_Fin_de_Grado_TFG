@@ -51,15 +51,5 @@ export const request_profile = {
 
         const responseUpdateData = await requestUpdateData.json();
         return responseUpdateData;
-    },
-
-    request_create_chat: async (newChat) => {
-        const requestCreateChat = await fetch('http://localhost:3000/api/profile/CreateChat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newChat)
-        });
-        const responseCreateChat = await requestCreateChat.json();
-        return responseCreateChat;
     }
 }
