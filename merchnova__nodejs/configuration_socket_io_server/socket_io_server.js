@@ -59,7 +59,8 @@ module.exports = (serverNode) => {
                                     //     transmitterId: datosAdmin.idAdmin.toString()
                                     // }
                                 ],
-                                fechaInicioChat: Date.now()
+                                fechaInicioChat: Date.now(),
+                                estado: 'ACTIVO'
                             }
                         }
                     },
