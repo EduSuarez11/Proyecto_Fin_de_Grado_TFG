@@ -7,7 +7,7 @@ const port = process.env.PORT;
 const { createServer, Server } = require('node:http');
 const server = express();
 const servNode = createServer(server);
-const io = new Server(servNode,)
+const io = new Server(servNode)
 
 middlewares(server);
 configSocketIO(servNode);

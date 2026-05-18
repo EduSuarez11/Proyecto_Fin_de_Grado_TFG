@@ -15,6 +15,7 @@ const manage_profile_data = require('./configuration_endpoints/profile/profile_a
 const manage_auth_token = require('./configuration_endpoints/auth/auth_token_api');
 const manage_payment = require('./configuration_endpoints/pago/payment_api');
 const manage_clients = require('./configuration_endpoints/auth/clients_api');
+const manage_chat = require('./configuration_endpoints/chat/chat_api');
 const pathImages = path.join(__dirname, "../images");
 const connectDB = async () => {
     try {
@@ -24,8 +25,6 @@ const connectDB = async () => {
         process.exit(1);
     }
 };
-
-
 
 module.exports = async (confServerExpress) => {
     await connectDB();
@@ -38,11 +37,11 @@ module.exports = async (confServerExpress) => {
     confServerExpress.use(express.urlencoded({ extended: false }));
 
     // Configuracion CORS
-    // confServerExpress.use(cors({
-    //     origin: 'http://localhost:5173',
-    //     credentials: true
-    // }));
-    confServerExpress.use(cors());
+    confServerExpress.use(cors({
+        origin: 'http://localhost:5173',
+        credentials: true
+    }));
+    //confServerExpress.use(cors());
 
     confServerExpress.use("/images", express.static(pathImages));
 
@@ -58,6 +57,9 @@ module.exports = async (confServerExpress) => {
     confServerExpress.use('/api/products', manage_products);
     confServerExpress.use('/api/products', manage_products_filter);
     confServerExpress.use('/api/products', manage_category);
+
+    // Configuracion de "chat"
+    confServerExpress.use('/api/chat', manage_chat);
 
     // Configuracion de "cart"
     confServerExpress.use('/api/cart', manage_cart);
