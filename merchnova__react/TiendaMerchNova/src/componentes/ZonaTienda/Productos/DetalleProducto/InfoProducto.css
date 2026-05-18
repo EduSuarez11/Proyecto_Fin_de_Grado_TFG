@@ -21,8 +21,8 @@
 
 .icon-color-d {
     width: 25px;
-    background:linear-gradient(to right,#7b2ff7,#c778fb);
-	color: white;
+    background: linear-gradient(to right, #7b2ff7, #c778fb);
+    color: white;
     cursor: pointer;
 }
 
@@ -62,11 +62,10 @@
     margin-bottom: 10px;
     font-weight: 500;
 }
-
 .sizes {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .size-btn {
@@ -108,6 +107,11 @@
     cursor: pointer;
 }
 
+.btn-cart:disabled {
+    background: linear-gradient(to right, #6c18f391, #b055ed87);
+    cursor: default;
+}
+
 .btn-buy {
     padding: 14px 26px;
     border: none;
@@ -121,6 +125,11 @@
 .btn-cart:hover,
 .btn-buy:hover {
     opacity: 0.9;
+}
+
+.btn-buy:disabled {
+    background: #6a0dad7c;
+    cursor: default;
 }
 
 .related-products {
@@ -169,7 +178,7 @@
 }
 
 .product-quantity {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .product-quantity p {

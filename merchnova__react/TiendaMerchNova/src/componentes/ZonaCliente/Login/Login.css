@@ -47,8 +47,8 @@
 }
 
 .form-control:focus {
-    outline: none;
-    border-color: #7b2ff7;
+    border-color: #8c52ff;
+    box-shadow: 0 0 0 4px rgba(140, 82, 255, .12);
 }
 
 .login-btn {

@@ -12,6 +12,7 @@ function InfoProducto() {
     const { order, setOrder, clientData, setClientData } = useGlobalState();
     const [quantity, setQuantity] = useState(1);
     const [addSuccess, setAddSuccess] = useState();
+    const [maxProducts, setMaxProducts] = useState('');
     const [talla, setTalla] = useState('');
     const [moreProducts, setMoreProducts] = useState(resp.moreProducts);
     //console.log('Producto: ', resp);
@@ -44,9 +45,22 @@ function InfoProducto() {
     }
 
 
+
     async function handleAddToCart() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
+        // Comprobar si la cantidad a añadir sumada a la cantidad ya existente en el carrito supera el máximo permitido (10 unidades)
+        const qtyInTheCart = clientData.carrito.itemsPedido.find(item => item.producto._id === resp.product._id)?.quantity || 0;
+        console.log('Cantidad en el carrito: ', qtyInTheCart);
+        console.log('Cantidad a añadir: ', quantity);
+        console.log('Cantidad total: ', qtyInTheCart + quantity);
+        if (qtyInTheCart + quantity > 10) {
+            setMaxProducts(`No puedes añadir más de 10 unidades de este producto al carrito. Tienes actualmente ${qtyInTheCart} unidades en el carrito.`);
+            return;
+        }
+
+        setMaxProducts('');
+
         if (clientData != null) {
             const response = await request_cart.cart_persistence({ clientData, order: resp.product, quantity, gastosEnvio: order.gastosEnvio, talla: talla }, '/Agregar');
 
@@ -60,8 +74,12 @@ function InfoProducto() {
         setAddSuccess('Producto añadido al carrito');
     }
 
+    // Funcion para recoger la cantidad del usuario y validar que este entre 1 y 10 productos a comprar/añadir carrito
     function onChangeQty(ev) {
-        setQuantity(parseInt(ev.target.value))
+        let qty = parseInt(ev.target.value);
+        if (qty > 10) qty = 10;
+        if (qty < 1 || !qty) qty = 1;
+        setQuantity(qty);
     }
 
     return (
@@ -100,7 +118,7 @@ function InfoProducto() {
                         {resp.product.stock > 0 ?
                             <span className="in-stock text-success">En stock: {resp.product.stock} restantes</span>
                             :
-                            <span className="out-stock text-danger">Sin stock</span>
+                            <span className="out-stock text-danger">Sin stock. ¡Atención, este producto se encuentra agotado!</span>
                         }
                     </div>
 
@@ -124,36 +142,32 @@ function InfoProducto() {
                     {/* Tallas */}
                     {
                         resp.product.talla.length > 0 &&
-                        <div className="product-sizes">
+                        <div className="product-sizes mb-3">
                             <p>Tallas disponibles</p>
                             <div className="sizes">
-                                {
-                                    resp.product.talla.map((element, index) =>
-                                        <div className={talla === element ? "talla-btn-active" : "size-btn"} id={element} onClick={(ev) => setTalla(element)} key={index}>{element}</div>
-                                    )
-                                }
+                                {resp.product.talla.map((element, index) =>
+                                    <div className={talla === element ? "talla-btn-active" : "size-btn"} id={element} onClick={(ev) => setTalla(element)} key={index}>{element}</div>
+                                )}
                             </div>
+                            {talla === '' && <span className='text-danger small fw-medium'>¡Debes elegir una talla obligatoriamente!</span>}
                         </div>
                     }
 
                     {/* Cantidad */}
                     <div className="product-quantity">
-                        <p>Cantidad</p>
-                        <input
-                            type="number"
-                            min="1"
-                            max='10'
-                            defaultValue="1"
-                            id='quantity'
-                            className="quantity-input"
-                            onChange={onChangeQty}
-                        />
+                        <p>Cantidad (máx - 10)</p>
+                        <input type="number" min="1" max='10' defaultValue="1" id='quantity' className="quantity-input" onChange={onChangeQty} />
                     </div>
+
+                    {maxProducts !== '' && <div className='text-danger small fw-medium mb-3'>{maxProducts}</div>}
 
                     {/* Botones */}
                     <div className="product-actions">
-                        <button className="btn-cart" onClick={handleAddToCart}>Añadir al carrito</button>
-                        <button className="btn-buy">Comprar ahora</button>
+                        <button className="btn-cart" disabled={resp.product.talla.length !== 0 && talla === ''} onClick={handleAddToCart}>Añadir al carrito</button>
+                        <Link to='/Portal/Pedido/DetallesEncargo'>
+                            <button className="btn-buy" disabled={resp.product.stock === 0}>Comprar ahora</button>
+                        </Link>
+
                     </div>
                 </div>
             </div>

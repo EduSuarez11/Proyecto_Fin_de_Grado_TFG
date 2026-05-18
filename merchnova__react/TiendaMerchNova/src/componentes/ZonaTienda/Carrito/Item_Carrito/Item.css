@@ -99,6 +99,11 @@
     color: white;
 }
 
+.checkout-btn:disabled {
+    background: linear-gradient(to right, #6c18f391, #b055ed87);
+    cursor: default;
+}
+
 .btn-outline-secondary {
     background: linear-gradient(to right, #7b2ff7, #c778fb);
     color: white;

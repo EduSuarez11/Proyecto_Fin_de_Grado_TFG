@@ -173,7 +173,7 @@ function Item() {
                             </div>
 
                             <Link to='/Portal/Pedido/DetallesEncargo'>
-                                <button className="checkout-btn">Finalizar compra</button>
+                                <button className="checkout-btn" disabled={clientData.carrito.itemsPedido.some(item => item.producto.stock === 0)}>Finalizar compra</button>
                             </Link>
                         </div>
                     )
