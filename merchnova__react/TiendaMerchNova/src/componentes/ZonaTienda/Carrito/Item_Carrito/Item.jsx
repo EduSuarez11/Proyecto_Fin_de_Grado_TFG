@@ -87,7 +87,7 @@ function Item() {
 
                                         <div className="item-info">
                                             <h3 className='text-title fw-bold'>{item.producto.nombre}</h3>
-                                            {item.producto.talla.length !== 0 && <p><strong>Talla: </strong>{item.producto.talla.join(', ')}</p>}
+                                            {item.producto.talla[0] === '' && <p><strong>Talla: </strong>{item.producto.talla.join(', ')}</p>}
                                             <p className="item-price">{item.producto.precio}</p>
                                         </div>
 
