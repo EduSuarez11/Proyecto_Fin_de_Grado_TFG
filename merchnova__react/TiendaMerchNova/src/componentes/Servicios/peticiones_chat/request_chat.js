@@ -15,11 +15,11 @@ export const request_chat = {
         return responseGetChat;
     },
 
-    end_chat: async (chatId) => {
+    end_chat: async (chatId, clientId) => {
         const requestGetChat = await fetch('http://localhost:3000/api/chat/EndChat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({salaId: chatId})
+            body: JSON.stringify({salaId: chatId, clientId})
         });
         const responseGetChat = await requestGetChat.json();
         return responseGetChat;

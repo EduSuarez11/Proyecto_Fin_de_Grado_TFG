@@ -20,17 +20,6 @@ export const request_auth = {
         });
 
         const data = await response.json();
-    },
-
-    request_update: async (formProfile) => {
-        const requestNewData = await fetch('http://localhost:3000/api/auth/Perfil-Update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formProfile)
-        });
-
-        const responseNewData = await requestNewData.json();
-        return responseNewData;
     }
 }
 
