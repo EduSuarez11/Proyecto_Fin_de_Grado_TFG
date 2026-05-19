@@ -77,7 +77,7 @@ function Header() {
     useEffect(
         () => {
             socket_io__client_service.receiveEvent('adminJoinRoom', (data) => {
-                const { salaId, datosCliente, datosAdmin, firstMsg } = JSON.parse(data);
+                const { salaId, datosCliente, datosAdmin, firstMsg, estado } = JSON.parse(data);
                 const clientUp = useGlobalState.getState().clientData;
 
                 if (clientUp._id && clientUp._id === datosAdmin.idAdmin) {
@@ -89,7 +89,7 @@ function Header() {
                         ...clientUp,
                         chats: [
                             ...clientUp?.chats,
-                            { _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg] }
+                            { _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg], estado }
                         ]
                     });
                     setChatId(salaId);

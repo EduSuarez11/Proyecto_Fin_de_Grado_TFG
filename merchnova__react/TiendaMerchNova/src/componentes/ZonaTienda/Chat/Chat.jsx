@@ -29,18 +29,6 @@ function Chat() {
         useGlobalState.getState().setClientData({ ...clientData, chats: update });
     }
 
-    // useEffect(
-    //     () => {
-    //         async function getChat() {
-    //             if (!salaId) {
-    //                 const chats = await request_chat.get_chat(clientData._id);
-    //                 const chatFind = chats.find(chat => chat._id === chatSelected._id);
-    //                 setChatSelected(chatFind);
-    //             }
-    //         }
-    //     }, [salaId]
-    // )
-
     const setData = useEffectEvent((data) => {
         const { salaId, mensaje } = JSON.parse(data);
         console.log('Mensaje recibido: ', mensaje);
@@ -93,8 +81,10 @@ function Chat() {
 
     async function archivateChat() {
         if (salaId) {
-            const clientEndChat = await request_chat.end_chat(salaId);
+            const clientEndChat = await request_chat.end_chat(salaId, clientData._id);
             console.log('Respuesta: ', clientEndChat);
+            setClientData(clientEndChat.data.client);
+            setChatSelected(null);
             navigate('/Portal/Soporte/Chat');
         }
     }
@@ -112,18 +102,16 @@ function Chat() {
                         <span>{clientData?.chats?.length || 0} conversaciones</span>
                     </div>
 
-
                     {/* BUSCADOR */}
                     <div className="sidebar-search">
                         <input type="text" placeholder="Buscar chat..." className="form-control" />
                     </div>
 
                     {chats?.map((chat, pos) =>
-                        <div className={chosenChat ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
+                        <div className={selectedChat?._id === chat._id ? "chat-user active-chat" : "chat-user"} onClick={() => { setChosenChat(chat._id); setChatSelected(chat); navigate(`/Portal/Soporte/Chat/${chat._id}`) }} key={pos}>
                             <div className="chat-user-left">
                                 <div className="chat-avatar-wrapper">
                                     <img src={chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.imagenCuenta : chat?.datosAdmin?.imagenCuenta} alt={chat?.datosCliente?.nombreCliente} className="chat-user-avatar" />
-                                    <span className="online-dot"></span>
                                 </div>
 
                                 <div>
@@ -141,7 +129,7 @@ function Chat() {
                 </div>
 
 
-                {(selectedChat !== null && selectedChat) &&
+                {(selectedChat !== null && selectedChat) ?
                     <div className="support-main-chat">
                         <div className="chat-main-header">
                             {/* DATOS ADMIN */}
@@ -225,6 +213,11 @@ function Chat() {
                             </div>
                         }
 
+                    </div>
+
+                    :
+                    <div>
+                        <span className='text-danger fs-2'>Selecciona un chat</span>
                     </div>
                 }
 
