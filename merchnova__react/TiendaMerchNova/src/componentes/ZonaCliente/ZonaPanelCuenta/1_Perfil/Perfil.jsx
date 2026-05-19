@@ -2,14 +2,14 @@ import './Perfil.css';
 import { Link, useLoaderData, useLocation, useNavigate } from "react-router-dom";
 import useGlobalState from "../../../../global_state/globalState";
 import { useEffect, useRef, useState } from "react";
-import { request_auth } from '../../../Servicios/peticiones_auth_frontend/request_auth';
+import { request_profile } from '../../../Servicios/peticiones_perfil/request_profile';
 
 function PerfilCuenta() {
     const { clientData, setClientData } = useGlobalState();
     const countries = useLoaderData();
     const location = useLocation();
     const [editProfile, setEditProfile] = useState(false);
-    const [formProfile, setFormProfile] = useState({ email: clientData?.cuenta?.email });
+    const [formProfile, setFormProfile] = useState({});
     const imageRef = useRef(null);
     const navigate = useNavigate();
 
@@ -73,8 +73,8 @@ function PerfilCuenta() {
 
     async function handleSubmitProfile() {
         try {
-            const responseNewData = await request_auth.request_update(formProfile);
-            //console.log('Respuesta node:', responseNewData);
+            const responseNewData = await request_profile.request_update(formProfile, clientData._id);
+            console.log('Respuesta node:', responseNewData);
             setClientData(responseNewData.data.newClientData);
             navigate('/', { state: { msg: `${responseNewData.message}` } });
         } catch (error) {
