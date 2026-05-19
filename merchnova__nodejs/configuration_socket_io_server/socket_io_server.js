@@ -8,7 +8,8 @@ async function setChatWithNewMessages(salaId, mensaje) {
     // Realizar peticion al backend para actualizar el cliente y admin con los nuevos mensajes
     await mongoose.connection.collection('clientes').updateMany(
         { 'chats._id': salaId },
-        { $push: { "chats.$.mensajes": mensaje } }
+        { $push: { "chats.$[chat].mensajes": mensaje } },
+        { arrayFilters: [{'chat._id': salaId}]}
     );
 }
 
@@ -60,6 +61,7 @@ module.exports = (serverNode) => {
                                     // }
                                 ],
                                 fechaInicioChat: Date.now(),
+                                fechaFinChat: null,
                                 estado: 'ACTIVO'
                             }
                         }
@@ -71,7 +73,8 @@ module.exports = (serverNode) => {
                     salaId,
                     datosCliente,
                     datosAdmin,
-                    firstMsg: mensaje
+                    firstMsg: mensaje,
+                    estado: adminUpdate.estado
                 }));
                 await setChatWithNewMessages(salaId, mensaje);
 
