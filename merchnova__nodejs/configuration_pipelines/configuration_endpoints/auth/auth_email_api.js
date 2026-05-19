@@ -153,39 +153,4 @@ manage_auth_email.post('/Login', async (req, resp, next) => {
     }
 });
 
-
-manage_auth_email.post('/Perfil-Update', async (req, res, next) => {
-    try {
-        let campos = Object.keys(req.body);
-        let data = {};
-        campos.map((campo) => {
-            if (campo !== undefined && campo !== null) {
-                if (campo === 'nombreCompleto') {
-                    data.nombreCompleto = req.body[campo];
-                } else if (campo === 'pais' || campo === 'municipio' || campo === 'provincia' || campo === 'codigoPostal' || campo === 'domicilio') {
-                    data["direcciones.0." + campo] = req.body[campo];
-                } else {
-                    data["cuenta." + campo] = req.body[campo];
-                }
-            }
-        });
-
-        console.log('Objeto data: ', data);
-
-        const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { 'cuenta.email': req.body.email },
-            {$set: data},
-            { returnDocument: "after" }
-        )
-
-        console.log('Nuevo cliente actualizado: ', updateClient);
-        if (!updateClient) throw new Error("No se pudo actualizar los datos.");
-
-        res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: updateClient } });
-    } catch (error) {
-        res.status(200).send({ code: 4, message: `${error}` });
-    }
-});
-
-
 module.exports = manage_auth_email;

@@ -7,6 +7,60 @@ const bcrypt = require('bcrypt');
 const manage_profile_data = express.Router();
 
 
+manage_profile_data.post('/Perfil-Update', async (req, res, next) => {
+    try {
+        const { data, clientId } = req.body;
+
+        if (!clientId || !data) throw new Error('Requiere al menos un dato para actualizar el perfil.');
+
+        console.log('Datos a actualizar:', data);
+
+        // Actualizar los datos del cliente
+        const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(clientId) },
+            { $set: data },
+            { returnDocument: "after" }
+        );
+
+        if (!updateClient) throw new Error('No se pudo actualizar el cliente.');
+
+        // Actualizar tambien la info del chat
+        if (updateClient.cuenta.rol !== 'ADMINISTRADOR') {
+            const datosClienteActualizados = {
+                idCliente: new mongoose.Types.ObjectId(clientId),
+                nombreCliente: data.nombreCompleto || updateClient.nombreCompleto,
+                imagenCuenta: data.cuenta?.imagenCuenta || updateClient.cuenta?.imagenCuenta
+            };
+
+            // 4. Actualizar los chats de los admins donde aparezca este cliente
+            await mongoose.connection.collection('clientes').updateMany(
+                { 'chats.datosCliente.idCliente': new mongoose.Types.ObjectId(clientId) },
+                { $set: { 'chats.$[chat].datosCliente': datosClienteActualizados } },
+                { arrayFilters: [{ 'chat.datosCliente.idCliente': new mongoose.Types.ObjectId(clientId) }] }
+            );
+        } else {
+            const datosAdminActualizados = {
+                idAdmin: new mongoose.Types.ObjectId(clientId),
+                nombreAdmin: data.nombreCompleto || updateClient.nombreCompleto,
+                imagenCuenta: data.cuenta?.imagenCuenta || updateClient.cuenta?.imagenCuenta
+            };
+            await mongoose.connection.collection('clientes').updateMany(
+                { 'chats.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientId) },
+                { $set: { 'chats.$[chat].datosAdmin': datosAdminActualizados } },
+                { arrayFilters: [{ 'chat.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientId) }] }
+            );
+        }
+        const userUpdate = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) })
+
+        console.log('Perfil y chats actualizados exitosamente');
+        res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: userUpdate } });
+    } catch (error) {
+        console.error('Error al actualizar perfil:', error);
+        res.status(500).send({ code: 4, message: `Error al actualizar perfil: ${error.message}` });
+    }
+});
+
+
 manage_profile_data.post('/ForgotPassword', async (req, res, next) => {
     try {
         const { email } = req.body;

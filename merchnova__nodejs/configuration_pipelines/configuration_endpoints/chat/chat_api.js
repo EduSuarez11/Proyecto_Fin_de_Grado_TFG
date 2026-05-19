@@ -44,6 +44,7 @@ manage_chat.post('/CreateChat', async (req, res, next) => {
                             // }
                         ],
                         fechaInicioChat: Date.now(),
+                        fechaFinChat: null,
                         estado: 'ACTIVO'
                     }
                 }
@@ -60,34 +61,25 @@ manage_chat.post('/CreateChat', async (req, res, next) => {
 })
 
 
-// Recuperar el chat al entrar a la conversacion
-manage_chat.get('/GetChat', async (req, res, next) => {
-    try {
-        const { clientId } = req.query;
-        const getChat = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) });
-        if (!getChat) throw new Error('No se pudo obtener el chat.');
-        res.status(200).send({ code: 0, message: 'Chat obtenido', data: { chat: getChat.chats } });
-    } catch (error) {
-        console.log('Error al obtener el chat: ', error);
-        res.status(200).send({ code: 17, message: `${error.message}` });
-    }
-})
-
-
 manage_chat.post('/EndChat', async (req, res, next) => {
     try {
         // En el req.body ira la sala a la que se finalizaria el chat
-        const { salaId } = req.body;
+        const { salaId, clientId } = req.body;
         console.log('Sala: ', salaId);
 
         const clientChatEnd = await mongoose.connection.collection('clientes').updateMany(
             { 'chats._id': salaId },
-            { $set: { 'chats.$.estado': 'ARCHIVADO' } }
+            { $set: { 'chats.$[chat].estado': 'ARCHIVADO', 'chats.$[chat].fechaFinChat': Date.now() } },
+            { arrayFilters: [{ 'chat._id': salaId }] }
         );
 
         if (clientChatEnd.modifiedCount === 0) throw new Error('No se pudo finalizar el chat.');
 
-        res.status(200).send({ code: 0, message: 'Chat finalizado', data: { client: clientChatEnd } });
+        const user = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) });
+
+        if (!user._id) throw new Error('Cliente no encontrado');
+
+        res.status(200).send({ code: 0, message: 'Chat finalizado', data: { client: user } });
     } catch (error) {
         console.log('Error al finalizar el chat: ', error);
         res.status(200).send({ code: 18, message: `${error.message}` });
