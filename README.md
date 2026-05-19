@@ -615,7 +615,99 @@ Ejemplo de visualizacion:
 ]
 ```
 
-## 3. Bibliotecas y fuentes de información
+---
+
+## 3. Conclusiones
+Resultados obtenidos y cumplimiento de objetivos
+
+El desarrollo del proyecto ha permitido crear una aplicación web funcional orientada a la venta de productos personalizados, cumpliendo los principales objetivos planteados al inicio del proyecto.
+
+Entre los resultados obtenidos destacan:
+
+- Implementación de una tienda online completamente funcional (con sus principales funcionalidades).
+- Desarrollo de una arquitectura SPA moderna utilizando React y Vite.
+- Creación de un backend basado en API RESTful con Node.js.
+- Integración de una base de datos NoSQL mediante MongoDB.
+- Sistema de autenticación y gestión de usuarios.
+- Gestión de productos, pedidos y carrito de compra.
+- Integración de métodos de pago externos.
+- Diseño responsive adaptable a distintos dispositivos.
+
+En general, los objetivos principales establecidos al comienzo del proyecto se han cumplido satisfactoriamente, pese a que otras funcionalidades también pensadas se quedaron por realizar (objetivos secundarios, si se acababan los principales antes de tiempo), consiguiendo una aplicación estable, organizada y preparada para futuras ampliaciones.
+
+### Retos encontrados y soluciones implementadas
+Durante el desarrollo del proyecto surgieron diferentes dificultades técnicas que requirieron investigación y adaptación para poder resolverlas correctamente. Por ejemplo, la gestión y control de errores en los pagos que realizan los usuarios, a la hora de realizar un pago (sin introducir datos) al cancelar, el usuario no podía volver a ejecutar el pago por problemas en la gestión del token de PayPal. Algo similar ocurrió con Stripe utilizando la documentación y el método de implantación realizado en el curso, por lo que se decidió utilizar tanto la las librerías de StripeJS y stripe (de `NodeJS`) que permitian una lógica de negocio algo más sencilla y segura de implementar.
+
+Otro de los retos importantes fue la integración del chat de soporte en el proyecto, encontrando problemas de conexión desde backend a frontend y viceversa. Para resolverlo se dispuso del uso de la Inteligencia Artificial y, en ese momento, las clases de refuerzo donde se pudo realizar desde cero la implementación del chat paso a paso e ir encontrando soluciones a los errores en la parte del soporte.
+
+### Aprendizajes y mejoras futuras
+El desarrollo del proyecto ha permitido aplicar y ampliar conocimientos relacionados con el desarrollo full stack y la creación de aplicaciones web modernas. Sobre todo en la parte frontend con las tencologías de `React` y `Nodejs`. El objetivo de la aplicación web desarrollado es la posibilidad de realizar mejoras de cara al futuro gracias también a todo lo desarrollado durante el proyecto.
+
+- Organización de proyectos frontend y backend.
+- Desarrollo de APIs RESTful.
+- Gestión de estados y navegación en aplicaciones SPA.
+- Integración de servicios externos.
+- Gestión de bases de datos NoSQL.
+- Implementación de autenticación y seguridad.
+- Diseño responsive y experiencia de usuario.
+- Ejemplo de mejoras futuras
+
+Aunque la aplicación cumple correctamente sus objetivos principales, existen posibles mejoras que podrían implementarse en futuras versiones, como:
+
+- Incorporación de un sistema de valoraciones y comentarios más avanzado.
+- Implementación de notificaciones en tiempo real.
+- Implementación puntuaciones o monedas virtuales para canjear distintos productos mediante un sistema de recompensa diario.
+- Internacionalización de la aplicación para distintos idiomas.
+- Incorporación de recomendaciones personalizadas de productos.
+- Implementación de un sistema de planes de un usuario (`Básico`, `Premium`,`Vip`).
+
+La organización del desarrollo del proyecto se realizó mediante una planificación dividida en distintas fases, permitiendo avanzar de forma progresiva y mantener un control sobre las tareas pendientes y completadas, pese a que alguna de ellas se retrasase. El proyecto se estructuró de las siguientes fases:
+
+- Análisis inicial y planificación del proyecto (previo al proyecto).
+- Diseño de la arquitectura y estructura de la aplicación.
+- Desarrollo del frontend.
+- Desarrollo del backend y la API REST.
+- Diseño y conexión de la base de datos. (`MongoDB`)
+- Implementación de autenticación y seguridad.
+- Integración de pagos y servicios externos.
+- Realización de pruebas y corrección de errores.
+- Documentación de la memoria.
+
+Esta organización permitió dividir el trabajo en partes manejables y mantener un seguimiento constante del progreso del proyecto.
+
+### Seguimiento de la planificación y metodología utilizada
+Para gestionar el desarrollo del proyecto se utilizó una planificación iterativa basada en funcionalidades, organizando las tareas mediante paneles visuales en ClickUp, pese a que el grupo formado era de un solo integrante se dispuso a su uso. 
+
+El uso de esta herramienta permitió:
+- Organizar tareas por fases. 
+- Establecer prioridades.
+- Dividir funcionalidades en pequeñas tareas.
+- Gestionar errores y mejoras pendientes.
+
+La metodología aplicada se aproxima a una organización tipo Kanban, donde las tareas pasan por diferentes estados según su avance, facilitando una visión general del desarrollo del proyecto.
+
+### Evaluación de desviaciones respecto a la planificación inicial
+Durante el desarrollo del proyecto se produjeron algunas desviaciones respecto a la planificación inicial debido a la complejidad de determinadas funcionalidades y problemas surgidos durante la implementación.
+Algunas fases requirieron más tiempo del inicialmente previsto, especialmente:
+
+- Integración de métodos de pago externos.
+- Implementación del sistema de chat y soporte.
+- Organización del estado global de la aplicación.
+
+Estas tareas implicaron tiempo adicional de investigación, pruebas y resolución de errores, por lo que no cumplieron la planificación que se había dictado.
+Otras funcionalidades que fueron descartadas o no completadas fueron pospuestas para futuras versiones debido a limitaciones de tiempo.
+
+- Sistema avanzado de recomendaciones personalizadas.
+- Notificaciones en tiempo real completas.
+- Subir productos por parte de los clientes y poder obtener ganancias.
+- Sistema de cupones y descuentos dinámicos.
+- Integración de un sistema de moneda virtual que permita canjear productos sin pagos.
+
+Aun así, estas funcionalidades quedan planteadas como posibles mejoras futuras para continuar evolucionando la aplicación.
+
+---
+
+## 4. Bibliografía y fuentes de información
 Durante el desarrollo del proyecto he utilizado diferentes fuentes de información, documentaciones oficiales, APIs y herramientas de apoyo que han servido como referencia tanto para la implementación técnica como para la resolución de problemas encontrados durante el desarrollo.
 
 ### Documentación oficial y de tecnologías
@@ -627,11 +719,47 @@ Durante el desarrollo del proyecto he utilizado diferentes fuentes de informaci�
 
 #### MongoDB
 [MongoDB](https://www.mongodb.com/es/docs/) — He revisado la Documentación y recursos relacionados con la base de datos NoSQL utilizada en el proyecto. Como por ejemplo, a la hora de realizar consultas en la base de datos.
-
 #### MDN Web Docs
 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript) — Fuente de consulta para HTML, CSS, JavaScript. Sobretodo utilizado para JavaScript.
 
 #### Bootstrap
 [BootStrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) — Framework CSS utilizado como apoyo para estilos y diseño responsive de la aplicación.
 
-### APIs
+### APIs y servicioy externos utilizados
+
+
+#### Google
+[Google Developer](https://developers.google.com/identity/protocols/oauth2/web-server?hl=es-419#node.js) — Utilizadas para funcionalidades relacionadas con servicios externos y herramientas proporcionadas por Google.
+
+#### Discord
+[Discord Developer Portal](https://discord.com/developers/applications) — Utilizada para integración con servicios de Discord.
+
+> Require inicio de sesión para su uso.
+
+#### Stripe
+[Stripe Docs JS](https://docs.stripe.com/js) — Pasarela de pago utilizada para la gestión de pagos online desde la parte frontend.
+
+[Stripe Developer](https://dashboard.stripe.com/) — Gestiona las claves de Stripe y también los pagos ficticios que se van realizando.
+
+> Require inicio de sesión para su uso.
+
+#### PayPal
+[PayPal Developer](https://developer.paypal.com/dashboard/) — API utilizada para implementar pagos mediante PayPal.
+
+> Requiere inicio de sesión para su uso.
+
+#### Mailjet
+[Mailjet](https://app.mailjet.com/dashboard) — Servicio utilizado para el envío de correos electrónicos desde la aplicación (activación de cuentas, gestionar contraseñas, eliminar cuenta...).
+
+> Requiere inicio de sesión para su uso.
+
+
+### Herramientas de desarrollo
+`Visual Studio Code` — Editor de código abierto utilizado para el desarrollo del proyecto.
+
+`GitHub` — Plataforma utilizada para el control de versiones y almacenamiento del repositorio, utilizada con VSC desde la terminal con `Git`.
+
+`Postman` — Herramienta utilizada para probar y verificar la parte del API REST.
+
+
+Además de la documentación oficial, también se han visitado diferentes foros y comunidades de desarrollo para encontrar y resolver algunos problemas específicos encontrados durante el proyecto.
