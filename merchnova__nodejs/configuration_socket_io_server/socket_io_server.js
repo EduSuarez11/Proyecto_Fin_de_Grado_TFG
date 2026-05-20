@@ -17,7 +17,7 @@ module.exports = (serverNode) => {
     const io = new Server(serverNode,
         {
             cors: {
-                origin: '*',
+                origin: [process.env.URL_DOMAIN, process.env.URL_FRONTEND],
                 methods: ['GET', 'POST']
             }
         }

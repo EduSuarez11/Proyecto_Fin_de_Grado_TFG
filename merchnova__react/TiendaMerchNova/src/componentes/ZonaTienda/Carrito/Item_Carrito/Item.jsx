@@ -83,7 +83,7 @@ function Item() {
                             clientData.carrito.itemsPedido.length != 0 ?
                                 clientData.carrito.itemsPedido.map((item, index) =>
                                     <div className='cart-item w-100' key={index}>
-                                        <img src={`http://localhost:3000${item.producto.imagen}`} alt="producto" />
+                                        <img src={item.producto.imagen} alt="producto" />
 
                                         <div className="item-info">
                                             <h3 className='text-title fw-bold'>{item.producto.nombre}</h3>

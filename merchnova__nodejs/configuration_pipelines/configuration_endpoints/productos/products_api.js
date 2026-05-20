@@ -8,7 +8,7 @@ const manage_products = express.Router();
 manage_products.get('/Productos', async (req, res, next) => {
     try {
         // Usar limit para obtener solo algunos productos destacados en el Home
-        const products = await mongoose.connection.collection('productos').find().toArray();
+        const products = await mongoose.connection.collection('productos').find({path: 1}).toArray();
 
         res.status(200).send({ code: 0, message: 'Productos obtenidos correctamente', data: products });
     } catch (error) {

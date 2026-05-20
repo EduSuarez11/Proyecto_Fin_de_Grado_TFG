@@ -127,7 +127,7 @@ function PanelClientes() {
                                                 <div className="modal-product-card" key={index}>
                                                     {/* IMAGEN */}
                                                     <div className="modal-product-image">
-                                                        <img src={`http://localhost:3000${item?.producto?.imagen}`} alt={item?.producto?.nombre} />
+                                                        <img src={item?.producto?.imagen} alt={item?.producto?.nombre} />
                                                     </div>
 
                                                     {/* INFO */}

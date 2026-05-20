@@ -45,7 +45,7 @@ function Pedidos() {
                                 {
                                     pedido.items.map((item, index) =>
                                         <div className="order-item" key={index}>
-                                            <img src={`http://localhost:3000${item.producto.imagen}`} alt="" />
+                                            <img src={item.producto.imagen} alt={item.producto.nombre} />
 
                                             <div className="item-info">
                                                 <p className="item-name">{item.producto.nombre}</p>

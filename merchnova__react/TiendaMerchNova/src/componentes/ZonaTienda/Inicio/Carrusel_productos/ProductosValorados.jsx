@@ -34,7 +34,7 @@ function ProductosValorados({ products }) {
                         {products.data.slice(4, 8).map((product, index) =>
                             <div className="col-md-3" key={index}>
                                 <div className="card product-card">
-                                    <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} className="card-img-top p-2" />
+                                    <img src={product.imagen} alt={product.nombre} className="card-img-top p-2" />
 
                                     <div className="card-body text-center">
                                         <h5 className="">{product.nombre}</h5>

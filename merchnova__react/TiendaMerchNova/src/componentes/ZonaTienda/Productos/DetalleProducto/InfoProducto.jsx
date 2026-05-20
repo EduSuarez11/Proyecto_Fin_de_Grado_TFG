@@ -91,7 +91,7 @@ function InfoProducto() {
             <nav className="breadcrumb">
                 <Link to='/'>Inicio </Link>
                 <span className="mx-2">/</span>
-                <Link to='/Portal/Productos'>Tienda</Link>
+                <Link to='/Portal/Productos?page=1&categorias=todos'>Tienda</Link>
                 <span className="mx-2">/</span>
                 <span className="current-product">{resp.product.nombre}</span>
 
@@ -102,7 +102,7 @@ function InfoProducto() {
 
             <div className="product-container">
                 <div className="product-image">
-                    <img src={`http://localhost:3000${resp.product.imagen}`} alt="producto" />
+                    <img src={resp.product.imagen} alt="producto" />
                 </div>
 
                 {/* Nombre producto */}
@@ -179,7 +179,7 @@ function InfoProducto() {
                         moreProducts?.map((product, el) =>
                             <div className="related-card" key={el}>
                                 <Link to={`/Portal/Producto/${product.categoria}/${product.slug}`}>
-                                    <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} />
+                                    <img src={product.imagen} alt={product.nombre} />
                                     <h3>{product.nombre}</h3>
                                     <p>{product.precio}</p>
                                 </Link>

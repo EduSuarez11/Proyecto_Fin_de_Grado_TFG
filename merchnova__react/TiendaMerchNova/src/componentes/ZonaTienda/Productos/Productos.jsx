@@ -87,6 +87,7 @@ function Productos() {
         });
         return stars;
     }
+    console.log('Productos: ',dataProducts)
 
 
     return (
@@ -144,7 +145,7 @@ function Productos() {
                 {/* PRODUCTOS A MOSTRAR */}
                 <div className="col-lg-9">
                     <div className="row">
-                        {dataProducts.products ?
+                        {dataProducts.products.length !== 0 ?
                             <>
                                 {
                                     (dataProducts.products?.map((product, index) =>
@@ -155,7 +156,7 @@ function Productos() {
                                                         -{product.rebaja}%
                                                     </div>
                                                 )}
-                                                <img src={`http://localhost:3000${product.imagen}`} className="card-img-top p-2" />
+                                                <img src={product.imagen} className="card-img-top p-2" />
                                                 <div className="card-body">
                                                     <h6 className="title-product">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...': product.nombre}</h6>
                                                     <div className="rating">
@@ -171,7 +172,7 @@ function Productos() {
 
                                 {/* Paginacion de los productos */}
                                 <div className="shop-pagination-wrapper mb-4">
-                                    <div className="pagination-results">{Math.min(page * dataProducts?.limit, dataProducts?.totalProducts)} de {dataProducts?.totalProducts} productos</div>
+                                    <div className="pagination-results">{Math.min(page * dataProducts?.limit, dataProducts?.totalProducts) || 0} de {dataProducts?.totalProducts || 0} productos</div>
                                     <nav className="shop-pagination">
                                         <button className="page-nav-btn" disabled={page === 1} onClick={() => handleSetPage(page - 1)} >&lt;</button>
 
@@ -186,7 +187,7 @@ function Productos() {
                                 </div>
                             </>
                             :
-                            <div className="d-flex justify-content-center align-items-center flex-column">
+                            <div className="d-flex justify-content-center align-items-center flex-column" style={{height: '430px'}}>
                                 <div className="spinner-border" role="status">
                                     <span className="sr-only"></span>
                                 </div>

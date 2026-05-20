@@ -48,8 +48,8 @@ function Resumen({ datosDireccion, paymentMethod }) {
             <div className="summary-section">
                 <h5>Método de pago</h5>
                 <p>
-                    {paymentMethod === "tarjeta" && "💳 Tarjeta"}
-                    {paymentMethod === "paypal" && "🟡 PayPal"}
+                    {paymentMethod === "tarjeta" && (<i class="fa-solid fa-credit-card"></i> + " Tarjeta")}
+                    {paymentMethod === "paypal" && (<i class="fa-brands fa-paypal"></i>  + " PayPal")}
                 </p>
 
                 {/* {paymentMethod === "tarjeta" && (
@@ -64,7 +64,7 @@ function Resumen({ datosDireccion, paymentMethod }) {
 
                 {clientData.carrito.itemsPedido.map((item, index) => (
                     <div className="summary-product" key={index}>
-                        <img src={`http://localhost:3000${item.producto.imagen}`} alt="" />
+                        <img src={item.producto.imagen} alt="" />
                         <div>
                             <p>{item.producto.nombre}</p>
                             <span>Cantidad: {item.quantity}</span>
