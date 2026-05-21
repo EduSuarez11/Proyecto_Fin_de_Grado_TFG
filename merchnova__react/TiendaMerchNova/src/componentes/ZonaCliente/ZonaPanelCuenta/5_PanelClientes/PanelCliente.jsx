@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import './PanelCliente.css'
 import { request_clients } from '../../../Servicios/peticiones_auth_frontend/request_clients';
-import DetallesPedido from './Pedidos_admin/DetallesPedido';
 
 function PanelClientes() {
 
