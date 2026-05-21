@@ -17,7 +17,7 @@ module.exports = (serverNode) => {
     const io = new Server(serverNode,
         {
             cors: {
-                origin: [process.env.URL_DOMAIN, process.env.URL_FRONTEND,'https://merchnova-api.onrender.com'],
+                origin: [process.env.URL_DOMAIN, process.env.URL_FRONTEND,'https://merchnova-web.onrender.com/'],
                 methods: ['GET', 'POST']
             }
         }
