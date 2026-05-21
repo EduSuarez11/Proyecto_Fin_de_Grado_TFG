@@ -9,9 +9,11 @@
     }
         */
 //#endregion ------------------------------------------------------------
+const URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://merchnova-api.onrender.com/'
+
 export const request_products = {
     get_home_products: async () => {
-        const productsRequest = await fetch('http://localhost:3000/api/products/Productos/Home');
+        const productsRequest = await fetch(`${URL}api/products/Productos/Home`);
         const response = await productsRequest.json();
         //console.log('Productos cargados: ', response.data);
 

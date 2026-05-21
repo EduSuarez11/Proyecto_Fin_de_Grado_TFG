@@ -23,10 +23,10 @@ export const request_auth = {
     }
 }
 
-
+const URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/' : 'https://merchnova-api.onrender.com/'
 export const request_get_token = {
     token_verify: async (token) => {
-        const request = await fetch(`http://localhost:3000/api/auth/Verify/Token`, {
+        const request = await fetch(`${URL}api/auth/Verify/Token`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
