@@ -38,7 +38,7 @@ module.exports = async (confServerExpress) => {
 
     // Configuracion CORS
     confServerExpress.use(cors({
-        origin: 'http://localhost:5173',
+        origin: ['http://localhost:5173', 'https://merchnova-web.onrender.com/'],
         credentials: true
     }));
     //confServerExpress.use(cors());
