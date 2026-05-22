@@ -168,7 +168,24 @@ manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
         console.log('Error al cambiar la privacidad: ', error);
         res.status(200).send({ code: 15, message: `${error.message}` });
     }
-})
+});
+
+
+manage_profile_data.post('/DeleteAccount', async (req, res, next) => {
+    try {
+        const { clientData } = req.body;
+        const completeOperation = await mongoose.connection.collection('clientes').deleteOne(
+            { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) }
+        );
+
+        if (completeOperation.deletedCount === 0) throw new Error('No se pudo eliminar la cuenta.');
+
+        res.status(200).send({ code: 0, message: 'Su cuenta ha sido eliminada con éxito.' });
+    } catch (error) {
+        console.log('Error al eliminar la cuenta: ', error);
+        res.status(200).send({ code: 16, message: `${error.message}` });
+    }
+});
 
 
 module.exports = manage_profile_data;

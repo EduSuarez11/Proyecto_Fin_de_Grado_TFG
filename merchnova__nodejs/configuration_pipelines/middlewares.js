@@ -31,14 +31,14 @@ module.exports = async (confServerExpress) => {
     // Configuracion de peticiones json
 
     //console.log('Configurando PIPELINE de Express...');
-    confServerExpress.use(express.json());
+    confServerExpress.use(express.json({limit: '100mb'}));
 
     // Configuracion de peticiones URL
     confServerExpress.use(express.urlencoded({ extended: false }));
 
     // Configuracion CORS
     confServerExpress.use(cors({
-        origin: ['http://localhost:5173', 'https://merchnova-web.onrender.com/'],
+        origin: '*',
         credentials: true
     }));
     //confServerExpress.use(cors());
