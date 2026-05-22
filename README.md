@@ -22,29 +22,28 @@ A lo largo de los siguientes apartados se comentaran aspectos como las funcional
 
 ## 1. Introducción y justificación
 ### Descripción de la aplicación a desarrollar
-El proyecto que se va a desarrollar está relacionado con una plataforma de venta de productos personalizados con el propósito de vender 
-El proyecto que se va a construir consiste en el desarrollo de una aplicación web de comercio electrónico orientada a la venta de productos personalizados. La plataforma permitirá a los usuarios explorar diferentes categorías de productos (`tazas, camisetas, peluches entre otros`), visualizar información detallada de cada artículo y realizar compras de forma sencilla y segura.
+El proyecto que se va a desarrollar está relacionado con una plataforma de venta de comercio electrónico con el propósito de venta de productos personalizados. La plataforma permitirá a los usuarios explorar diferentes categorías de productos (`tazas, camisetas, peluches entre otros`), visualizar información detallada de cada artículo y realizar compras de forma sencilla y segura.
 
 La finalidad principal de la aplicación es ofrecer una experiencia moderna y accesible para la compra de productos personalizados, permitiendo gestionar de manera eficiente tanto los productos como los usuarios y pedidos realizados dentro de la plataforma.
 
-Entre las principales funcionalidades del sistema se incluyen el registro e inicio de sesión de usuarios (`Obligatorio para realizar compras en la aplicación`), la gestión del catálogo de productos, un carrito de compra (`Cada usuario tiene el suyo propio`), la realización de pedidos y un panel de administración para controlar distintos aspectos de la tienda (`Exclusivo para los usuarios administradores`).
+Entre las principales funcionalidades del sistema se incluyen el registro e inicio de sesión de usuarios (`Obligatorio para realizar compras en la aplicación`), la gestión del catálogo de productos, un carrito de compra (`Cada usuario tiene el suyo propio`), la realización de pedidos y un panel de administración para controlar distintos aspectos de la tienda como el registro de los pedidos de los usuarios (`Exclusivo para los usuarios administradores`).
 
-Además, este proyecto tiene como objetivo aplicar y consolidar los conocimientos adquiridos durante el ciclo de Desarrollo de Aplicaciones Web (DAW), aparte de aplicar nuevas funcionalidades no vistas anteriormente en el curso, utilizando tecnologías actuales tanto para el desarrollo del frontend como del backend; así como buenas prácticas de diseño, organización y seguridad en aplicaciones web.
+Además, este proyecto tiene como objetivo aplicar y consolidar los conocimientos adquiridos durante el ciclo de Desarrollo de Aplicaciones Web (DAW), aparte de aplicar algunas funcionalidades no vistas anteriormente en el curso, utilizando tecnologías actuales tanto para el desarrollo del frontend como del backend; así como prácticas diseño, organización y seguridad en aplicaciones web.
 
 ### Motivación de mi elección
-Una de las prioridades por elegir este proyecto es la interactuación con el que he ido teniendo con este tipo de aplicaciones en los últimos años, además de pasar de utilizar una aplicación web que suelo visitar y utilizar a poder desarrollarla. Ya que es una de las aplicaciones más modernas y muy utilizada en el día a día en nuestra vida, llegando a tener millones de usuarios en todo el mundo.
+Una de las prioridades por elegir este proyecto es la interactuación con el que he ido teniendo con este tipo de aplicaciones en los últimos años, la posibilidad de pasar de utilizar una aplicación web que suelo visitar y utilizar a poder desarrollarla. Ya que es una de las aplicaciones más modernas y muy utilizada en el día a día en nuestra vida, llegando a tener millones de usuarios en todo el mundo.
 
 Por otro lado, la idea de crear una tienda de productos personalizados resulta especialmente atractiva debido a la posibilidad de ofrecer artículos únicos y diferentes, permitiendo combinar creatividad y tecnología dentro de una misma aplicación.
 
 Otro de los motivos que me ha llevado a la realización de este proyecto ha sido la oportunidad de aplicar de forma práctica los conocimientos adquiridos durante el ciclo de Desarrollo de Aplicaciones Web (DAW), trabajando desde las 2 partes que conforman el desarrollo (`Frontend y Backend`), la gestión de bases de datos (`No relacional`), la autenticación de usuarios y el diseño de interfaces modernas y funcionales.
 
-Por último, este proyecto también supone un reto personal y profesional, ya que permite simular el desarrollo de una aplicación real, enfrentándose a problemas y situaciones similares a las que pueden encontrarse en el ámbito laboral del desarrollo web.
+Por último, este proyecto también supone una forma de poder consolidar y volver a repasar todo lo adquirido este año, ya que permite simular el desarrollo de una aplicación real, enfrentándose a problemas y situaciones similares a las que pueden encontrarse en el ámbito laboral del desarrollo web.
 
 ---
+
 ## 2. Análisis y diseño del proyecto
 
 ### 2.1 Descripción de la arquitectura web
-
 La aplicación se basa en una arquitectura Single Page Application (SPA) que consiste en una única página HTML y que va cambiando de forma dinámica a través de JavaScript que permite otorgar una experiencia de usuario muy fluida e interactiva. Las partes que componen la aplicación son las siguientes:
 
 1. Frontend: es la parte visual con la que interactúan los usuarios. Se encargara de mostrar la interfaz gráfica, gestionar la navegación entre vistas y enviar solicitudes al servidor (`NodeJS`) para obtener o modificar información.
@@ -61,15 +60,18 @@ La aplicación frontend ha sido desarrollada utilizando tecnologías modernas or
 
 - Registro e inicio de sesión de usuarios.
    - Incluye también inicio de sesión con Google y Discord.
+   - Dispone de ReCaptcha que es un sistema de seguridad que nos permite proteger los sitios web del spam y los ataques automatizados.
 
 - Visualización y gestión de pedidos.
+    - Los usuarios visualizan sus pedidos.
+    - Los administradores visualizan y gestionan todos los pedidos de todos los usuarios y pueden cancelar los que quedan `Pendientes`.
 
 - Panel de administración.
    - Exclusivo para administradores.
 
 Al tratarse de una SPA, el cambio entre páginas o secciones se realiza de manera dinámica mediante un sistema de rutas del cliente, sin necesidad de recargar completamente la aplicación, mediante la biblioteca de `React Router DOM`, robusta y versátil que se utiliza para el enrutamiento de una aplicación React.
 
-2. Backend: se encargara de procesar la lógica de negocio de la aplicación y gestionar la comunicación con la base de datos (`MongoDB`).
+1. Backend: se encargara de procesar la lógica de negocio de la aplicación y gestionar la comunicación con la base de datos (`MongoDB`).
 
 Entre sus responsabilidades principales destacan las siguentes:
 
@@ -103,7 +105,7 @@ Por último, la comunicación entre los diferentes componentes de la aplicación
  - El backend responde al frontend y devuelve una respuesta en formato JSON (en algún caso redirige).
  - El frontend maneja y actualiza dinámicamente la interfaz con los datos recibidos.
 
-Debido a esta arquitectura, la aplicación mantiene una estructura modular, organizada y escalable, facilitando tanto el mantenimiento como futuras ampliaciones del sistema.
+Debido a esta arquitectura, la aplicación mantiene una estructura modular, organizada y escalable, facilitando tanto el mantenimiento como posibles futuras ampliaciones de la plataforma.
 
 ---
 
@@ -111,83 +113,75 @@ Debido a esta arquitectura, la aplicación mantiene una estructura modular, orga
 Para el desarrollo de la aplicación se han implementado diferentes tecnologías tanto para el frontend como para el backend, la base de datos y el despliegue del proyecto.
 
 #### Frontend
-En el frontend, la tecnología aplicada es React
+En el frontend, la tecnología aplicada es React.
 
-- React
-    React es un framework de JavaScript orientada al desarrollo de interfaces de usuario dinámicas e interactivas mediante estructuras llamadas componentes reutilizables. Su uso permite crear aplicaciones SPA (Single Page Application), mejorando la experiencia del usuario gracias a la carga dinámica de contenido sin recargar la página completa.
+##### React
+React es un framework de JavaScript orientada al desarrollo de interfaces de usuario dinámicas e interactivas mediante estructuras llamadas componentes reutilizables. Su uso permite crear aplicaciones SPA (Single Page Application), mejorando la experiencia del usuario gracias a la carga dinámica de contenido sin recargar la página completa.
 
-    Entre las ventajas de utilizar React destacan las siguentes:
+Entre las ventajas de utilizar React destacan las siguentes:
 
-    - Desarrollo basado en componentes reutilizables utilizando JSX.
-    - Uso de un DOM virtual que ofrece rapidez y fluidez en la aplicación.
-    - Renderizado de interfaces dinámicas y eficiente.
-    - Gran compatibilidad con librerías externas.
-    - Creación de aplicaciones móviles nativas con React Native.
-    - Amplia comunidad y documentación.
+- Desarrollo basado en componentes reutilizables utilizando JSX.
+- Uso de un DOM virtual que ofrece rapidez y fluidez en la aplicación.
+- Renderizado de interfaces dinámicas y eficiente.
+- Gran compatibilidad con librerías externas.
+- Creación de aplicaciones móviles nativas con React Native.
+- Amplia comunidad y documentación.
 
-  - Vite
-    Vite es una herramienta de compilación que tiene como objetivo proporcionar una experiencia de desarrollo más rápida y ágil para proyectos web modernos. Formado por un servidor de desarrollo que consta de funcionalidades mejoradas 
+##### Vite
+Vite es una herramienta de compilación que tiene como objetivo proporcionar una experiencia de desarrollo más rápida y ágil para proyectos web modernos. Formado por un servidor de desarrollo que consta de funcionalidades mejoradas. Sus principales ventajas son:
 
-    Sus principales ventajas son:
-
-    - Inicio rápido del servidor de desarrollo.
-    - Compilación optimizada.
-    - Mejor rendimiento en comparación con otras herramientas tradicionales.
-    - Configuración sencilla.
-    - Actualización rápida ante los cambios realizados.
+- Inicio rápido del servidor de desarrollo.
+- Compilación optimizada.
+- Mejor rendimiento en comparación con otras herramientas tradicionales.
+- Configuración sencilla.
+- Actualización rápida ante los cambios realizados.
 
 --- 
 
 #### Backend
-Para el desarrollo del servidor y la lógica de negocio se ha utilizado Node.js siguiendo una arquitectura basada en API RESTful.
+Para el desarrollo del servidor y la lógica de negocio se ha utilizado Node.js siguiendo una arquitectura basada en API RESTful, que devuelve respuestas en formato `JSON` al cliente.
 
-- Node.js
-    Node.js es un entorno que permite ejecutar JavaScript en el lado del servidor, facilitando el desarrollo completo de la aplicación utilizando un único lenguaje tanto en frontend como en backend.
+##### Node.js
+Node.js es un entorno que permite ejecutar JavaScript en el lado del servidor, que facilita el desarrollo completo de la aplicación utilizando un único lenguaje tanto en frontend como en backend. Entre sus características principales destacan:
 
-    Entre sus características principales destacan:
+- Alto rendimiento.
+- Arquitectura asíncrona y no bloqueante.
+- Escalabilidad, adecuado en arquitectura de microservicios.
+- Gran ecosistema de paquetes mediante npm (`Node Package Manager`).
+- API RESTful que devuelve respuestas en formato JSON.
 
-    - Alto rendimiento.
-    - Arquitectura asíncrona y no bloqueante.
-    - Escalabilidad, adecuado en arquitectura de microservicios.
-    - Gran ecosistema de paquetes mediante npm (`Node Package Manager`).
-    - API RESTful que devuelve respuestas en formato JSON.
+La comunicación entre frontend y backend se realiza mediante una API RESTful basada en peticiones HTTP. Se utilizan algunos métodos HTTP como:
 
-    La comunicación entre frontend y backend se realiza mediante una API RESTful basada en peticiones HTTP.
+`GET` - Obtener información.
+`POST` - Crear recursos.
+`PUT/PATCH` - Actualizar información.
+`DELETE` - Eliminar recursos.
 
-    Se utilizan algunos métodos HTTP como:
-
-    `GET` - Obtener información.
-    `POST` - Crear recursos.
-    `PUT/PATCH` - Actualizar información.
-    `DELETE` - Eliminar recursos.
-
-    > Los métodos que suelen utilizar generalmente son `POST` y `GET`
-
-    Los datos intercambiados entre cliente y servidor se envían en formato JSON.
+> Los métodos que suelen utilizar generalmente son `POST` y `GET`.
 
 ---
 
 #### Base de datos
-La base de datos utilizada en el proyecto es MongoDB.
+La base de datos utilizada en el proyecto es MongoDB, que se explicará a continuación...
 
-- MongoDB
-    MongoDB es una base de datos NoSQL de alto rendimiento orientada a documentos que almacena la información en formato BSON, similar a JSON, eliminando los esquemas fijos y tablas que utiliza una base de datos SQL. Su elección se debe a los siguientes motivos:
+##### MongoDB
+MongoDB es una base de datos NoSQL de alto rendimiento orientada a documentos que almacena la información en formato BSON, similar a JSON, eliminando los esquemas fijos y tablas que utiliza una base de datos SQL. Su elección se debe a los siguientes motivos:
 
-    - Flexibilidad en la estructura de datos.
-    - Escalabilidad.
-    - Buen rendimiento para aplicaciones web modernas.
-    - Buena asociación con React + NodeJS.
+- Flexibilidad en la estructura de datos.
+- Escalabilidad.
+- Buen rendimiento para aplicaciones web modernas.
+- Buena asociación con React + NodeJS.
 
-    En ella se almacenan datos relacionados con:
+En ella se almacenan datos relacionados con los siguentes datos:
 
-    - Usuarios.
-    - Información del usuario (`direcciones`, `datos de la cuenta`, etc).
-    - Datos del pago.
-    - Productos.
-    - Pedidos.
-    - Carrito de compra.
-    - Categorías.
-    - Chat de soporte técnico.
+- Usuarios.
+- Información del usuario (`direcciones`, `datos de la cuenta`, etc).
+- Datos del pago.
+- Productos.
+- Pedidos.
+- Carrito de compra.
+- Categorías.
+- Chat de soporte técnico.
 
 ---
 
@@ -202,7 +196,7 @@ Durante el desarrollo del proyecto se han realizado diferentes pruebas para gara
 - Comprobación de la correcta conexión con la base de datos.
 - Depuración de código para garantizar la información que proviene de las distintas partes de la aplicación.
 
-También se han utilizado las herramientas de desarrollo del navegador y pruebas manuales para detectar errores y mejorar la experiencia de usuario.
+También se han utilizado las herramientas de desarrollo del navegador y algunas pruebas manuales para detectar errores y mejorar la experiencia de usuario.
 
 ---
 
@@ -221,68 +215,71 @@ Estas medidas ayudan a proteger la información de los usuarios y garantizar un 
 
 ---
 
-#### Despliegue y hosting
-Por determinar
-
----
-
 #### Otras herramientas utilizadas
 Además de las tecnologías principales, durante el desarrollo del proyecto se han utilizado otras herramientas complementarias:
 
-- Git para el control de versiones (desde `VSC`).
+- Git para el control de versiones (desde terminal `VSC`).
 - GitHub para el almacenamiento y gestión del repositorio.
 - Postman para probar las rutas de la API.
 
 ---
 
 ### 2.3 Análisis de usuarios (Perfiles de usuario)
-La aplicación está diseñada para ser utilizada por diferentes tipos de usuarios (`visitantes`, `usuarios registrados` y `usuarios administradores`), cada uno con funcionalidades y permisos específicos dentro del sistema. La división de perfiles permite organizar correctamente el acceso a la información y garantizar la seguridad y el correcto funcionamiento de la plataforma.
+La aplicación está diseñada para ser utilizada por diferentes tipos de usuarios (`visitantes`, `usuarios registrados` y `usuarios administradores`), cada uno con funcionalidades y permisos específicos dentro de la aplicación. La división de perfiles me permite organizar correctamente el acceso a la información y garantizar la seguridad y el correcto funcionamiento de la plataforma. Disponemos de 3 tipos de usuarios, que son:
 
-- Usuario visitante: El usuario visitante es cualquier persona que accede a la aplicación sin haber iniciado sesión. Tiene los siguientes permisos:
-    - Necesidades principales.
-    - Navegar por el catálogo de productos.
-    - Visualizar información detallada de los productos y consultar precios, imágenes y valoraciones.
-    - Buscar productos por categorías.
-    - Registrarse para realizar compras.
-    - Añadir productos deseados al carrito de compras.
-    - No puede realizar pedidos ni acceder a funciones privadas.
-    - No puede gestionar su perfil ni los pedidos de los usuarios.
-    - No puede utilizar el soporte técnico.
+##### Usuario visitante
+El usuario visitante es cualquier persona que accede a la aplicación sin haber iniciado sesión. Tiene los siguientes permisos:
 
-    > El perfil de visitante es el que representa a cualquier usuario que viene a echar un vistazo a la tienda y visualizar sus productos.
+- Necesidades principales.
+- Navegar por el catálogo de productos.
+- Visualizar información detallada de los productos y consultar precios, imágenes y valoraciones.
+- Buscar productos por categorías.
+- Registrarse para realizar compras.
+- Añadir productos deseados al carrito de compras.
+- No puede realizar pedidos ni acceder a funciones privadas.
+- No puede gestionar su perfil ni los pedidos de los usuarios.
+- No puede utilizar el soporte técnico.
 
 
-- Usuario registrado: que corresponde a los clientes que disponen de una cuenta dentro de la plataforma.
-    - Necesidades principales
-    - Iniciar sesión de forma segura.
-    - Gestionar y modificar su perfil personal y sus direcciones.
-    - Gestión e incorporación de productos al carrito.
-    - Realizar pedidos.
-    - Consultar historial de compras.
-    - Guardar información relacionada con sus pedidos y datos personales.
-    - Acceso a funcionalidades privadas como el chat de ayuda.
+> El perfil de visitante es el que representa a cualquier usuario que viene a echar un vistazo a la tienda y visualizar sus productos y las funcionalidades de las que dispone.
 
-    > Este perfil representa el principal tipo de usuario de la aplicación, ya que interactúa directamente con el sistema de compra de la tienda online.
 
-- Usuario administrador: este usuario tiene los permisos del anterior sumados a los siguientes:
-    - Gestionar el catálogo de productos.
-    - Añadir, modificar o eliminar productos.
-    - Controlar pedidos realizados por los clientes.
-    - Gestiòn y control de usuarios registrados.
-    - Supervisar el funcionamiento de la aplicación.
-    - Acceso completo al panel de administración y funcionalidades restringidas.
-    - Administración del contenido de la tienda.
-    - Asistente de ayuda a los clientes.
+##### Usuario registrado
+Este usuario corresponde a los clientes que disponen de una cuenta dentro de la plataforma, que previamente se hayan registrado y activado su cuenta. Estos son sus permisos (junto a algunos de los vistos anteriormente):
 
-    > El administrador es el usuario encargado de gestionar y supervisar el funcionamiento general de la plataforma. dispone de permisos especiales que permiten mantener actualizada la plataforma y garantizar su funcionamiento.
+- Iniciar sesión de forma segura.
+- Gestionar y modificar su perfil personal y sus direcciones.
+- Gestión e incorporación de productos al carrito.
+- Realizar pedidos.
+- Consultar historial de compras (pedidos).
+- Modificación de datos sensibles como la contraseña.
+- Acceso a funcionalidades privadas como el chat de ayuda.
+
+
+> Este perfil representa el principal tipo de usuario de la aplicación, ya que interactúa directamente con el sistema de compra de la tienda online.
+
+
+##### Usuario administrador
+Este usuario dispone de los permisos del anterior sumados a los siguientes:
+- Gestionar el catálogo de productos (añadir, modificar o eliminar productos).
+- Controlar pedidos realizados por los clientes.
+- Gestión y control de usuarios registrados (futura mejora).
+- Supervisar el funcionamiento de la aplicación.
+- Acceso completo al panel de administración y funcionalidades restringidas.
+- Administración del contenido de la tienda.
+- Asistente de ayuda a los clientes.
+
+
+> El administrador es el usuario encargado de gestionar y supervisar el funcionamiento general de la plataforma. dispone de permisos especiales que permiten mantener actualizada la plataforma y garantizar su funcionamiento.
 
 
 La aplicación implementa un sistema de control de acceso basado en roles de usuario. Dependiendo del tipo de cuenta autenticada, el sistema habilita o restringe determinadas funcionalidades. Por ello:
 
-- Se mejora la seguridad de la aplicación.
+- Se mejora la seguridad de la aplicación (evitando acceder a rutas privadas).
 - Se protege la información sensible.
 - Se evita el acceso no autorizado a funciones administrativas.
 - Se ofrece una experiencia adaptada a cada tipo de usuario.
+
 
 > De esta forma, cada usuario interactúa únicamente con las herramientas y opciones necesarias según su función dentro de la plataforma.
 
@@ -293,12 +290,12 @@ La aplicación implementa un sistema de control de acceso basado en roles de usu
 #### Requisitos funcionales
 Los requisitos funcionales describen las funcionalidades y acciones que la aplicación debe ser capaz de realizar para garantizar el correcto funcionamiento de la tienda online.
 
-Usuarios
+##### Usuarios
 - La gestión de usuarios, el sistema debe permitir el registro de nuevos usuarios. Una vez registrado, el usuario puede iniciar y cerrar de sesión. Dentro de la sesión, el usuario ya podrá modificar sus datos personales según el tipo de inicio de sesión que has escogido (en este caso, con `email` puedes modificar todos los campos y con otro tipo hay campos que no podrás modificar).
 - La tienda online deberá diferenciar entre usuarios cliente y administrador, mostrando alguna etiqueta en el perfil o algo parecido.
 - Restringir el acceso a determinadas rutas según el rol del usuario (dispone de `visitante`, `registrado` y `administrador`).
 
-Gestión de productos, en la aplicación:
+##### Gestión de productos, en la aplicación:
 - Se mostrará un catálogo de productos personalizados.
 - Podrá visualizar información detallada de cada producto.
 - Se permitirá clasificar productos por categorías, valoración o precio.
@@ -306,13 +303,13 @@ Gestión de productos, en la aplicación:
 - El administrador podrá editar productos existentes.
 - El administrador podrá eliminar productos del catálogo.
 
-Carrito de compra, donde el usuario:
+##### Carrito de compra, donde el usuario:
 - Podrá añadir productos al carrito.
 - Podrá modificar cantidades de productos.
 - Podrá eliminar productos del carrito.
 - Y el sistema calculará automáticamente el importe total del pedido.
 
-Gestión de pedidos:
+##### Gestión de pedidos:
 - El usuario podrá realizar pedidos.
 - El sistema almacenará la información de los pedidos realizados (sin información sensible).
 - El usuario podrá consultar su historial de compras.
@@ -325,45 +322,50 @@ Gestión de pedidos:
 #### Requisitos no funcionales
 Los requisitos no funcionales definen las características técnicas y de calidad que debe cumplir la aplicación para garantizar una experiencia adecuada y un funcionamiento eficiente para el usuario que la va a utilizar.
 
-Rendimiento
+##### Rendimiento
 - La aplicación deberá ofrecer tiempos de carga reducidos.
 - Las peticiones al servidor deberán responder de forma rápida y eficiente.
 - La navegación entre páginas deberá ser fluida gracias al modelo SPA.
 
-Usabilidad
+##### Usabilidad
 - La interfaz deberá ser intuitiva y fácil de utilizar.
 - El diseño debe de facilitar la navegación del usuario.
 - Los elementos visuales deberán mantener una estructura clara y organizada.
 - Diseño responsive para que la aplicación se adapte diferente tipo de pantallas.
 - El sistema deberá ser compatible con dispositivos móviles, tablets y ordenadores.
 
-Seguridad
+##### Seguridad
 - Las contraseñas deberán almacenarse de forma cifrada.
 - El sistema deberá proteger las rutas privadas mediante autenticación o redirección inmediata.
 - Solo los administradores podrán acceder a funciones de gestión.
 - La aplicación deberá validar los datos recibidos para evitar accesos no autorizados o errores.
 
 
-Escalabilidad
+##### Escalabilidad
 - La arquitectura de la aplicación deberá permitir añadir nuevas funcionalidades en el futuro.
 - El sistema deberá mantener una estructura modular y organizada.
 
-Mantenibilidad
+##### Mantenibilidad
 - El código deberá de ser legible, estructurado y organizado correctamente.
 - Se utilizarán componentes reutilizables para facilitar futuras modificaciones.
 - La separación entre frontend, backend y base de datos facilitará el mantenimiento y control del proyecto.
 
-Compatibilidad
+##### Compatibilidad
 - La aplicación deberá funcionar correctamente en los navegadores modernos más utilizados.
 - El sistema deberá mantener compatibilidad con distintos sistemas operativos.
  
-Dsponibilidad
+##### Dsponibilidad
 - La aplicación deberá estar accesible siempre que el servidor se encuentre operativo.
 - El sistema deberá minimizar errores críticos que afecten al uso de la plataforma como la pérdida de datos.
 
 ---
 
 ### 2.5 Estructura de navegación
+En este punto, mostraremos el mapa de la plataforma. En ella se puede representar de forma visual, toda la estructura SPA de la aplicacíon web, tanto sus diferentes partes como las rutas asignadas a cada una de ellas. 
+La estructura parte desde la página principal de inicio y se divide en varias secciones principales, como el catálogo de productos, la gestión de cuenta de usuario, el sistema de autenticación, el soporte al cliente y el flujo de compra. Además, se diferencian las rutas públicas de aquellas que requieren autenticación mediante distintos colores y conexiones, y también de los componentes padres e hijos mediante lineas normales y discontinuas.
+
+#### Mapa del sitio
+![Mapa del Sitio](mapa_del_sitio.jpg)
 
 ---
 
@@ -371,43 +373,44 @@ Dsponibilidad
 La lógica de negocio de la aplicación se encuentra implementada principalmente en el backend, encargado de procesar las solicitudes realizadas por los usuarios, gestionar la información almacenada en la base de datos y controlar el funcionamiento general del sistema.
 Para facilitar el mantenimiento y la escalabilidad del proyecto, el backend se ha organizado siguiendo una estructura modular, separando cada responsabilidad en diferentes carpetas y módulos independientes.
 
-- Estructura general del backend
-    La aplicación backend se organiza en distintas capas con funciones específicas:
-    Rutas: las rutas definen los endpoints de la API RESTful y gestionan las solicitudes HTTP enviadas desde el frontend.
-    Cada conjunto de rutas se encuentra separado según la funcionalidad correspondiente, por ejemplo:
-    - Rutas de autentificación (usuarios y tokens).
-    - Rutas de productos (`filtrado`o por `categorías`).
-    - Rutas del carrito.
-    - Rutas de la pasarela de pago.
-    - Rutas del perfil del usuario.
+#### Estructura general del backend
+La aplicación backend se organiza en distintas capas con funciones específicas:
+Rutas: las rutas definen los endpoints de la API RESTful y gestionan las solicitudes HTTP enviadas desde el frontend. Cada conjunto de rutas se encuentra separado según la funcionalidad correspondiente, por ejemplo:
 
-    > Estas rutas reciben las peticiones del cliente y las redirigen hacia la lógica correspondiente.
+- Rutas de autentificación (usuarios y tokens).
+- Rutas de productos (`filtrado`o por `categorías`).
+- Rutas del carrito.
+- Rutas de la pasarela de pago.
+- Rutas del perfil del usuario.
 
 
-- Servicios
-    Algunas funcionalidades auxiliares se encuentran separadas en módulos independientes para facilitar la reutilización del código. También destacan las peticiones a APIs externas. Entre ellas destacan:
-
-    - Gestión de JsonWebToken.
-    - Envío de emails con la API de Mailjet.
-    - Gestión de la pasarela de pago.
+> Estas rutas reciben las peticiones del cliente y las redirigen hacia la lógica correspondiente.
 
 
-- Conexión con APIs de terceros y servicios externos
-    La aplicación puede integrarse con distintos servicios externos para ampliar funcionalidades y mejorar la experiencia del usuario. Entre ellas podemos encontrar:
+#### Servicios
+Algunas funcionalidades auxiliares se encuentran separadas en módulos independientes para facilitar la reutilización del código. También destacan las peticiones a APIs externas. Entre ellas destacan:
+
+- Gestión de JsonWebToken.
+- Envío de emails con la API de Mailjet.
+- Gestión de la pasarela de pago.
+
+
+#### Conexión con APIs de terceros y servicios externos
+La aplicación puede integrarse con distintos servicios externos para ampliar funcionalidades y mejorar la experiencia del usuario. Entre ellas podemos encontrar:
     
-    - Pasarelas de pago
-        La tienda online puede conectarse con plataformas de pago externas para permitir la realización de compras de forma segura y eficaz. Esto permite procesar pagos online, validar transacciones, gestionar el método de pago, etc. La comunicación con estos servicios se realiza mediante APIs proporcionadas por las propias plataformas.
+- Pasarelas de pago
+    La tienda online puede conectarse con plataformas de pago externas para permitir la realización de compras de forma segura y eficaz. Esto permite procesar pagos online, validar transacciones, gestionar el método de pago, etc. La comunicación con estos servicios se realiza mediante APIs proporcionadas por las propias plataformas.
 
-    - Servicios de autenticación
-        La aplicación cuenta con autentificación de Google o Discord, que permiten iniciar sesión sin introducir ningún dato, recogiendo su información a través de las plataformas anteriormente mencionadas. Para ello, se requiere de la comunicación de la API tanto de Google como de Discord que ponen a disposición en sus aplicaciones. Por ello, permite al usuario a mantener su sesión activa, como un usuario normal, evita introducir cualquier dato al recogerlo de las plataformas que el usuario haya utilizado para el registro.
+- Servicios de autenticación
+    La aplicación cuenta con autentificación de Google o Discord, que permiten iniciar sesión sin introducir ningún dato, recogiendo su información a través de las plataformas anteriormente mencionadas. Para ello, se requiere de la comunicación de la API tanto de Google como de Discord que ponen a disposición en sus aplicaciones. Por ello, permite al usuario a mantener su sesión activa, como un usuario normal, evita introducir cualquier dato al recogerlo de las plataformas que el usuario haya utilizado para el registro.
 
-    - Servicios de email
-        Otra plataforma con la que podemos comunicar es con la API de Mailjet, un proveedor de servicios de correo electrónico que permite enviar emails transaccionales de forma automática dentro de nuestra aplicación con el objetivo de activar las cuentas que se quieran registrar, recuperación de contraseña, confirmar el pago de los pedidos, notificaciones, entre otros posibles usos.
+- Servicios de email
+    Otra plataforma con la que podemos comunicar es con la API de Mailjet, un proveedor de servicios de correo electrónico que permite enviar emails transaccionales de forma automática dentro de nuestra aplicación con el objetivo de activar las cuentas que se quieran registrar, recuperación de contraseña, confirmar el pago de los pedidos, notificaciones, entre otros posibles usos.
 
-    - Servicios de ubicación
-        Este servicio nos permite obtener todos los países del mundo (`nombre`, `bandera`, `idiomas`, ...), que posteriormente se utilizan a la hora de configurar nuestro perfil.
+- Servicios de ubicación
+    Este servicio nos permite obtener todos los países del mundo (`nombre`, `bandera`, `idiomas`, ...), que posteriormente se utilizan a la hora de configurar nuestro perfil.
 
-    Gracias a esta estructura flexible, la aplicación puede ampliarse y adaptarse fácilmente a nuevas necesidades o funcionalidades que se implementarán en el futuro, permitiendo reutilizar código.
+Por ello, esta estructura flexible, la aplicación puede ampliarse y adaptarse fácilmente a nuevas necesidades o funcionalidades que se implementarán en el futuro, permitiendo reutilizar código.
 
 ---
 
@@ -528,6 +531,7 @@ La colección también almacena múltiples direcciones asociadas a cada cliente 
 - País.
 
 Ejemplo de visualización:
+
 ```
     {
         "direcciones": [
@@ -541,6 +545,7 @@ Ejemplo de visualización:
         ]
     }
 ```
+
 > Las relaciones principales de la colección `clientes` son las siguientes:
 >   `Productos` — mediante los pedidos y carrito de compra.
 >   `Pedidos` — almacenados directamente dentro del usuario.
@@ -570,6 +575,7 @@ En esta colección podemos encontrar una variedad de propiedades que describen e
 - Path (utilizado para numerar los productos).
 
 Ejemplo de visualización:
+
 ```
     {
         "nombre": "...",
@@ -600,6 +606,7 @@ La colección `categorías` almacena las diferentes categorías disponibles dent
 Cada documento representa una categoría individual y contiene la información necesaria para identificarla dentro de la aplicación. En este caso, lo utilizaremos para mostrar todas las categorías y según el usuario clickea en una, directamente le redirige al catálogo de productos filtrado solamente por la categoría escogida.
 
 Ejemplo de visualizacion:
+
 ```
 [
     {
@@ -618,11 +625,7 @@ Ejemplo de visualizacion:
 ---
 
 ## 3. Conclusiones
-Resultados obtenidos y cumplimiento de objetivos
-
-El desarrollo del proyecto ha permitido crear una aplicación web funcional orientada a la venta de productos personalizados, cumpliendo los principales objetivos planteados al inicio del proyecto.
-
-Entre los resultados obtenidos destacan:
+El desarrollo del proyecto ha permitido crear una aplicación web funcional orientada a la venta de productos personalizados, cumpliendo los principales objetivos planteados al inicio del proyecto. Entre los resultados obtenidos destacan:
 
 - Implementación de una tienda online completamente funcional (con sus principales funcionalidades).
 - Desarrollo de una arquitectura SPA moderna utilizando React y Vite.
@@ -636,7 +639,7 @@ Entre los resultados obtenidos destacan:
 En general, los objetivos principales establecidos al comienzo del proyecto se han cumplido satisfactoriamente, pese a que otras funcionalidades también pensadas se quedaron por realizar (objetivos secundarios, si se acababan los principales antes de tiempo), consiguiendo una aplicación estable, organizada y preparada para futuras ampliaciones.
 
 ### Retos encontrados y soluciones implementadas
-Durante el desarrollo del proyecto surgieron diferentes dificultades técnicas que requirieron investigación y adaptación para poder resolverlas correctamente. Por ejemplo, la gestión y control de errores en los pagos que realizan los usuarios, a la hora de realizar un pago (sin introducir datos) al cancelar, el usuario no podía volver a ejecutar el pago por problemas en la gestión del token de PayPal. Algo similar ocurrió con Stripe utilizando la documentación y el método de implantación realizado en el curso, por lo que se decidió utilizar tanto la las librerías de StripeJS y stripe (de `NodeJS`) que permitian una lógica de negocio algo más sencilla y segura de implementar.
+Durante el desarrollo del proyecto surgieron diferentes problemas que requirieron investigación y adaptación para poder resolverlas correctamente. Por ejemplo, la gestión y control de errores en los pagos que realizan los usuarios, a la hora de realizar un pago (sin introducir datos) al cancelar, el usuario no podía volver a ejecutar el pago por problemas en la gestión del token de PayPal. Algo similar ocurrió con Stripe utilizando la documentación y el método de implantación realizado en el curso, por lo que se decidió utilizar tanto la las librerías de StripeJS y stripe (de `NodeJS`) que permitian una lógica de negocio algo más sencilla y segura de implementar.
 
 Otro de los retos importantes fue la integración del chat de soporte en el proyecto, encontrando problemas de conexión desde backend a frontend y viceversa. Para resolverlo se dispuso del uso de la Inteligencia Artificial y, en ese momento, las clases de refuerzo donde se pudo realizar desde cero la implementación del chat paso a paso e ir encontrando soluciones a los errores en la parte del soporte.
 
@@ -761,5 +764,4 @@ Durante el desarrollo del proyecto he utilizado diferentes fuentes de informaci�
 
 `Postman` — Herramienta utilizada para probar y verificar la parte del API REST.
 
-
-Además de la documentación oficial, también se han visitado diferentes foros y comunidades de desarrollo para encontrar y resolver algunos problemas específicos encontrados durante el proyecto.
+Además de la documentación oficial, también se han visitado algún foro o tipo de ayuda de desarrollo para encontrar y resolver algunos tipo de problema específico encontrado durante el proyecto.
