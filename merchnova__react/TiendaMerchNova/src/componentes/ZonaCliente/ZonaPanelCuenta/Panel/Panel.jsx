@@ -16,7 +16,7 @@ function Panel({ order, clientData, logOut }) {
             <Link to='/Portal/Cart' className="cart-icon">
                 <i className="bi bi-cart3">
                     <span className="position-absolute translate-middle badge bg-danger size-qty">
-                        {clientData.carrito.itemsPedido.length}
+                        {clientData?.carrito?.itemsPedido.length || 0}
                     </span>
                 </i>
             </Link>

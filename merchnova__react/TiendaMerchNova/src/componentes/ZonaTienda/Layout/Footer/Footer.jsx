@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import './Footer.css';
 
 function Footer() {
@@ -18,30 +19,48 @@ function Footer() {
                     <div className="col-md-2 mb-4">
                         <h6 className="footer-title">Tienda</h6>
                         <ul className="footer-links">
-                            <li><a href="#">Camisetas</a></li>
-                            <li><a href="#">Sudaderas</a></li>
-                            <li><a href="#">Pósters</a></li>
-                            <li><a href="#">Accesorios</a></li>
+                            {
+                                [
+                                    {name: 'Camisetas', url: '/Portal/Productos?page=1&categoria=camisetas'},
+                                    {name: 'Sudaderas', url: '/Portal/Productos?page=1&categoria=sudaderas'},
+                                    {name: 'Pósters', url: '/Portal/Productos?page=1&categoria=posters'},
+                                    {name: 'Más accesorios', url: '/Portal/Productos?page=1&categoria=todos'}
+                                ].map((elem, pos) =>
+                                    <li key={pos}><Link to={elem.url}>{elem.name}</Link></li>
+                                )
+                            }
                         </ul>
                     </div>
 
                     <div className="col-md-3 mb-4">
                         <h6 className="footer-title">Soporte</h6>
                         <ul className="footer-links">
-                            <li><a href="#">Contacto</a></li>
-                            <li><a href="#">Preguntas frecuentes</a></li>
-                            <li><a href="#">Devoluciones</a></li>
-                            <li><a href="#">Envíos</a></li>
+                            {
+                                [
+                                    {name: 'Contacto', url: '/Portal/Soporte/Ayuda'},
+                                    {name: 'Preguntas frecuentes', url: '/Portal/Informacion/SobreNosotros'},
+                                    {name: 'Devoluciones', url: '/Portal/Informacion/ComoFunciona#compras'},
+                                    {name: 'Envíos', url: '/Portal/Informacion/ComoFunciona#pedidos'}
+                                ].map((elem, pos) =>
+                                    <li key={pos}><Link to={elem.url}>{elem.name}</Link></li>
+                                )
+                            }
                         </ul>
                     </div>
 
                     <div className="col-md-3 mb-4">
                         <h6 className="footer-title">Síguenos</h6>
                         <div className="footer-socials">
-                            <a href="#"><i className="bi bi-instagram"></i></a>
-                            <a href="#"><i className="bi bi-twitter-x"></i></a>
-                            <a href="#"><i className="bi bi-youtube"></i></a>
-                            <a href="#"><i className="bi bi-tiktok"></i></a>
+                            {
+                                [
+                                    { url: 'https://instagram.com', icon: 'bi bi-instagram' },
+                                    { url: 'https://x.com', icon: 'bi bi-twitter-x' },
+                                    { url: 'https://youtube.com', icon: 'bi bi-youtube' },
+                                    { url: 'https://tiktok.com', icon: 'bi bi-tiktok' }
+                                ].map((elem, pos) =>
+                                    <Link to={elem.url} target='_blank' key={pos}><i className={elem.icon}></i></Link>
+                                )
+                            }
                         </div>
                     </div>
 

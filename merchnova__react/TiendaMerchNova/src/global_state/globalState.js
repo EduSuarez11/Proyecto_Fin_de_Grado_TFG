@@ -48,7 +48,9 @@ const useGlobalState = create(
                 },
 
                 logOut: () => {
-                    set({ clientData: null })
+                    set({ clientData: null });
+                    sessionStorage.removeItem('merchnova-storage-v1');
+                    sessionStorage.removeItem('token');
                 },
 
                 setOrder: (action, newItem) => {

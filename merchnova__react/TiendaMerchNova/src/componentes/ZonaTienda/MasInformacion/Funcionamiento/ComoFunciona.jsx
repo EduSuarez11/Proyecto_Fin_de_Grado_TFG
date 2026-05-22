@@ -2,7 +2,7 @@ import './ComoFunciona.css'
 
 function ComoFunciona() {
     return (
-        <div className="help-center-container container-fluid">
+        <div className="container-fluid p-5">
 
             <div className="row">
 
@@ -14,12 +14,8 @@ function ComoFunciona() {
                         <h5>Centro de ayuda</h5>
 
                         <ul>
-
                             <li>
-                                <a href="#inicio">
-                                    <i className="bi bi-house-door"></i>
-                                    Inicio
-                                </a>
+                                <a href="#inicio"><i className="bi bi-house-door"></i>Inicio</a>
                             </li>
 
                             <li>

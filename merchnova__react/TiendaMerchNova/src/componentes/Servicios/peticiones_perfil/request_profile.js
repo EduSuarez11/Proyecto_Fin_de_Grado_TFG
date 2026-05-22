@@ -62,5 +62,16 @@ export const request_profile = {
 
         const responseNewData = await requestNewData.json();
         return responseNewData;
+    },
+
+    delete_account: async (clientData) => {
+        const requestDataCompleted = await fetch('http://localhost:3000/api/profile/DeleteAccount', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({clientData})
+        });
+
+        const responseOk = await requestDataCompleted.json();
+        return responseOk;
     }
 }

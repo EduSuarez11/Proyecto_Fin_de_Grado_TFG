@@ -139,21 +139,21 @@ function FinPedido() {
                                     clientData.carrito.itemsPedido.map((item, pos) =>
                                         <div className="product" key={pos}>
                                             <span>{item.producto.nombre}</span>
-                                            <span>+ {item.producto.precio * item.quantity}</span>
+                                            <span>+ {item.producto.precio * item.quantity} €</span>
                                         </div>
                                     )
                                 }
 
                                 <div className="product text-danger">
                                     <span>Gastos de envío</span>
-                                    <span>{order.gastosEnvio}</span>
+                                    <span>+ {order.gastosEnvio} €</span>
                                 </div>
 
                                 <hr />
 
                                 <div className="total">
                                     <span>Total</span>
-                                    <span>{Math.round((subtotal + order.gastosEnvio) * 100) / 100}</span>
+                                    <span>{Math.round((subtotal + order.gastosEnvio) * 100) / 100} €</span>
                                 </div>
 
                                 {

@@ -55,8 +55,6 @@ function Header() {
 
     }, []);
 
-
-
     useEffect(
         () => {
             const token = sessionStorage.getItem("token");
@@ -140,7 +138,7 @@ function Header() {
                             </form>
 
                             {
-                                clientData == null ?
+                                clientData === null ?
                                     <div className="d-flex align-items-center gap-3">
                                         <Link to='/Portal/Cart' className="cart-icon">
                                             <i className="bi bi-cart3">

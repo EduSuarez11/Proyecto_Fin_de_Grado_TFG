@@ -11,7 +11,7 @@ function ProductosValorados({ products }) {
                         {products.data.slice(0, 4).map((product, index) =>
                                 <div className="col-md-3" key={index}>
                                     <div className="card product-card">
-                                        <img src={`http://localhost:3000${product.imagen}`} alt={product.nombre} className="card-img-top p-3"/>
+                                        <img src={product.imagen} alt={product.nombre} className="card-img-top p-3"/>
 
                                         <div className="card-body text-center">
                                             <h5 className="">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...': product.nombre}</h5>
