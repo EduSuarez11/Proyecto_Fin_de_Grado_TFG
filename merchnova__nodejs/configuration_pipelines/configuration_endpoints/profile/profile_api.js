@@ -9,16 +9,40 @@ const manage_profile_data = express.Router();
 
 manage_profile_data.post('/Perfil-Update', async (req, res, next) => {
     try {
-        const { data, clientId } = req.body;
+        const { data, clientData } = req.body;
 
-        if (!clientId || !data) throw new Error('Requiere al menos un dato para actualizar el perfil.');
+        if (!clientData || !data) throw new Error('Requiere al menos un dato para actualizar el perfil.');
 
         console.log('Datos a actualizar:', data);
 
         // Actualizar los datos del cliente
         const updateClient = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(clientId) },
-            { $set: data },
+            { _id: new mongoose.Types.ObjectId(clientData._id) },
+            {
+                $set: {
+                    nombreCompleto: data?.nombreCompleto ? data?.nombreCompleto : clientData.nombreCompleto,
+                    cuenta: {
+                        email: clientData.cuenta.email,
+                        password: clientData.cuenta.password,
+                        genero: data?.genero ? data?.genero : clientData?.cuenta?.genero || '',
+                        cuentaActiva: clientData.cuenta.cuentaActiva,
+                        imagenCuenta: data?.imagenCuenta  ? data?.imagenCuenta : clientData?.cuenta?.imagenCuenta || '',
+                        creacionCuenta: clientData.cuenta.creacionCuenta,
+                        telefono: data?.telefono  ? data?.telefono : clientData?.cuenta?.telefono || '',
+                        sobreMi: data?.sobreMi  ? data?.sobreMi : clientData?.cuenta?.sobreMi || '',
+                        tipo: clientData.cuenta.tipo,
+                        rol: clientData.cuenta.rol,
+                        visibilidad: clientData.cuenta.visibilidad,
+                        notificaciones: clientData.cuenta.notificaciones
+                    },
+                    // En este caso, en el perfil se mostrará y editará la primera dirección
+                    'direcciones.0.codigoPostal': data?.codigoPostal  ? data?.codigoPostal : clientData?.direcciones[0]?.codigoPostal || '',
+                    'direcciones.0.domicilio': data?.domicilio  ? data?.domicilio : clientData?.direcciones[0]?.domicilio || '',
+                    'direcciones.0.municipio': data?.municipio  ? data?.municipio : clientData?.direcciones[0]?.municipio || '',
+                    'direcciones.0.pais': data?.pais  ? data?.pais : clientData?.direcciones[0]?.pais || '',
+                    'direcciones.0.provincia': data?.provincia  ? data?.provincia : clientData?.direcciones[0]?.provincia || ''
+                }
+            },
             { returnDocument: "after" }
         );
 
@@ -27,30 +51,30 @@ manage_profile_data.post('/Perfil-Update', async (req, res, next) => {
         // Actualizar tambien la info del chat
         if (updateClient.cuenta.rol !== 'ADMINISTRADOR') {
             const datosClienteActualizados = {
-                idCliente: new mongoose.Types.ObjectId(clientId),
+                idCliente: new mongoose.Types.ObjectId(clientData._id),
                 nombreCliente: data.nombreCompleto || updateClient.nombreCompleto,
                 imagenCuenta: data.cuenta?.imagenCuenta || updateClient.cuenta?.imagenCuenta
             };
 
             // 4. Actualizar los chats de los admins donde aparezca este cliente
             await mongoose.connection.collection('clientes').updateMany(
-                { 'chats.datosCliente.idCliente': new mongoose.Types.ObjectId(clientId) },
+                { 'chats.datosCliente.idCliente': new mongoose.Types.ObjectId(clientData._id) },
                 { $set: { 'chats.$[chat].datosCliente': datosClienteActualizados } },
-                { arrayFilters: [{ 'chat.datosCliente.idCliente': new mongoose.Types.ObjectId(clientId) }] }
+                { arrayFilters: [{ 'chat.datosCliente.idCliente': new mongoose.Types.ObjectId(clientData._id) }] }
             );
         } else {
             const datosAdminActualizados = {
-                idAdmin: new mongoose.Types.ObjectId(clientId),
+                idAdmin: new mongoose.Types.ObjectId(clientData._id),
                 nombreAdmin: data.nombreCompleto || updateClient.nombreCompleto,
                 imagenCuenta: data.cuenta?.imagenCuenta || updateClient.cuenta?.imagenCuenta
             };
             await mongoose.connection.collection('clientes').updateMany(
-                { 'chats.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientId) },
+                { 'chats.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientData_id) },
                 { $set: { 'chats.$[chat].datosAdmin': datosAdminActualizados } },
-                { arrayFilters: [{ 'chat.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientId) }] }
+                { arrayFilters: [{ 'chat.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientData._id) }] }
             );
         }
-        const userUpdate = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientId) })
+        const userUpdate = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientData._id) })
 
         console.log('Perfil y chats actualizados exitosamente');
         res.status(200).send({ code: 0, message: 'Los datos han sido actualizados con éxito.', data: { newClientData: userUpdate } });
