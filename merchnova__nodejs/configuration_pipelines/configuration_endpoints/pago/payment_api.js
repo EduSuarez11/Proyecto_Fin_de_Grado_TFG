@@ -10,7 +10,7 @@ const manage_payment = express.Router();
 manage_payment.post('/create-intent', async (req, res, next) => {
     try {
         const { clientData, direccionEnvio } = req.body;
-        console.log('Datos de create intent ', req.body);
+        //console.log('Datos de create intent ', req.body);
         let clientSecret;
         let paymentIntent;
         clientData.carrito._id = new mongoose.Types.ObjectId();
@@ -25,13 +25,9 @@ manage_payment.post('/create-intent', async (req, res, next) => {
             'amount': Math.round(clientData.carrito.total * 100),
             'currency': 'eur',
             'customer': customer.id,
-            //'description': `MerchNova - Pago realizado con éxito. Pedido con identificador ${clientData.carrito._id} y cantidad total ${clientData.carrito.total}. `,
             'automatic_payment_methods': {
                 'enabled': true
             }
-            // 'metadata': {
-            //     orderId: clientData.carrito._id.toString()
-            // }
         });
 
         clientSecret = payment_intent.client_secret;
@@ -50,11 +46,7 @@ manage_payment.post('/order-update', async (req, res, next) => {
         const { clientData, order, direccionEnvio } = req.body;
         console.log('Datos para actualización de orden: ', req.body);
 
-        // FECHA DE PAGO Y ENTREGA
-        const fecha = new Date();
-        const fechaPago = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const fechaEnvio = `${fecha.getDate() + 2}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-
+        
         // CREAR UN ID DEL PEDIDO Y AÑADIR OTROS DATOS AL PEDIDO
         order._id = new mongoose.Types.ObjectId();
         order.metodoPago = {
@@ -105,8 +97,8 @@ manage_payment.post('/order-update', async (req, res, next) => {
             { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': order._id },
             {
                 $set: {
-                    'pedidos.$.fechaPago': fechaPago,
-                    'pedidos.$.fechaEnvio': fechaEnvio,
+                    'pedidos.$.fechaPago': Date.now(),
+                    'pedidos.$.fechaEnvio': Date.now() + 2 * 24 * 60 * 60 * 1000,
                     'carrito.itemsPedido': [],
                     'carrito.subtotal': 0,
                     'carrito.gastosEnvio': 0,
@@ -133,7 +125,7 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
         console.log(req.body);
         order._id = new mongoose.Types.ObjectId();
         const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
-        console.log('Datos de PayPal: ', orderPaypal);
+        //console.log('Datos de PayPal: ', orderPaypal);
         if (!orderPaypal) throw new Error('No se pudo crear la orden de PayPal.');
 
         order.metodoPago = {
@@ -164,8 +156,8 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
 
 
         // Comprobar si existe un pedido existente para evitar crear pedidos "basura"
-        const orderExist = await mongoose.connection.collection('clientes').findOne({ 'cuenta.email': clientData.cuenta.email, 'pedidos.metodoPago.info.estado': 'PENDIENTE' })
-        console.log('Pedido existente: ', orderExist);
+        const orderExist = await mongoose.connection.collection('clientes').findOne({ _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos.metodoPago.info.estado': 'PENDIENTE' })
+        //console.log('Pedido existente: ', orderExist);
         if (!orderExist) {
             // Si no existe, crear el pedido en estado "PENDIENTE"
             const updateOrder = await mongoose.connection.collection('clientes').updateOne(
@@ -177,7 +169,7 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
             const pendingOrder = orderExist.pedidos.find(pedido => pedido.metodoPago.info.estado === 'PENDIENTE');
             //console.log('Pedido pendiente: ', pendingOrder);
             await mongoose.connection.collection('clientes').updateOne(
-                { 'cuenta.email': clientData.cuenta.email, 'pedidos._id': pendingOrder._id },
+                { 'cuenta.email': clientData.cuenta.email, 'pedidos._id': new mongoose.Types.ObjectId(pendingOrder._id) },
                 {
                     $set: {
                         'pedidos.$.items': order.items,
@@ -204,11 +196,11 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
         const orderId = req.params.orderId;
         const { clientData, id } = req.body;
 
-        console.log('Datos para captura de pago: ', req.body);
-        console.log('Id de pedido: ', orderId, ' y Id de pedido: ', id);
+        //console.log('Datos para captura de pago: ', req.body);
+        //console.log('Id de pedido: ', orderId, ' y Id de pedido: ', id);
 
         const capturaPago = await paypalService.CapturePaymentOfPaypal_2(orderId);
-        console.log('Captura de pago: ', capturaPago);
+        //console.log('Captura de pago: ', capturaPago);
 
         if (!capturaPago) throw new Error('No se pudo capturar el pago de PayPal.');
 

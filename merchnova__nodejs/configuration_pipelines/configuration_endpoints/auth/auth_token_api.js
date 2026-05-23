@@ -33,8 +33,9 @@ manage_auth_token.get('/TokenChangePass/:id/:token', async (req, res, next) => {
             _id: new mongoose.Types.ObjectId(id)
         })
 
-        const verifyToken = jwtService.verifyTokenChangePass(token, process.env.FIRMA_JWT + user.cuenta.password);
+        const verifyToken = jwtService.verifyTokenChangePass(token, process.env.FIRMA_JWT);
 
+        if (!verifyToken) throw new Error('Verificación del token erronea.')
         if (!user) throw new Error('Token no válido o expirado.');
         //console.log('Usuario: ', user);
         console.log('Token verificado para cambio de contraseña: ', verifyToken);

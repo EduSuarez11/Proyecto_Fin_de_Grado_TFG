@@ -131,12 +131,15 @@ manage_auth_email.post('/Login', async (req, resp, next) => {
 
         // VERIFICAR LA PETICION DE RECAPTCHA, SI ES VALIDA Y POR PUNTUACION
         if (responseRecaptcha.error) throw new Error('Error en la verificación de reCAPTCHA, intentalo de nuevo.');
-        if (!responseRecaptcha.tokenProperties.valid || responseRecaptcha.riskAnalysis.score < 0.5) throw new Error('Verificación de reCAPTCHA fallida, vuelve a intentarlo.');
+        if (!responseRecaptcha.tokenProperties.valid || responseRecaptcha.riskAnalysis.score < 0.5) throw new Error('Fallo en verificación de reCAPTCHA, vuelve a intentarlo.');
 
 
         // COMPROBAR SI EL USUARIO EXISTE EN BASE DE DATOS, SI NO ERROR
         const existClient = await mongoose.connection.collection('clientes').findOne({'cuenta.email': email});
         if (!existClient) throw new Error('Login fallido, el email no existe.');
+
+        // COMPROBRAR SI LA CUENTA ES DE EMAIL
+        if (existClient.cuenta.tipo === 'discord' || existClient.cuenta.tipo === 'google') throw new Error('Esa cuenta no pertenece al email.')
 
         // COMPROBAR SI LA CONTRASEÑA DEL USUARIO ES CORRECTA Y SI LA CUENTA ESTA ACTIVADA
         if (!bcrypt.compareSync(password, existClient.cuenta.password)) throw new Error('La contraseña del usuario es incorrecta.');

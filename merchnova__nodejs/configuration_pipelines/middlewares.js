@@ -16,7 +16,7 @@ const manage_auth_token = require('./configuration_endpoints/auth/auth_token_api
 const manage_payment = require('./configuration_endpoints/pago/payment_api');
 const manage_clients = require('./configuration_endpoints/auth/clients_api');
 const manage_chat = require('./configuration_endpoints/chat/chat_api');
-const pathImages = path.join(__dirname, "../images");
+
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.URL_MONGODB);
@@ -42,8 +42,6 @@ module.exports = async (confServerExpress) => {
         credentials: true
     }));
     //confServerExpress.use(cors());
-
-    confServerExpress.use("/images", express.static(pathImages));
 
     // Configuracion de "auth"
     confServerExpress.use('/api/auth', manage_auth_email);
