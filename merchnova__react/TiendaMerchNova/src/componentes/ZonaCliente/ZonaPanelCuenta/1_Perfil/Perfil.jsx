@@ -30,7 +30,7 @@ function PerfilCuenta() {
         nombre: (value) => value.length >= 6 && value.length <= 50,
         telefono: (value) => /^\d{9}$/.test(value),
         codigoPostal: (value) => /^[a-zA-Z0-9\s-]{3,8}$/.test(value),
-        domicilio: (value) => /^[a-zA-Z0-9.,\s\-#°ª]{8,60}$/i.test(value),
+        domicilio: (value) => /^[a-zA-Z0-9.,\s\-#°ºª]{8,60}$/i.test(value),
         municipio: (value) => value.length >= 2 && value.length <= 20,
         pais: (value) => value === 'Ninguno' ? false : true,
         provincia: (value) => value.length >= 2 && value.length <= 20,
@@ -73,7 +73,7 @@ function PerfilCuenta() {
 
     async function handleSubmitProfile() {
         try {
-            const responseNewData = await request_profile.request_update(formProfile, clientData._id);
+            const responseNewData = await request_profile.request_update(formProfile, clientData);
             console.log('Respuesta node:', responseNewData);
             setClientData(responseNewData.data.newClientData);
             navigate('/', { state: { msg: `${responseNewData.message}` } });

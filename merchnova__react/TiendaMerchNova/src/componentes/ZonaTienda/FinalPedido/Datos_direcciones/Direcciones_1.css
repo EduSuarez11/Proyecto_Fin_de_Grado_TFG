@@ -114,11 +114,18 @@
 }
 
 .pay-btn:hover {
-  opacity: 0.9;
+  background: linear-gradient(to right, #6c18f3, #b155ed);
+  color: white;
 }
 
 .btn-stage {
   background: linear-gradient(135deg, #7b2ff7, #c778fb);
+  color: white;
+}
+
+
+.btn-stage:hover {
+  background: linear-gradient(to right, #6c18f3, #b155ed);
   color: white;
 }
 

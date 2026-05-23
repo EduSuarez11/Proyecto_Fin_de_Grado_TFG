@@ -53,11 +53,11 @@ export const request_profile = {
         return responseUpdateData;
     },
 
-    request_update: async (formProfile, clientId) => {
+    request_update: async (formProfile, clientData) => {
         const requestNewData = await fetch('http://localhost:3000/api/profile/Perfil-Update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({data: formProfile, clientId})
+            body: JSON.stringify({data: formProfile, clientData})
         });
 
         const responseNewData = await requestNewData.json();

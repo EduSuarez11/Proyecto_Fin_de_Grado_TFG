@@ -55,6 +55,7 @@ function FinPedido() {
         });
     }
 
+    // Funcion para los pasos de "Fin de compra"
     function nextStage(stage) {
         setStages(stages + 1);
         if (stage === 1) {
@@ -64,7 +65,7 @@ function FinPedido() {
     }
 
 
-    // PayPal
+    // Creacion de la ordern para PayPal
     async function createOrder() {
         const responseOrder = await request_paypal.create_order(clientData, order, direccionEnvio);
         console.log('Respuesta de la orden: ', responseOrder);
@@ -73,7 +74,7 @@ function FinPedido() {
         return responseOrder.orderId;
     }
 
-    //PayPal
+    // Aprobar el pago de PayPal
     async function onApprove() {
         console.log('Orden aprobada, procediendo a captura. OrderID: ', orderId);
         console.log('Id de pedido de cliente: ', orderClient);

@@ -27,7 +27,7 @@ function Pedidos() {
 
                                 <div>
                                     <span className="label">Fecha</span>
-                                    <strong>{pedido.fechaPago}</strong>
+                                    <strong>{new Date(pedido.fechaPago).toLocaleString()}</strong>
                                 </div>
 
                                 <div>

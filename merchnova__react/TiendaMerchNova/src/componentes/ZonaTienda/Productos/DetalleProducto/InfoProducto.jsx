@@ -50,7 +50,7 @@ function InfoProducto() {
         //console.log('Producto al añadir: ', resp);
         //console.log('Cantidad total add: ', quantity);
         // Comprobar si la cantidad a añadir sumada a la cantidad ya existente en el carrito supera el máximo permitido (10 unidades)
-        const qtyInTheCart = clientData.carrito.itemsPedido.find(item => item.producto._id === resp.product._id)?.quantity || 0;
+        const qtyInTheCart = clientData?.carrito?.itemsPedido?.find(item => item?.producto?._id === resp.product._id)?.quantity || 0;
         console.log('Cantidad en el carrito: ', qtyInTheCart);
         console.log('Cantidad a añadir: ', quantity);
         console.log('Cantidad total: ', qtyInTheCart + quantity);
