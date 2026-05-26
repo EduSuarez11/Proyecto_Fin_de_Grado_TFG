@@ -3,6 +3,7 @@ import Header from './Header/Header';
 import Footer from './Footer/Footer';
 import MiniFooter from './Footer/MiniFooter/MiniFooter';
 import { useMemo } from 'react';
+import ScrollToTop from '../../configurations/scrollEffect';
 
 function Layout() {
     const route = useLocation();
@@ -18,6 +19,8 @@ function Layout() {
             {
                 route.pathname !== '/Cliente/TipoLogin' ?
                     <div className='container-fluid p-0'>
+                        <ScrollToTop/>
+
                         <Header />
 
                         <Outlet />

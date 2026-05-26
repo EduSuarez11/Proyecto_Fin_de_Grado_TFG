@@ -1,8 +1,8 @@
+import './Tarjeta_2.css'
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import requestFetch from "../../../Servicios/request_external_api";
 import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { stripePromise } from "../../../configurations/config";
-import FormTarjeta from "./FormTarjeta";
 import { request_stripe } from "../../../Servicios/peticiones_pago/request_payment";
 import useGlobalState from "../../../../global_state/globalState";
 
@@ -39,7 +39,7 @@ function Tarjeta({ setPaymentMethod, paymentMethod, clientData, direccionEnvio, 
                 {
                     ['Tarjeta', 'PayPal'].map((tipo, index) =>
                         <div className={`payment-card ${paymentMethod === tipo.toLowerCase() ? "active" : ""}`} key={index}>
-                            <input type="radio" id={tipo.toLowerCase()} name="paymentMethod" value={tipo.toLowerCase()} checked={paymentMethod === tipo.toLowerCase()}
+                            <input type="radio" id={tipo.toLowerCase()} className="payment-radio" name="paymentMethod" value={tipo.toLowerCase()} checked={paymentMethod === tipo.toLowerCase()}
                                 onChange={() => {
                                     setPaymentMethod(tipo.toLowerCase());
                                 }}

@@ -52,13 +52,21 @@
     transition: 0.2s;
 }
 
+.btn-cancel:hover {
+    background: #dfc1fe;
+}
+
 .img-avatar {
     width: 124px;
     height: 124px;
     border-radius: 50%;
     border: 1px solid #6a0dad;
-    
+
     object-fit: cover;
 
     display: block;
+}
+
+.data-info {
+    color: #6a0dad;
 }

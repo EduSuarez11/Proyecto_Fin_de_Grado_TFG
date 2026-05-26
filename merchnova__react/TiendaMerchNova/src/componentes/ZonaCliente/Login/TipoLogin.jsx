@@ -29,7 +29,7 @@ function TipoLogin() {
 
                     sessionStorage.setItem("token", response.data.access_token);
                     setClientData(response.data.user);
-                    navigate('/');
+                    navigate('/', {state: {msg: 'Has iniciado sesión con Discord'}});
                 } catch (error) {
                     console.log('Error al iniciar sesion en DC: ', error);
                     doubleRequest.current = false;

@@ -16,7 +16,7 @@
 
 
 /* LINEA SUPERIOR */
-.register-card::before {
+/* .register-card::before {
     content: '';
     position: absolute;
 
@@ -29,7 +29,7 @@
         linear-gradient(90deg,
             #7b2ff7,
             #c778fb);
-}
+} */
 
 .register-card .alert {
     border: none;

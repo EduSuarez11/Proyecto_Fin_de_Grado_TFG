@@ -117,6 +117,19 @@
   opacity: 0.9;
 }
 
+.btn-cancel {
+  border: 1px solid #6a0dad;
+  color: #6a0dad;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #dfc1fe;
+  color: black;
+}
+
 @media (max-width: 768px) {
   .checkout-grid {
     grid-template-columns: 1fr;

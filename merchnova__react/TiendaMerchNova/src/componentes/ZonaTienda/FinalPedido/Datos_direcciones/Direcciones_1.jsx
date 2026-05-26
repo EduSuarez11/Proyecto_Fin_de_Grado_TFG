@@ -1,16 +1,13 @@
 import './Direcciones_1.css';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import useGlobalState from '../../../../global_state/globalState';
 import { useState } from "react";
 
 function Direcciones({ onChangeAddress }) {
     const countries = useLoaderData();
-    const navigate = useNavigate();
     const { setOrder, clientData, order, setPayData } = useGlobalState();
 
     //console.log('Pedidos en el encargo: ', order);
-
-
 
     return (
         <div className="px-2 py-3 mb-4">

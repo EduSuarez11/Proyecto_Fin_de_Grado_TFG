@@ -71,10 +71,11 @@
 
 .btn-primary:hover {
     opacity: 0.7;
+    color: white;
 }
 
 
-.btn-secondary {
+.btn-vist {
     padding: 10px 20px;
     border-radius: 8px;
     text-decoration: none;
@@ -83,8 +84,10 @@
     transition: all 0.3s ease;
 }
 
-.btn-secondary:hover {
-    background: #bababa;
+.btn-vist:hover {
+    background: #dfc1fe;
+    color: black;
+    
 }
 
 .success-info {

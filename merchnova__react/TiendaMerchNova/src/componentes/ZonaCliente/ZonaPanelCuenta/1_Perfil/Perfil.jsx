@@ -85,9 +85,9 @@ function PerfilCuenta() {
     return (
         <div className="card p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0 fw-bold" style={{color: '#6a0dad'}}>Mi Perfil</h2>
+                <h2 className="mb-0 fw-bold" style={{ color: '#6a0dad' }}>Mi Perfil</h2>
                 <div className="text-end">
-                    <span className="badge bg-info mb-1 text-black fw-medium">Tipo de cuenta: {clientData?.cuenta?.tipo}</span>
+                    <span className="badge bg-info mb-1 fw-medium text-black">Tipo de cuenta - {clientData?.cuenta?.tipo}</span>
                 </div>
             </div>
 
@@ -96,14 +96,14 @@ function PerfilCuenta() {
                     <div className="col-md-4 text-center mb-4 border-end">
                         <div className="container mx-auto d-flex justify-content-center align-items-center flex-column">
                             <img src={clientData?.cuenta?.imagenCuenta} ref={imageRef} alt="Previsualización" className="mb-3 img-avatar" />
-                            <label htmlFor="imageUpload" className={(!editProfile || clientData?.cuenta?.tipo === 'discord') ? `btn btn-save-img btn-sm w-75` : `btn btn-save btn-sm w-75`} >
+                            <label htmlFor="imageUpload" className={(!editProfile || clientData?.cuenta?.tipo === 'discord' || clientData?.cuenta?.tipo === 'google') ? `btn btn-save-img btn-sm w-75` : `btn btn-save btn-sm w-75`} >
                                 <i className="bi bi-camera me-2"></i>Cambiar Foto
                             </label>
-                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData?.cuenta?.tipo !== 'discord' || clientData?.cuenta?.tipo === 'google') ? !editProfile : true} onChange={changeImagePreview} />
+                            <input type="file" id="imageUpload" hidden accept="image/*" disabled={(clientData?.cuenta?.tipo !== 'discord' && clientData?.cuenta?.tipo !== 'google') ? !editProfile : true} onChange={changeImagePreview} />
                             {
                                 (clientData?.cuenta?.tipo === 'discord' || clientData?.cuenta?.tipo === 'google') &&
                                 <div className="form-text small text-danger">
-                                    No puedes cambiar tu foto de perfil con inicio de sesión de Discord o Google.
+                                    No puedes cambiar tu foto de perfil de Discord o Google.
                                 </div>
                             }
                         </div>
@@ -121,7 +121,7 @@ function PerfilCuenta() {
                                 className="form-control custom-input"
                                 placeholder="Tu nombre"
                                 defaultValue={clientData?.nombreCompleto}
-                                disabled={clientData?.cuenta?.tipo !== 'discord' ? !editProfile : true}
+                                disabled={(clientData?.cuenta?.tipo !== 'discord' && clientData?.cuenta?.tipo !== 'google') ? !editProfile : true}
                                 onChange={(ev) => {
                                     onChangeInputProfile(ev);
                                     validateField('nombre', ev.target.value);
@@ -138,7 +138,7 @@ function PerfilCuenta() {
 
                             {
                                 (clientData?.cuenta?.tipo === 'discord' || clientData?.cuenta?.tipo === 'google') &&
-                                <div className="form-text small text-danger">No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google</div>
+                                <p className="form-text small text-danger">No puedes cambiar tu foto de perfil si has iniciado sesión con Discord o Google</p>
                             }
                         </div>
 
@@ -173,8 +173,10 @@ function PerfilCuenta() {
                         <hr className="my-4" />
 
                         {/* Dirección */}
-                        <h5 className="fw-bold mb-3 text-secondary">Dirección</h5>
-
+                        <h5 className="fw-bold mb-3 text-secondary">Dirección (Envío)</h5>
+                        {clientData?.direcciones?.length === 0 && 
+                            <p className='text-danger small'>Es necesario rellenar las datos de dirección a la hora de realizar compras.</p>
+                        }
                         <div className="mb-3">
                             <label className="form-label fw-semibold">Domicilio</label>
                             <input
@@ -316,9 +318,9 @@ function PerfilCuenta() {
                             }
 
                             {
-                                clientData?.cuenta?.tipo === 'discord' || clientData?.cuenta?.tipo === 'google' &&
+                                clientData?.cuenta?.tipo === 'discord' &&
                                 <div className="form-text small text-danger">
-                                    No puedes cambiar tu teléfono si has iniciado sesión con Discord o Google
+                                    No puedes cambiar tu teléfono si has iniciado sesión con Discord
                                 </div>
                             }
                         </div>
@@ -353,9 +355,16 @@ function PerfilCuenta() {
                         {/* Seguridad */}
                         <h5 className="fw-bold mb-3 text-secondary">Seguridad</h5>
 
-                        <div className="row mb-4">
-                            <Link>¿Cambiar la contraseña de tu cuenta? Pulsa aquí para restablecerla</Link>
-                        </div>
+                        {clientData?.cuenta?.tipo === 'email' ?
+                            <div className="row mb-4">
+                                <Link to='/Cliente/Login'>¿Cambiar la contraseña de tu cuenta? Pulsa aquí para restablecerla</Link>
+                            </div>
+                            :
+                            <div className="row mb-4">
+                                <span className='data-info'>Solo puedes cambiar la contraseña de tu cuenta de tipo email.</span>
+                            </div>
+                        }
+
 
                         {/* Botones */}
                         <div className="d-flex justify-content-end mt-4">
@@ -370,8 +379,8 @@ function PerfilCuenta() {
                                             Cancelar
                                         </button>
 
-                                        <button type="button" className="btn btn-purple px-4 fw-bold" onClick={handleSubmitProfile} 
-                                        disabled={!validateProfile.codigoPostal || !validateProfile.municipio || !validateProfile.domicilio || !validateProfile.provincia || !validateProfile.nombre || !validateProfile.pais || !validateProfile.telefono}  >
+                                        <button type="button" className="btn btn-purple px-4 fw-bold" onClick={handleSubmitProfile}
+                                            disabled={!validateProfile.codigoPostal || !validateProfile.municipio || !validateProfile.domicilio || !validateProfile.provincia || !validateProfile.nombre || !validateProfile.pais || !validateProfile.telefono}  >
                                             Guardar cambios
                                         </button>
                                     </>

@@ -20,6 +20,7 @@ function FinPedido() {
     const [paymentMethod, setPaymentMethod] = useState({ tipo: '' });
     const refStripeElement = useRef(null);
     const refClient = useRef(null);
+    const doubleRequest = useRef(false);
 
     let orderId;
     let orderClient;
@@ -29,7 +30,8 @@ function FinPedido() {
     useEffect(
         () => {
             const chargeClientSecret = async () => {
-                if (!clientSecret) {
+                if (!clientSecret && !doubleRequest.current) {
+                    doubleRequest.current = true;
                     const responseStripe = await request_stripe.get_client_stripe(clientData, direccionEnvio);
                     //console.log('Respuesta client secret: ', responseStripe);
                     setClientSecret(responseStripe.clientSecret);
@@ -92,7 +94,6 @@ function FinPedido() {
 
 
     return (
-
         <div className="checkout-container">
             {
                 clientSecret != null ?
@@ -114,18 +115,18 @@ function FinPedido() {
                                         stages === 1 ?
                                             <div className='d-flex flex-row justify-content-end px-2'>
                                                 <Link to='/Portal/Cart'>
-                                                    <button className="btn btn-outline-secondary me-2 px-4">Volver al carrito</button>
+                                                    <button className="btn btn-cancel me-2 px-4">Volver al carrito</button>
                                                 </Link>
-                                                <button className="btn btn-stage" onClick={() => nextStage(stages)}>Continuar</button>
+                                                <button className="btn btn-stage" onClick={() => nextStage(stages)} disabled={!direccionEnvio?.domicilio && !direccionEnvio?.codigoPostal && !direccionEnvio?.municipio && !direccionEnvio?.provincia}>Continuar</button>
                                             </div>
                                             : stages !== 3 ?
                                                 <div className='d-flex flex-row justify-content-end px-2'>
-                                                    <button className="btn btn-outline-secondary me-2 px-4" onClick={() => setStages(stages - 1)}>Volver</button>
+                                                    <button className="btn btn-cancel me-2 px-4" onClick={() => setStages(stages - 1)}>Volver</button>
                                                     <button className="btn btn-stage" onClick={() => nextStage(stages)}>Continuar</button>
                                                 </div>
                                                 :
                                                 <div className="d-flex flex-row justify-content-end px-2 mt-4">
-                                                    <button className="btn btn-outline-secondary me-2 px-4" onClick={() => setStages(stages - 1)}>Volver</button>
+                                                    <button className="btn btn-cancel me-2 px-4" onClick={() => setStages(stages - 1)}>Volver</button>
                                                 </div>
                                     }
                                 </div>
@@ -152,7 +153,7 @@ function FinPedido() {
 
                                 <hr />
 
-                                <div className="total">
+                                <div className="total mb-4">
                                     <span>Total</span>
                                     <span>{Math.round((subtotal + order.gastosEnvio) * 100) / 100} €</span>
                                 </div>

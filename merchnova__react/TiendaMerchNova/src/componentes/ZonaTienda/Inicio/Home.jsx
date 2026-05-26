@@ -86,7 +86,7 @@ function Home() {
 
             <div className="promo text-center text-white py-5">
                 <div className="container">
-                    <h2>🔥 Descuento en todo tipo de productos</h2>
+                    <h2 className='mb-4'>🔥 Descuento en todo tipo de productos</h2>
                     <Link to='/Portal/Productos'>
                         <button className='className="btn btn-light mt-3"'>Comprar ahora</button>
                     </Link>

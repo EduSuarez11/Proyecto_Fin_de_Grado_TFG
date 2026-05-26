@@ -35,21 +35,21 @@ function Resumen({ datosDireccion, paymentMethod }) {
 
     return (
         <div className="checkout-step fade-in">
-            <h3 className="step-title">Resumen del pedido</h3>
+            <h3 className="mb-3">Resumen de datos</h3>
 
             <div className="summary-section">
                 <h5>Dirección de envío</h5>
-                <p>{datosDireccion?.nombreCompleto}</p>
-                <p>{datosDireccion?.domicilio}</p>
-                <p>{datosDireccion?.municipio}, {datosDireccion?.provincia} - {datosDireccion?.codigoPostal}</p>
-                <p>{datosDireccion?.pais}</p>
+                <p>{datosDireccion?.nombreCompleto ? datosDireccion?.nombreCompleto : clientData.nombreCompleto}</p>
+                <p>{datosDireccion?.domicilio ? datosDireccion?.domicilio : clientData.direcciones[0].domicilio}</p>
+                <p>{datosDireccion?.municipio ? datosDireccion?.municipio : clientData.direcciones[0].municipio}, {datosDireccion?.provincia ? datosDireccion?.provincia : clientData.direcciones[0].provincia} - {datosDireccion?.codigoPostal ? datosDireccion?.codigoPostal : clientData.direcciones[0].codigoPostal}</p>
+                <p>{datosDireccion?.pais ? datosDireccion?.pais : clientData.direcciones[0].pais}</p>
             </div>
 
             <div className="summary-section">
                 <h5>Método de pago</h5>
                 <p>
-                    {paymentMethod === "tarjeta" && (<i class="fa-solid fa-credit-card"></i> + " Tarjeta")}
-                    {paymentMethod === "paypal" && (<i class="fa-brands fa-paypal"></i>  + " PayPal")}
+                    {paymentMethod === "tarjeta" && (<div><i class="fa-solid fa-credit-card"></i> Tarjeta</div>)}
+                    {paymentMethod === "paypal" && (<div><i class="fa-brands fa-paypal"></i> PayPal</div>)}
                 </p>
 
                 {/* {paymentMethod === "tarjeta" && (

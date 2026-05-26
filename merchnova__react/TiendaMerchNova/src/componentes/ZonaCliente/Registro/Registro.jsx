@@ -93,7 +93,7 @@ function Registro() {
                         ))
                     }
 
-                    <div className="mb-3">
+                    <div className="mb-5">
                         <label className="form-label">Género</label>
                         <select defaultValue='' name="genero" className="form-select" onChange={onChangeInput}>
                             <option value="">Selecciona tu género</option>

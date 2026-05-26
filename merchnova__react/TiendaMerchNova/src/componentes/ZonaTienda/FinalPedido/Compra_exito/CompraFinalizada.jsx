@@ -34,7 +34,7 @@ function CompraFinalizada() {
 
                 <div className="success-actions">
                     <Link to="/Portal/Productos" className="btn-primary">Mirar más productos</Link>
-                    <Link to="/Cliente/Cuenta/Pedidos" className="btn-secondary">Ver mis pedidos</Link>
+                    <Link to="/Cliente/Cuenta/Pedidos" className="btn-vist">Ver mis pedidos</Link>
                 </div>
 
             </div>

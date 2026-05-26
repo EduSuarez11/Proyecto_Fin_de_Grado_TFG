@@ -154,7 +154,7 @@ function Productos() {
                 {/* PRODUCTOS A MOSTRAR */}
                 <div className="col-lg-9">
                     <div className="row">
-                        {dataProducts.products ?
+                        {dataProducts.products.length !== 0 ?
                             <>
                                 {
                                     (dataProducts.products?.map((product, index) =>
