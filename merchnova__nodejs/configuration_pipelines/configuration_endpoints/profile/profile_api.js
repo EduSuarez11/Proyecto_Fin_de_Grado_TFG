@@ -63,13 +63,15 @@ manage_profile_data.post('/Perfil-Update', async (req, res, next) => {
                 { arrayFilters: [{ 'chat.datosCliente.idCliente': new mongoose.Types.ObjectId(clientData._id) }] }
             );
         } else {
+            //console.log('Cliente admin: ', updateClient);
+            //console.log('Data: ', data);
             const datosAdminActualizados = {
                 idAdmin: new mongoose.Types.ObjectId(clientData._id),
                 nombreAdmin: data.nombreCompleto || updateClient.nombreCompleto,
                 imagenCuenta: data.cuenta?.imagenCuenta || updateClient.cuenta?.imagenCuenta
             };
             await mongoose.connection.collection('clientes').updateMany(
-                { 'chats.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientData_id) },
+                { 'chats.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientData._id) },
                 { $set: { 'chats.$[chat].datosAdmin': datosAdminActualizados } },
                 { arrayFilters: [{ 'chat.datosAdmin.idAdmin': new mongoose.Types.ObjectId(clientData._id) }] }
             );

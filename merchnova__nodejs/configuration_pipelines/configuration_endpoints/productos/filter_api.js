@@ -35,10 +35,11 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
     try {
         //console.log(JSON.stringify(req.body));
         //const types = Object.keys(req.body.dataFilter);
-        const { categoria, minPrice, maxPrice, page } = req.query;
+        const { categoria, minPrice, maxPrice, page, valoracion } = req.query;
         const LimitProductsForPage = 12;
         //console.log('Precios: ', parseInt(minPrice), parseInt(maxPrice))
         //console.log('Parametros de url: ', JSON.stringify(req.query));
+        console.log('categoria: ', categoria);
         let parameter = {};
         if (categoria && categoria !== 'todos') {
             parameter.categoria = categoria
@@ -47,6 +48,13 @@ manage_products_filter.get('/FiltrarProductos', async (req, res, next) => {
         if (minPrice && maxPrice && parseInt(minPrice) > 0 && parseInt(maxPrice) > 0) {
             parameter.precio = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) }
         }
+
+        console.log('Valoracion: ', valoracion);
+        if (valoracion !== 'nan' && parseInt(valoracion) > 0) {
+            console.log('Pasa por aqui con val: ', valoracion);
+            parameter.valoraciones = { $lte: parseInt(valoracion) + 1, $gte: parseInt(valoracion) }
+        }
+
 
         //console.log(parameter);
 
