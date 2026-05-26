@@ -74,7 +74,7 @@ module.exports = (serverNode) => {
                     datosCliente,
                     datosAdmin,
                     firstMsg: mensaje,
-                    estado: adminUpdate.estado
+                    estado: 'ACTIVO'
                 }));
                 await setChatWithNewMessages(salaId, mensaje);
 
