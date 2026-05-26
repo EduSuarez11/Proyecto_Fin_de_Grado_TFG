@@ -132,7 +132,7 @@ manage_profile_data.post('/NewDirection', async (req, res, next) => {
         // console.log('Cliente a actualizar: ', clientData);
 
         const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { 'cuenta.email': clientData.cuenta.email },
+            { _id: new mongoose.Types.ObjectId(clientData._id) },
             { $push: { direcciones: data } },
             { returnDocument: "after" }
         );

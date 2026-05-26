@@ -5,7 +5,7 @@ const manage_cart = express.Router();
 
 async function findProduct(client, order) {
     const productExists = await mongoose.connection.collection('clientes').findOne({
-        'cuenta.email': client.cuenta.email,
+        _id: new mongoose.Types.ObjectId(client._id),
         'carrito.itemsPedido': {
             $elemMatch: {
                 'producto.nombre': order.nombre
@@ -19,7 +19,7 @@ async function findProduct(client, order) {
 manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
     try {
         const { client, order, quantity, gastosEnvio, talla } = req.body;
-        //console.log(order, '--------', gastosEnvio);
+        console.log('Cliente:', client);
 
         const find = await findProduct(client, order);
 
@@ -37,7 +37,7 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
         let updateData;
         if (find) {
             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                { 'cuenta.email': client.cuenta.email, 'carrito.itemsPedido.producto.nombre': order.nombre },
+                { _id: new mongoose.Types.ObjectId(client._id), 'carrito.itemsPedido.producto.nombre': order.nombre },
                 {
                     $inc: { 'carrito.itemsPedido.$.quantity': quantity },
                     $set: {
@@ -55,7 +55,7 @@ manage_cart.post('/Persistencia/Agregar', async (req, res, next) => {
         } else {
             order.talla = talla ? [talla] : [];
             updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                { 'cuenta.email': client.cuenta.email, },
+                { _id: new mongoose.Types.ObjectId(client._id) },
                 {
                     $push: {
                         'carrito.itemsPedido': {
@@ -104,7 +104,7 @@ manage_cart.post('/Persistencia/Eliminar', async (req, res, next) => {
         let deleteProductCart;
         if (find) {
             deleteProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                { 'cuenta.email': client.cuenta.email },
+                { _id: new mongoose.Types.ObjectId(client._id) },
                 {
                     $pull: {
                         'carrito.itemsPedido': {
@@ -148,7 +148,7 @@ manage_cart.post('/Persistencia/Actualizar', async (req, res, next) => {
         let updateProductCart;
         if (find) {
             updateProductCart = await mongoose.connection.collection('clientes').findOneAndUpdate(
-                { 'cuenta.email': client.cuenta.email, 'carrito.itemsPedido.producto.nombre': order.nombre },
+                { _id: new mongoose.Types.ObjectId(client._id), 'carrito.itemsPedido.producto.nombre': order.nombre },
                 {
                     $set: {
                         'carrito.itemsPedido.$.quantity': quantity,

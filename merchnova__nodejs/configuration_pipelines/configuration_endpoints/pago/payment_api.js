@@ -122,7 +122,7 @@ manage_payment.post('/order-update', async (req, res, next) => {
 manage_payment.post('/Create/Order', async (req, res, next) => {
     try {
         const { clientData, order, direccionEnvio } = req.body;
-        console.log(req.body);
+        //console.log(req.body);
         order._id = new mongoose.Types.ObjectId();
         const orderPaypal = await paypalService.CreateOrderPaypal_1(clientData, order);
         //console.log('Datos de PayPal: ', orderPaypal);
@@ -161,15 +161,16 @@ manage_payment.post('/Create/Order', async (req, res, next) => {
         if (!orderExist) {
             // Si no existe, crear el pedido en estado "PENDIENTE"
             const updateOrder = await mongoose.connection.collection('clientes').updateOne(
-                { 'cuenta.email': clientData.cuenta.email },
+                { _id: new mongoose.Types.ObjectId(clientData._id) },
                 { $push: { pedidos: order } }
             );
         } else {
             // Si existe, continuar con ese pedido y actualizar los campos que posiblemente podrian haber cambiado.
             const pendingOrder = orderExist.pedidos.find(pedido => pedido.metodoPago.info.estado === 'PENDIENTE');
+            order._id = pendingOrder._id;
             //console.log('Pedido pendiente: ', pendingOrder);
             await mongoose.connection.collection('clientes').updateOne(
-                { 'cuenta.email': clientData.cuenta.email, 'pedidos._id': new mongoose.Types.ObjectId(pendingOrder._id) },
+                { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(pendingOrder._id) },
                 {
                     $set: {
                         'pedidos.$.items': order.items,
@@ -217,7 +218,7 @@ manage_payment.post('/Capture/Payment/:orderId', async (req, res, next) => {
                 if (updateProductStock.modifiedCount === 0) throw new Error('No se pudo actualizar el stock del producto: ' + item.producto.nombre);
             }
         }
-
+        //console.log('Order: ', id);
         // Guardar el resto de datos de pago del cliente
         const updatePayData = await mongoose.connection.collection('clientes').findOneAndUpdate(
             { _id: new mongoose.Types.ObjectId(clientData._id), 'pedidos._id': new mongoose.Types.ObjectId(id) },
