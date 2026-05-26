@@ -15,31 +15,28 @@ function DescripcionSoporte() {
     async function createChat() {
         console.log('Cliente find: ', clientData);
         if (clientData?.cuenta?.rol === 'CLIENTE') {
-            const chatExists = clientData?.chats?.find(chat => chat.datosCliente.idCliente === clientData._id);
-            console.log('¿Existe el chat para el cliente?: ', chatExists);
-            if (!chatExists) {
-                const createChat = {
-                    datosCliente: {
-                        idCliente: clientData._id,
-                        nombreCliente: clientData.nombreCompleto,
-                        imagenCuenta: clientData.cuenta.imagenCuenta
-                    },
-                    mensajes: [], // Inicialmente el historial de mensajes estará vacío al crear el chat, aunque se le añade un mensaje de bienvenida desde el servidor de Socket.IO al crear la sala.
-                }
-                const getDataResponse = await request_chat.request_create_chat(createChat);
-                console.log('Respuesta al crear el chat: ', getDataResponse);
-
-                if (getDataResponse.code !== 0) {
-                    //console.log('Error al crear el chat: ', getDataResponse.message);
-                    setCode(getDataResponse.code);
-                    return;
-                }
-                socket_io__client_service.joinRoom({salaId: getDataResponse.data.salaId});
-                //setClientData({...clientData, chats: [...clientData?.chats, {...createChat, _id: getDataResponse.data.salaId}]});
-                setClientData(getDataResponse.data.userUpdate);
-                setMsgChat(getDataResponse.message);
-                console.log('Cliente desde descripcion: ', clientData);
+            const createChat = {
+                datosCliente: {
+                    idCliente: clientData._id,
+                    nombreCliente: clientData.nombreCompleto,
+                    imagenCuenta: clientData.cuenta.imagenCuenta
+                },
+                mensajes: [], // Inicialmente el historial de mensajes estará vacío al crear el chat, aunque se le añade un mensaje de bienvenida desde el servidor de Socket.IO al crear la sala.
             }
+            const getDataResponse = await request_chat.request_create_chat(createChat);
+            console.log('Respuesta al crear el chat: ', getDataResponse);
+
+            if (getDataResponse.code !== 0) {
+                //console.log('Error al crear el chat: ', getDataResponse.message);
+                setCode(getDataResponse.code);
+                return;
+            }
+            socket_io__client_service.joinRoom({ salaId: getDataResponse.data.salaId });
+            //setClientData({...clientData, chats: [...clientData?.chats, {...createChat, _id: getDataResponse.data.salaId}]});
+            setClientData(getDataResponse.data.userUpdate);
+            setMsgChat(getDataResponse.message);
+            console.log('Cliente desde descripcion: ', clientData);
+
         }
     }
 
@@ -67,14 +64,16 @@ function DescripcionSoporte() {
 
                 {msgChat !== '' && <span className={code === 0 ? 'text-danger small' : 'text-success small'} >{msgChat}</span>}
 
+                {!clientData && <span className='text-danger small' >Debes iniciar sesión para poder utilizar el soporte de ayuda</span>}
+
                 {/* ACCIONES */}
                 <div className="support-actions">
-                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={clientData?.chats?.find(chat => chat.estado !== 'ACTIVO')}>
+                    <button className="btn btn-support-primary" type='button' onClick={createChat} disabled={clientData?.chats?.find(chat => chat.estado === 'ACTIVO') || !clientData}>
                         <i className="bi bi-chat-dots me-2"></i>Iniciar conversación
                     </button>
 
 
-                    <button className="btn btn-support-outline" type='button' disabled={!clientData?.chats?._id} onClick={() => navigate(`/Portal/Soporte/Chat`)}>
+                    <button className="btn btn-support-help" type='button' disabled={clientData?.chats?.some(chat => !chat)} onClick={() => navigate(`/Portal/Soporte/Chat`)}>
                         <i className="bi bi-clock-history me-2"></i>Ver conversación
                     </button>
 

@@ -137,9 +137,13 @@
     color: white;
 }
 
+.btn-support-primary:disabled {
+    color: lightgray;
+}
 
 
-.btn-support-outline {
+
+.btn-support-help {
     height: 54px;
 
     padding: 0 28px;
@@ -155,11 +159,14 @@
 }
 
 
-.btn-support-outline:hover {
+.btn-support-help:hover {
     background: linear-gradient(to right, #6c18f3, #b155ed);
     color: white;
 }
 
+.btn-support-help:disabled {
+    color: lightgray;
+}
 
 
 @media(max-width:768px) {

@@ -124,7 +124,7 @@ const applicationRoutes = createBrowserRouter(
                   {
                      path: 'Soporte', children: [
                         { path: 'Ayuda', element: <DescripcionSoporte /> },
-                        { path: 'Chat/:salaId?', element: <Chat /> }
+                        { path: 'Chat/:salaId?', element: <Chat />, loader: securityApplication }
                      ]
                   },
 

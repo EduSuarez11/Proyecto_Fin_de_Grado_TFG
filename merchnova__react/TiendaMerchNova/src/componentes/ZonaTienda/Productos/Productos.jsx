@@ -16,6 +16,7 @@ function Productos() {
         minPrice: 0,
         maxPrice: 0
     });
+    const [valoration, setValoration] = useState('');
     const [params, setParams] = useSearchParams();
     const [errorPrice, setErrorPrice] = useState('');
 
@@ -23,11 +24,12 @@ function Productos() {
     const categories = params.get('categoria') || "todos";
     const minPrice = params.get('minPrice') || 0;
     const maxPrice = params.get('maxPrice') || 0;
+    const valoracion = params.get('valoracion') || null;
 
     useEffect(
         () => {
             const getProductsByPage = async () => {
-                const response = await request_filter_products.get_products_filter(categories, page, minPrice, maxPrice);
+                const response = await request_filter_products.get_products_filter(categories, page, minPrice, maxPrice, valoration);
                 console.log('Respuesta de la peticion: ', response)
                 setDataProducts({
                     ...dataProducts,
@@ -39,7 +41,7 @@ function Productos() {
                 });
             }
             getProductsByPage();
-        }, [page, categories, maxPrice, minPrice]
+        }, [page, categories, maxPrice, minPrice, valoracion]
     );
 
     const handleSetPage = (nuevaPagina) => {
@@ -51,7 +53,7 @@ function Productos() {
 
 
 
-    const handleFilter = (nuevaCategoria, minPrice, maxPrice) => {
+    const handleFilter = (nuevaCategoria, minPrice, maxPrice, valoracion) => {
         // Si ambos precios están vacíos, eliminar los parámetros de precio de la URL porque se quedan colgando vacios
         if (!minPrice && !maxPrice) {
             params.delete('minPrice');
@@ -65,6 +67,13 @@ function Productos() {
 
             if (minPrice) params.set("minPrice", minPrice);
             if (maxPrice) params.set("maxPrice", maxPrice);
+        }
+
+        console.log('Valoracion cl: ', valoracion)
+        if (!valoracion || valoracion === 'nan') {
+            params.delete('valoracion')
+        } else {
+            params.set('valoracion', valoracion)
         }
 
         params.set('categoria', nuevaCategoria);
@@ -87,7 +96,7 @@ function Productos() {
         });
         return stars;
     }
-    console.log('Productos: ',dataProducts)
+
 
 
     return (
@@ -118,9 +127,9 @@ function Productos() {
                         <div className="filter-box">
                             <h6>Valoración</h6>
                             {
-                                ["De 4 o más", "De 3 hasta 4"].map((element, index) =>
+                                ["Ninguno", "1 a 2 estrellas", "2 a 3 estrellas", "3 hasta 4 estrellas", "De 4 o más estrellas"].map((element, index) =>
                                     <div className="form-check" key={index}>
-                                        <input className="form-check-input" type="radio" name="rating" />
+                                        <input className="form-check-input" id={element === 'Ninguno' ? 'nan' : `${(index)}`} type="radio" name="rating" onChange={(ev) => setValoration(ev.target.id !== null ? ev.target.id : null)} />
                                         <label className="form-check-label">{element}</label>
                                     </div>
                                 )
@@ -137,7 +146,7 @@ function Productos() {
 
                             {errorPrice !== '' && <span className='text-danger'>{errorPrice}</span>}
 
-                            <button className="btn btn-filter w-100 mt-2 fw-medium" onClick={() => handleFilter((typeProduct === null ? "todos" : typeProduct), priceFilter.minPrice, priceFilter.maxPrice)} >Aplicar</button>
+                            <button className="btn btn-filter w-100 mt-2 fw-medium" onClick={() => handleFilter((typeProduct === null ? "todos" : typeProduct), priceFilter.minPrice, priceFilter.maxPrice, valoration)} >Aplicar</button>
                         </div>
                     </div>
                 </div>
@@ -145,7 +154,7 @@ function Productos() {
                 {/* PRODUCTOS A MOSTRAR */}
                 <div className="col-lg-9">
                     <div className="row">
-                        {dataProducts.products.length !== 0 ?
+                        {dataProducts.products ?
                             <>
                                 {
                                     (dataProducts.products?.map((product, index) =>
@@ -158,7 +167,7 @@ function Productos() {
                                                 )}
                                                 <img src={product.imagen} className="card-img-top p-2" />
                                                 <div className="card-body">
-                                                    <h6 className="title-product">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...': product.nombre}</h6>
+                                                    <h6 className="title-product">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...' : product.nombre}</h6>
                                                     <div className="rating">
                                                         {handleValorations(product.valoraciones)} {product.valoraciones}
                                                     </div>
@@ -187,7 +196,7 @@ function Productos() {
                                 </div>
                             </>
                             :
-                            <div className="d-flex justify-content-center align-items-center flex-column" style={{height: '430px'}}>
+                            <div className="d-flex justify-content-center align-items-center flex-column" style={{ height: '430px' }}>
                                 <div className="spinner-border" role="status">
                                     <span className="sr-only"></span>
                                 </div>

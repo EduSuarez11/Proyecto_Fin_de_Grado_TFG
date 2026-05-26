@@ -44,15 +44,15 @@ function Chat() {
         }, []
     )
 
-    console.log('Chat seleccionado: ', chatSelected);
-    console.log('Datos del chats: ', chats);
+    //console.log('Chat seleccionado: ', chatSelected);
+    //console.log('Datos del chats: ', chats);
 
     // Funcion para enviar un mensaje y cambiar el estado de los chats de los participantes
     function sendMessage() {
         if (!message.trim()) return; // No enviar mensajes vacíos
 
         // Enviar mensaje con los datos de ambos usuarios de la sala para mostrarlo en chat posteriormente con imagen y nombre
-        console.log('Enviando mensaje a la sala: ', salaId);
+        //console.log('Enviando mensaje a la sala: ', salaId);
         const messageToSend = {
             salaId: salaId,
             mensaje: {
@@ -115,13 +115,13 @@ function Chat() {
                                 </div>
 
                                 <div>
-                                    <h6>{chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente : chat?.datosAdmin?.nombreAdmin}</h6>
+                                    <h6>{chat?.datosAdmin?.idAdmin === clientData._id ? chat?.datosCliente?.nombreCliente.slice(0, 12) + '...' : chat?.datosAdmin?.nombreAdmin.slice(0, 12) + '...'}</h6>
                                     <p>{chat?.mensajes[chat?.mensajes?.length - 1]?.contenido || ''}</p>
+                                    <span className='date-last-msg'>{ chat?.mensajes.length !== 0 ? new Date(chat?.mensajes[chat?.mensajes?.length - 1]?.timestamp).toLocaleString() || '' : '---'}</span>
                                 </div>
                             </div>
 
                             <div className="chat-meta">
-                                <small>{new Date(chat?.mensajes[chat?.mensajes?.length - 1]?.timestamp).toLocaleString() || ''}</small>
                                 <span className="unread-badge">2</span>
                             </div>
                         </div>
@@ -159,7 +159,6 @@ function Chat() {
                                                 <button className='btn btn-primary' onClick={archivateChat}>Archivar chat</button>
                                             </div>
                                         }
-
                                     </div>
                                 )}
                             </div>
@@ -216,8 +215,18 @@ function Chat() {
                     </div>
 
                     :
-                    <div>
-                        <span className='text-danger fs-2'>Selecciona un chat</span>
+                    <div className="empty-chat-wrapper">
+                        <div className="empty-chat-card">
+                            <div className="empty-chat-icon">
+                                <i className="bi bi-chat-left-dots"></i>
+                            </div>
+
+                            <h3>Selecciona una conversación</h3>
+
+                            <p>Elige un chat desde la barra lateral para visualizar los mensajes
+                                y continuar la conversación con el soporte técnico.
+                            </p>
+                        </div>
                     </div>
                 }
 

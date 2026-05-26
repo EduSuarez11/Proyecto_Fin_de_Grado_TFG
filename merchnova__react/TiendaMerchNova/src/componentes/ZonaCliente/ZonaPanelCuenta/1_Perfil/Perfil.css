@@ -34,8 +34,8 @@
 }
 
 .btn-save:hover {
-    background:linear-gradient(to right,#6c18f3,#b155ed);
-	color: white;
+    background: linear-gradient(to right, #6c18f3, #b155ed);
+    color: white;
 }
 
 .btn-save-img {
@@ -53,11 +53,12 @@
 }
 
 .img-avatar {
-    width: 50%;
-    height: 50%;
-
+    width: 124px;
+    height: 124px;
+    border-radius: 50%;
+    border: 1px solid #6a0dad;
+    
     object-fit: cover;
-    object-position: center;
 
     display: block;
 }

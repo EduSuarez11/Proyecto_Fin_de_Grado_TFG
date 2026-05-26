@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { request_category } from '../../../Servicios/peticiones_productos/request_products';
 import { useMemo } from 'react';
 import { request_auth, request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
@@ -20,6 +20,7 @@ function Header() {
         info: false
     });
     const [categories, setCategories] = useState([]);
+    const doubleRequest = useRef(false);
 
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
 
@@ -72,27 +73,36 @@ function Header() {
         }, []
     );
 
+    const getMsg = useEffectEvent(
+        (data) => {
+            const { salaId, datosCliente, datosAdmin, firstMsg } = JSON.parse(data);
+            let { estado } = JSON.parse(data);
+            const clientUp = useGlobalState.getState().clientData;
+
+            if (clientUp._id && clientUp._id === datosAdmin.idAdmin && !doubleRequest.current) {
+                doubleRequest.current = true
+                setNewMessages(true);
+                console.log('Admin uniendose al chat');
+                estado = 'ACTIVO';
+                console.log('Chat estado: ', estado);
+                socket_io__client_service.sendMessage('adminJoinRoom', JSON.stringify({ keyChat: salaId, datosAdmin }));
+                useGlobalState.getState().setClientData({
+                    ...clientUp,
+                    chats: [
+                        ...clientUp?.chats,
+                        { _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg], estado }
+                    ]
+                });
+                setChatId(salaId);
+            } else if (route.pathname !== '/Portal/Soporte/Chat') {
+                setNewMessages(true);
+            }
+        }
+    )
+
     useEffect(
         () => {
-            socket_io__client_service.receiveEvent('adminJoinRoom', (data) => {
-                const { salaId, datosCliente, datosAdmin, firstMsg, estado } = JSON.parse(data);
-                const clientUp = useGlobalState.getState().clientData;
-
-                if (clientUp._id && clientUp._id === datosAdmin.idAdmin) {
-                    setNewMessages(true);
-                    console.log('Cliente: ', clientUp);
-                    console.log('Admin uniendose al chat');
-                    socket_io__client_service.sendMessage('adminJoinRoom', JSON.stringify({ keyChat: salaId, datosAdmin }));
-                    useGlobalState.getState().setClientData({
-                        ...clientUp,
-                        chats: [
-                            ...clientUp?.chats,
-                            { _id: salaId, datosCliente, datosAdmin, mensajes: [firstMsg], estado }
-                        ]
-                    });
-                    setChatId(salaId);
-                }
-            })
+            socket_io__client_service.receiveEvent('adminJoinRoom', getMsg)
         }, []
     )
 
@@ -193,7 +203,11 @@ function Header() {
                     }
 
 
-                    <div className="subnav-item has dropdown" id="soporte" onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Soporte</div>
+                    <div className="subnav-item has dropdown" id="soporte" onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                        Soporte
+                        {(newMessages) && <span className="badge bg-danger" style={{ top: '0', right: '0', transform: 'translate(50%, -50%)' }}>!</span>}
+                    </div>
+
                     {showPanel.soporte &&
                         <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                             <div className="grid-panel" style={showPanel.soporte && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
