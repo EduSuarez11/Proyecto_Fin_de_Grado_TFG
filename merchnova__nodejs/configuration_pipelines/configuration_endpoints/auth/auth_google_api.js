@@ -101,7 +101,7 @@ manage_auth_google.get('/CallbackGoogle', async (req, res, next) => {
             <html>
                 <body>
                     <script>
-                        window.opener.postMessage(${JSON.stringify({ codigo: 0, mensaje: "Login con Google ok, info del perfil del usuario obtenida de google mediante la PEOPLE-API", dataUser: { client: clientData, accessToken } })}, '*')
+                        window.opener.postMessage(${JSON.stringify({ codigo: 0, mensaje: "Login con Google ok, info del perfil del usuario obtenida de google mediante la PEOPLE-API", dataUser: { clientData, accessToken } })}, '*')
                         window.close();
                     </script>
                 </body>
