@@ -165,7 +165,7 @@ function InfoProducto() {
                     <div className="product-actions">
                         <button className="btn-cart" disabled={resp.product.talla.length !== 0 && talla === ''} onClick={handleAddToCart}>Añadir al carrito</button>
                         <Link to='/Portal/Pedido/DetallesEncargo'>
-                            <button className="btn-buy" disabled={resp.product.stock === 0}>Comprar ahora</button>
+                            <button className="btn-buy" disabled={resp.product.stock === 0} onClick={handleAddToCart}>Comprar ahora</button>
                         </Link>
 
                     </div>

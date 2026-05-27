@@ -192,7 +192,7 @@ function Header() {
                             <div className="subnav-item has-dropdown" id='products' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Productos</div>
                         </Link>
                         {showPanel.products &&
-                            <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="menu-panel" id="products" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                                 <div className="grid-panel" style={showPanel.products && { gridTemplateColumns: 'repeat(3, 1fr)' }}>
                                     {categories.map((el, pos) =>
                                         <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Productos?page=1&categoria=${el.nombreCat.toLowerCase()}`} key={pos}>
@@ -210,7 +210,7 @@ function Header() {
                         </div>
 
                         {showPanel.soporte &&
-                            <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="menu-panel" id="soporte" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                                 <div className="grid-panel" style={showPanel.soporte && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                                     {['Ayuda', "Chat"].map((el, pos) =>
                                         <Link className="text-decoration-none" style={{ color: 'inherit' }} to={!newMessages ? `/Portal/Soporte/${el}` : `/Portal/Soporte/${el}/${chatId}`} key={pos}>
@@ -226,7 +226,7 @@ function Header() {
 
                         <div className="subnav-item has-dropdown" id='info' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Más información</div>
                         {showPanel.info &&
-                            <div className="menu-panel" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
+                            <div className="menu-panel" id="info" onMouseEnter={(ev) => handleShowPanelFromInside(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>
                                 <div className="grid-panel" style={showPanel.info && { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                                     {['Sobre Nosotros', "Como Funciona"].map((el, pos) =>
                                         <Link className="text-decoration-none" style={{ color: 'inherit' }} to={`/Portal/Informacion/${el.replace(/\s+/g, '')}`} key={pos}>

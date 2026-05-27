@@ -29,6 +29,7 @@ function Panel({ order, clientData, logOut }) {
                     aria-expanded="false">
                     <img
                         src={clientData.cuenta.imagenCuenta}
+                        referrerPolicy="no-referrer"
                         alt="avatar usuario"
                         className="rounded-circle"
                         width="40"

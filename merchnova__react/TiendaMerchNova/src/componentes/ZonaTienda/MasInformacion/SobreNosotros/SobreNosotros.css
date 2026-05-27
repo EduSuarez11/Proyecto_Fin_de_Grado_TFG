@@ -48,8 +48,8 @@
 .about-hero-content p {
     font-size: 18px;
     line-height: 1.8;
-
-    color: #666;
+    font-weight: 500;
+    color: black;
 }
 
 
@@ -106,14 +106,15 @@
 
 .section-title h2 {
     font-size: 40px;
-    font-weight: 800;
+    font-weight: 600;
 
     margin-top: 8px;
 }
 
 
 .about-section p {
-    color: #666;
+    color: black;
+    font-weight: 475;
     line-height: 1.9;
     margin-bottom: 18px;
 }

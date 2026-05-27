@@ -165,9 +165,9 @@ function Productos() {
                                                         -{product.rebaja}%
                                                     </div>
                                                 )}
-                                                <img src={product.imagen} className="card-img-top p-2" />
+                                                <img src={product.imagen} className="card-img-top p-2 img-fluid" />
                                                 <div className="card-body">
-                                                    <h6 className="title-product">{product.nombre.length > 24 ? product.nombre.slice(0, 20) + ' ...' : product.nombre}</h6>
+                                                    <h6 className="title-product">{product.nombre.length > 15 ? product.nombre.slice(0, 15) + '...' : product.nombre}</h6>
                                                     <div className="rating">
                                                         {handleValorations(product.valoraciones)} {product.valoraciones}
                                                     </div>

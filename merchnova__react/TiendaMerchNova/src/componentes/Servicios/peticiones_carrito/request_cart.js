@@ -12,4 +12,3 @@ export const request_cart = {
     }
 }
 
-

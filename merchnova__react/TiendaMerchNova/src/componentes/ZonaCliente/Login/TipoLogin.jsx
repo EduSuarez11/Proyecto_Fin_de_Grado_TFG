@@ -22,14 +22,14 @@ function TipoLogin() {
                 try {
                     doubleRequest.current = true;
                     const responseDiscord = await request_discord.request_callback_discord(event.data.code);
-                    
+
                     const response = await request_discord.request_login_discord(responseDiscord.user);
 
                     if (response.code !== 0) throw new Error('Fallo en la peticion de discord');
 
                     sessionStorage.setItem("token", response.data.access_token);
                     setClientData(response.data.user);
-                    navigate('/', {state: {msg: 'Has iniciado sesión con Discord'}});
+                    navigate('/', { state: { msg: 'Has iniciado sesión con Discord' } });
                 } catch (error) {
                     console.log('Error al iniciar sesion en DC: ', error);
                     doubleRequest.current = false;
@@ -41,20 +41,38 @@ function TipoLogin() {
     }, [])
 
 
-    function getDataGoogle(ev) {
-        console.log('Datos de google: ', ev.data);
-        setClientData(ev.data?.dataUser?.client);
-        sessionStorage.setItem("token", ev.data.dataUser.accessToken);
-        window.removeEventListener('message', getDataGoogle);
-        navigate('/', {state: {msg: 'Has iniciado sesión con Google'}})
-    }
+    useEffect(() => {
+        const getDataGoogle = async (ev) => {
+            //console.log("Mensaje recibido: ", event.data);
+            if (ev.data.dataUser && !doubleRequest.current) {
+                try {
+                    doubleRequest.current = true;
+
+                    //console.log('Datos de google: ', ev.data.dataUser);
+                    //console.log('Datos de google2: ', ev.data);
+                    //sessionStorage.setItem("token", ev.data?.dataUser?.accessToken);
+                    window.removeEventListener('message', getDataGoogle);
+                    setClientData(ev.data?.dataUser?.clientData);
+                    sessionStorage.setItem('token', ev.data?.dataUser?.accessToken)
+                    navigate('/', { state: { msg: 'Has iniciado sesión con Google' } })
+                } catch (error) {
+                    console.log('Error al iniciar sesion en Google: ', error);
+                    doubleRequest.current = false;
+                }
+            }
+        };
+        window.addEventListener('message', getDataGoogle);
+        return () => window.removeEventListener('message', getDataGoogle);
+    }, [])
+
+
 
     async function handleLoginGoogle() {
         const response = await request_google.loginGoogle();
         //console.log('Respuesta url: ', response);
 
-        if (response.code !== 0 ) throw new Error('Fallo en la peticion de google');
-        window.addEventListener('message', getDataGoogle);
+        if (response.code !== 0) throw new Error('Fallo en la peticion de google');
+        //window.addEventListener('message', getDataGoogle);
         googlePopup = window.open(response.url, 'Google_popup', 'width=800px; height=700px');
     }
 

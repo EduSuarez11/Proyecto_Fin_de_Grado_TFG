@@ -9,7 +9,7 @@ function ProductosValorados({ products }) {
                 <div className="carousel-item active">
                     <div className="row g-4">
                         {products.data.slice(0, 4).map((product, index) =>
-                                <div className="col-md-3" key={index}>
+                                <div className="col-12 col-sm-6 col-md-6 col-lg-3 mb-4" key={index}>
                                     <div className="card product-card">
                                         <img src={product.imagen} alt={product.nombre} className="card-img-top p-3"/>
 
@@ -32,7 +32,7 @@ function ProductosValorados({ products }) {
                 <div className="carousel-item">
                     <div className="row g-4">
                         {products.data.slice(4, 8).map((product, index) =>
-                            <div className="col-md-3" key={index}>
+                            <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" key={index}>
                                 <div className="card product-card">
                                     <img src={product.imagen} alt={product.nombre} className="card-img-top p-2" />
 

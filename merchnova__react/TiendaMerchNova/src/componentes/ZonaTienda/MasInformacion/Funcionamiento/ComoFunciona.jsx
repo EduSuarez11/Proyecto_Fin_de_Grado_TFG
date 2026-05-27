@@ -5,7 +5,6 @@ function ComoFunciona() {
         <div className="container-fluid p-5">
 
             <div className="row">
-
                 {/* SIDEBAR */}
                 <div className="col-lg-3">
 
@@ -86,7 +85,7 @@ function ComoFunciona() {
                         {/* HERO */}
                         <section className="help-hero">
                             <span className="help-badge">💜 Centro de ayuda MerchNova</span>
-                            <h1>Aprende cómo funciona la tienda</h1>
+                            <h1 className='fw-bold text-funcion'>Aprende cómo funciona la tienda</h1>
 
                             <p>Aquí encontrarás toda la información necesaria para navegar por MerchNova,
                                 comprar productos y gestionar tu cuenta.

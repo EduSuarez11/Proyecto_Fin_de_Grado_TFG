@@ -84,21 +84,20 @@
     margin-bottom:20px;
 }
 
+.text-funcion {
+    color: #6a0dad;
+}
 
 .help-hero h1{
     font-size:52px;
-    font-weight:800;
-
     margin-bottom:20px;
-
-    color:#2d1b46;
 }
 
 
 .help-hero p{
     font-size:18px;
-
-    color:#666;
+    font-weight: 500;
+    color:black;
 
     line-height:1.8;
 }
@@ -114,19 +113,16 @@
 
 .help-section h2{
     font-size:34px;
-    font-weight:800;
-
+    font-weight:600;
     margin-bottom:24px;
-
-    color:#3b2160;
+    color:#4a0a79;
 }
 
 
 .help-section p{
-    color:#666;
-
+    color:black;
     line-height:1.9;
-
+    font-weight: 475;
     margin-bottom:18px;
 }
 

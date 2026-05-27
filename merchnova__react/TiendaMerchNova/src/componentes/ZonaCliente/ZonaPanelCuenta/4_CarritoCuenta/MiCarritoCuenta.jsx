@@ -22,7 +22,7 @@ function CarritoCuenta() {
     }
 
     return (
-        <div className="card p-4">
+        <div className="card p-4 mb-4">
             <h4 className="fw-bold mb-4">Tu carrito</h4>
             {
                 clientData.carrito.itemsPedido.length === 0 ? (

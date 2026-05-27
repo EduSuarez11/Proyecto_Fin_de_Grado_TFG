@@ -98,7 +98,7 @@ function Chat() {
 
                     {/* HEADER */}
                     <div className="sidebar-header">
-                        <h5>Chats activos</h5>
+                        <h5>Mis Chats</h5>
                         <span>{clientData?.chats?.length || 0} conversaciones</span>
                     </div>
 
@@ -140,7 +140,7 @@ function Chat() {
                                             <img src={chatSelected?.datosCliente?.imagenCuenta} alt={chatSelected?.datosCliente?.nombreCliente} className="main-chat-avatar" />
                                             <div className='d-flex flex-column justify-content-center'>
                                                 <h6>{chatSelected?.datosCliente?.nombreCliente}</h6>
-                                                <span>Cliente</span>
+                                                <span>Usuario</span>
                                             </div>
                                         </div>
                                     </div>
