@@ -5,11 +5,12 @@ El objetivo principal de esta memoria es explicar de forma detallada el proceso 
 
 A lo largo de los siguientes apartados se comentaran aspectos como las funcionalidades de la aplicación web, las tecnologías utilizadas, el diseño de la interfaz, la estructura de la base de datos, la implementación del backend y frontend, las pruebas realizadas y las posibles mejoras futuras del proyecto.
 
-- Apartado 1 — Introducción y justificación
-- Apartado 2 — Análisis y diseño del proyecto
-- Apartado 3 — Conclusiones
-- Apartado 4 — Bibliografía y fuentes de información
-- Apartado 5 — Anexos
+- [Apartado 1 — Introducción y justificación](#1-introducción-y-justificación)
+- [Apartado 2 — Análisis y diseño del proyecto](#2-análisis-y-diseño-del-proyecto)
+- [Apartado 3 — Conclusiones](#3-conclusiones)
+- [Apartado 4 — Bibliografía y fuentes de información](#4-bibliografía-y-fuentes-de-información)
+- [Apartado 5 — Anexos](#5-anexos)
+- [Apartado 6 - Nuevas implementaciones](#6-nuevas-implementaciones)
 
 |        <!-- -->         |                           <!-- -->                            |
 | :---------------------: | :-----------------------------------------------------------: |
@@ -808,3 +809,7 @@ npm install
 ```
 
 > También hacemos lo propio con el backend y lo arrancamos con el siguiente comando: `node .\server.js`.
+
+
+## 6 Nuevas implementaciones
+En este punto se irán añadiendo futuras funcionalidades propias después del 28 de mayo de 2026 (Fin del TFG).
