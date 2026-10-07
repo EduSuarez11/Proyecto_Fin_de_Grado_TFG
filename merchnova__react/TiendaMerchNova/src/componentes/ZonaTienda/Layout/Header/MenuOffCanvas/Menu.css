@@ -1,0 +1,82 @@
+/* OFFCANVAS */
+.menu-funcionalidades {
+    background-color: #ffffff;
+    color: #000000;
+    width: 320px !important;
+    border-left: 3px solid transparent;
+
+    border-image: linear-gradient(
+        135deg,
+        #7b2ff7,
+        #c778fb
+    ) 1;
+}
+
+
+/* CABECERA */
+
+.menu-funcionalidades-header {
+    border-bottom: 2px solid transparent;
+
+    border-image: linear-gradient(
+        135deg,
+        #7b2ff7,
+        #c778fb
+    ) 1;
+}
+
+.menu-funcionalidades-header h5 {
+    color: #000000;
+    font-weight: 600;
+}
+
+
+/* LISTA */
+
+.menu-funcionalidades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* ENLACES */
+
+.menu-funcionalidades-item {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+
+    color: #000000;
+    background-color: #ffffff;
+
+    border: 2px solid transparent;
+    border-radius: 8px;
+
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.menu-funcionalidades-item:hover {
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        #7b2ff7,
+        #c778fb
+    );
+
+    border-color: transparent;
+    transform: translateX(-3px);
+}
+
+
+/* BOTÓN CERRAR */
+
+.menu-funcionalidades .btn-close {
+    box-shadow: none;
+}
+
+.menu-funcionalidades .btn-close:focus {
+    box-shadow: none;
+}

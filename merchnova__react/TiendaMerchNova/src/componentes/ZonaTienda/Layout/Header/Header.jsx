@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
 import useGlobalState from '../../../../global_state/globalState';
 import Panel from '../../../ZonaCliente/ZonaPanelCuenta/Panel/Panel';
@@ -7,9 +7,11 @@ import { request_category } from '../../../Servicios/peticiones_productos/reques
 import { useMemo } from 'react';
 import { request_auth, request_get_token } from '../../../Servicios/peticiones_auth_frontend/request_auth';
 import socket_io__client_service from '../../../Servicios/socket_io_client/socket_io__client_service';
+import Menu from './MenuOffCanvas/Menu';
 
 function Header() {
     const route = useLocation();
+    const navigate = useNavigate();
     const { clientData, logOut, order, setClientData } = useGlobalState();
     const refPanel = useRef(null);
     const [newMessages, setNewMessages] = useState(false);
@@ -21,6 +23,9 @@ function Header() {
     });
     const [categories, setCategories] = useState([]);
     const doubleRequest = useRef(false);
+    const [inputHeader, setInputHeader] = useState('');
+    const [productsSearch, setProductsSearch] = useState([]);
+    const products = useLoaderData().data;
 
     const showButtonsSession = (routeComponent) => routeComponent !== '/Cliente/Registro' && routeComponent !== '/Cliente/Login';
 
@@ -106,6 +111,9 @@ function Header() {
         }, []
     )
 
+
+    //console.log('Productos header: ', products);
+
     //console.log('Cliente: ', clientData)
     /** #region ------------------- Datos cliente ---------------------------
      * Objeto clientData:
@@ -141,11 +149,32 @@ function Header() {
                     {showButtonsSession(route.pathname) ?
                         <div className="collapse navbar-collapse" id="navbarContent">
                             <form className="d-flex mx-auto search-bar">
-                                <input className="form-control me-2" type="search" placeholder="Buscar productos..." />
+                                <input className="form-control me-2" type="search" value={inputHeader} placeholder="Buscar productos..." onChange={(ev) => setInputHeader(ev.target.value)} />
                                 <button className="btn btn-light" type="submit">
                                     <i className="bi bi-search"></i>
                                 </button>
                             </form>
+
+                            {inputHeader !== '' && inputHeader.trim() !== '' &&
+                                <div className="search-results overflow-auto">
+                                    {/* Resultado */}
+                                    {products.filter(p => p.nombre.toLowerCase().includes(inputHeader)).map((prod, pos) =>
+                                        <div className="search-result-item" onClick={() => { navigate(`/Portal/Producto/${prod.categoria}/${prod.slug}`); setInputHeader('') }} key={pos}>
+                                            <div className="search-result-image">
+                                                <img src={prod.imagen} alt={prod.nombre} />
+                                            </div>
+
+                                            <div className="search-result-content">
+                                                <h6 className="search-result-title">{prod.nombre}</h6>
+                                                <p className="search-result-category">{prod.categoria}</p>
+
+                                                <span className="search-result-price">{prod.precio} €</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            }
+
 
                             {
                                 clientData === null ?
@@ -188,6 +217,8 @@ function Header() {
             {(route.pathname !== '/Cliente/Login' && route.pathname !== '/Cliente/Registro') &&
                 <nav className="subnav">
                     <div className="subnav-container">
+                        <Menu/>
+
                         <Link to='/Portal/Productos?page=1&categoria=todos'>
                             <div className="subnav-item has-dropdown" id='products' onMouseEnter={(ev) => handleShowPanel(ev)} onMouseLeave={(ev) => handleHiddenPanel(ev)}>Productos</div>
                         </Link>
@@ -236,6 +267,10 @@ function Header() {
                                 </div>
                             </div>
                         }
+
+                        <Link to='/Portal/Membresia'>
+                            <div className="subnav-item has-dropdown" id='membresia'>Membresía</div>
+                        </Link>
                     </div>
                 </nav>
             }

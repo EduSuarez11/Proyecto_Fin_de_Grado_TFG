@@ -141,8 +141,163 @@
 }
 
 .category:hover {
-    background:linear-gradient(to right,#6c18f3,#b155ed);
-	color: white;
+    background: linear-gradient(to right, #6c18f3, #b155ed);
+    color: white;
     transform: translateY(-2px);
 }
+
+
+.search-results {
+    position: absolute;
+    top: calc(90%);
+    left: 375px;
+    right: 0;
+    width: 50%;
+
+    max-height: 368px;
+
+    background-color: #ffffff;
+
+    border-radius: 10px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    z-index: 1000;
+}
+
+/* Cada resultado */
+.search-result-item {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 80px;
+
+    padding: 12px 15px;
+
+    background-color: #ffffff;
+
+    color: #000000;
+
+    border-bottom: 1px solid #eeeeee;
+
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+/* Quitar borde al último resultado */
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+/* Hover */
+.search-result-item:hover {
+    background-color: #f8f8f8;
+}
+
+/* Imagen */
+.search-result-image {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    margin-right: 15px;
+
+    border-radius: 8px;
+
+    background: linear-gradient(135deg,
+            #7b2ff7,
+            #c778fb);
+
+    padding: 2px;
+}
+
+/* Imagen real */
+.search-result-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 6px;
+
+    background-color: #ffffff;
+}
+
+/* Contenido */
+.search-result-content {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    min-width: 0;
+}
+
+/* Nombre */
+.search-result-title {
+    margin: 0;
+
+    color: #000000;
+
+    font-weight: 600;
+
+    font-size: 15px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Categoría */
+.search-result-category {
+    margin: 3px 0;
+
+    color: #000000;
+
+    font-size: 13px;
+}
+
+/* Precio */
+.search-result-price {
+    display: inline-block;
+
+    width: fit-content;
+
+    color: #000000;
+
+    font-weight: 600;
+
+    font-size: 14px;
+
+    padding-bottom: 2px;
+
+    border-bottom: 2px solid transparent;
+
+    border-image: linear-gradient(135deg,
+            #7b2ff7,
+            #c778fb) 1;
+}
+
+
+.menu-bdg {
+    position: absolute;
+    right: 110%;
+    bottom: 5%;
+    
+    color: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
 
