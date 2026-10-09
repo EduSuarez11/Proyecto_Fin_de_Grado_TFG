@@ -19,13 +19,11 @@ import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/
 import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos";
 import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
 import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
-import { stripePromise } from "./componentes/configurations/config";
 import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancelada/CompraCancelada";
 import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_productos/request_products";
 import request_external from "./componentes/Servicios/request_external_api";
 import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClientes/PanelCliente";
 import SobreNosotros from "./componentes/ZonaTienda/MasInformacion/SobreNosotros/SobreNosotros";
-import { request_get_token } from "./componentes/Servicios/peticiones_auth_frontend/request_auth";
 import { accountLogged, areaAdmin, securityApplication, securityChangePassword } from "./componentes/security/route_control";
 import ErrorToken from "./componentes/ZonaCliente/Login/Restablecer_Clave/TokenExpirado/ErrorToken";
 import Configuracion from "./componentes/ZonaTienda/Configuracion/Configuracion";
@@ -36,6 +34,14 @@ import EliminarCuenta from "./componentes/ZonaTienda/Configuracion/Eliminar_cuen
 import Chat from "./componentes/ZonaTienda/Chat/Chat";
 import DescripcionSoporte from "./componentes/ZonaTienda/Chat/DescripcionSoporte/DescripcionSoporte";
 import ComoFunciona from "./componentes/ZonaTienda/MasInformacion/Funcionamiento/ComoFunciona";
+import CanjePuntos from "./componentes/ZonaTienda/Ruleta/CanjePuntos/CanjePuntos";
+import Ruleta from "./componentes/ZonaTienda/Ruleta/ruleta";
+import Membresias from "./componentes/ZonaTienda/Membresias/Membresia";
+import BusquedaUsuario from "./componentes/ZonaTienda/Busqueda/BusquedaUsuario";
+import { request_clients } from "./componentes/Servicios/peticiones_auth_frontend/request_clients";
+import PerfilUsuario from "./componentes/ZonaCliente/PerfilUsuarioExterno/PerfilUsuario";
+
+
 
 
 const optionsPayPal = {
@@ -61,12 +67,18 @@ const getAllProducts = async () => {
    return response;
 }
 
+const getPriceProduct = async () => {
+   const response = await request_products.get_all_products();
+   const product = response.data.filter(prod => prod._id === "69cee2098fc9d70ce04f52af")[0]
+   return product;
+}
 
 
 const applicationRoutes = createBrowserRouter(
    [
       {
          element: <Layout />,
+         loader: getAllProducts,
          children: [
             {
                path: '/',
@@ -82,9 +94,9 @@ const applicationRoutes = createBrowserRouter(
                   { path: 'TipoLogin', element: <TipoLogin />, loader: accountLogged },
                   {
                      path: 'Cuenta', element: <Cuenta />, loader: securityApplication, children: [
-                        { path: 'Perfil', element: <PerfilCuenta />, loader: request_external.request_get_countries },
+                        { path: 'Perfil', element: <PerfilCuenta /> },
                         { path: 'Pedidos', element: <Pedidos /> },
-                        { path: 'MisDirecciones', element: <MisDirecciones />, loader: request_external.request_get_countries },
+                        { path: 'MisDirecciones', element: <MisDirecciones /> },
                         { path: 'MiCarrito', element: <CarritoCuenta /> },
                         { path: 'PanelClientes', element: <PanelClientes />, loader: areaAdmin },
                      ]
@@ -99,7 +111,12 @@ const applicationRoutes = createBrowserRouter(
                   },
                   { path: 'MiCarrito', element: <CarritoCuenta />, loader: getAllProducts },
                   { path: 'CambiarClave/:clientId/:token', element: <RestablecerClave />, loader: securityChangePassword },
-                  { path: 'ErrorCambioClave', element: <ErrorToken /> }
+                  { path: 'ErrorCambioClave', element: <ErrorToken /> },
+                  {
+                     path: 'Perfil', children: [
+                        { path: 'Usuario/:idUser', element: <PerfilUsuario /> }
+                     ]
+                  }
                ]
             },
 
@@ -120,7 +137,6 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
 
-
                   {
                      path: 'Soporte', children: [
                         { path: 'Ayuda', element: <DescripcionSoporte /> },
@@ -128,11 +144,37 @@ const applicationRoutes = createBrowserRouter(
                      ]
                   },
 
+                  {
+                     path: 'Ruleta',
+                     element: <Ruleta />,
+                     loader: async () => {
+                        const [product, securityResult] = await Promise.all([
+                           getPriceProduct(),
+                           securityApplication()
+                        ]);
+
+                        return securityResult instanceof Response ? securityResult : product;
+                     }
+                  },
+                  {
+                     path: 'ZonaPremios', children: [
+                        { path: 'CanjearPuntos', element: <CanjePuntos />, loader: request_products.get_products_redeemables }
+                     ]
+                  },
+
+                  {
+                     path: 'Buscar', children: [
+                        { path: 'Usuarios', element: <BusquedaUsuario />, loader: request_clients.get_clients }
+                     ]
+                  },
+
+                  { path: 'Membresia', element: <Membresias />, loader: request_external.get_memberships },
+
                   { path: 'Productos', element: <Productos /> },
 
                   { path: 'Producto/:categoria/:slug', element: <InfoProducto />, loader: getChosenProduct },
 
-                  { path: 'Cart', element: <Carrito />, loader: getAllProducts },
+                  { path: 'Cart', element: <Carrito />, loader: getAllProducts }
                ]
             },
 
