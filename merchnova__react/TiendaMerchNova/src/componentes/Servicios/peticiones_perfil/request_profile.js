@@ -1,21 +1,11 @@
 export const request_profile = {
-    add_new_direction: async ({ clientData, data }) => {
-        const request = await fetch(`http://localhost:3000/api/profile/NewDirection`, {
+    update_direction: async ({ clientId, data }, action) => {
+        const request = await fetch(`http://localhost:3000/api/profile/${action}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientData, data })
+            body: JSON.stringify({ clientId, data })
         });
 
-        const response = await request.json();
-        return response;
-    },
-
-    remove_direction: async (clientData, direccion) => {
-        const request = await fetch(`http://localhost:3000/api/profile/Remove-Direction`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientData, direccion })
-        });
         const response = await request.json();
         return response;
     },
