@@ -26,21 +26,21 @@ manage_profile_data.post('/Perfil-Update', async (req, res, next) => {
                         password: clientData.cuenta.password,
                         genero: data?.genero ? data?.genero : clientData?.cuenta?.genero || '',
                         cuentaActiva: clientData.cuenta.cuentaActiva,
-                        imagenCuenta: data?.imagenCuenta  ? data?.imagenCuenta : clientData?.cuenta?.imagenCuenta || '',
+                        imagenCuenta: data?.imagenCuenta ? data?.imagenCuenta : clientData?.cuenta?.imagenCuenta || '',
                         creacionCuenta: clientData.cuenta.creacionCuenta,
-                        telefono: data?.telefono  ? data?.telefono : clientData?.cuenta?.telefono || '',
-                        sobreMi: data?.sobreMi  ? data?.sobreMi : clientData?.cuenta?.sobreMi || '',
+                        telefono: data?.telefono ? data?.telefono : clientData?.cuenta?.telefono || '',
+                        sobreMi: data?.sobreMi ? data?.sobreMi : clientData?.cuenta?.sobreMi || '',
                         tipo: clientData.cuenta.tipo,
                         rol: clientData.cuenta.rol,
                         visibilidad: clientData.cuenta.visibilidad,
                         notificaciones: clientData.cuenta.notificaciones
                     },
                     // En este caso, en el perfil se mostrará y editará la primera dirección
-                    'direcciones.0.codigoPostal': data?.codigoPostal  ? data?.codigoPostal : clientData?.direcciones[0]?.codigoPostal || '',
-                    'direcciones.0.domicilio': data?.domicilio  ? data?.domicilio : clientData?.direcciones[0]?.domicilio || '',
-                    'direcciones.0.municipio': data?.municipio  ? data?.municipio : clientData?.direcciones[0]?.municipio || '',
-                    'direcciones.0.pais': data?.pais  ? data?.pais : clientData?.direcciones[0]?.pais || '',
-                    'direcciones.0.provincia': data?.provincia  ? data?.provincia : clientData?.direcciones[0]?.provincia || ''
+                    'direcciones.0.codigoPostal': data?.codigoPostal ? data?.codigoPostal : clientData?.direcciones[0]?.codigoPostal || '',
+                    'direcciones.0.domicilio': data?.domicilio ? data?.domicilio : clientData?.direcciones[0]?.domicilio || '',
+                    'direcciones.0.municipio': data?.municipio ? data?.municipio : clientData?.direcciones[0]?.municipio || '',
+                    'direcciones.0.pais': data?.pais ? data?.pais : clientData?.direcciones[0]?.pais || '',
+                    'direcciones.0.provincia': data?.provincia ? data?.provincia : clientData?.direcciones[0]?.provincia || ''
                 }
             },
             { returnDocument: "after" }
@@ -125,54 +125,50 @@ manage_profile_data.post('/ResetPassword', async (req, res, next) => {
     }
 });
 
-manage_profile_data.post('/NewDirection', async (req, res, next) => {
+manage_profile_data.post('/:dir_action', async (req, res, next) => {
     try {
-        const { clientData, data } = req.body;
-        // console.log('Direccion nueva a agregar: ', data);
-        // console.log('Cliente a actualizar: ', clientData);
+        const { clientId, data } = req.body;
+        const { dir_action } = req.params;
+        let updateData;
+        console.log('Direccion datos: ', data);
 
-        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(clientData._id) },
-            { $push: { direcciones: data } },
-            { returnDocument: "after" }
-        );
+        switch (dir_action) {
+            case "NewDirection":
+                updateData = await mongoose.connection.collection('clientes').updateOne(
+                    { _id: new mongoose.Types.ObjectId(clientId) },
+                    { $push: { direcciones: data } }
+                );
 
-        if (updateData.modifiedCount === 0) throw new Error('No se pudo añadir la nueva dirección.');
+                if (updateData.modifiedCount !== 1) throw new Error("No se pudo añadir la nueva dirección.");
 
-        res.status(200).send({ code: 0, message: 'Nueva dirección añadida con éxito', dataUpdate: updateData });
+                res.status(200).send({ code: 0, message: 'Nueva dirección añadida con éxito', data });
+                break;
+
+            case "RemoveDirection":
+                updateData = await mongoose.connection.collection('clientes').updateOne(
+                    { _id: new mongoose.Types.ObjectId(clientId) },
+                    {
+                        $pull: {
+                            direcciones: {
+                                domicilio: data.domicilio,                                
+                                codigoPostal: data.codigoPostal,
+                            }
+                        }
+                    }
+                );
+
+                if (updateData.modifiedCount === 0) throw new Error('No se pudo eliminar la dirección.');
+
+                res.status(200).send({ code: 0, message: 'Dirección eliminada con éxito', data: data.domicilio });
+                break;
+            default:
+                break;
+        }
     } catch (error) {
+        console.log('Error en la dirección: ', error);
         res.status(200).send({ code: 11, message: `${error.message}` });
     }
 });
-
-manage_profile_data.post('/Remove-Direction', async (req, res, next) => {
-    try {
-        const { clientData, direccion } = req.body;
-        console.log(req.body)
-        const updateData = await mongoose.connection.collection('clientes').findOneAndUpdate(
-            { 'cuenta.email': clientData.cuenta.email, _id: new mongoose.Types.ObjectId(clientData._id) },
-            {
-                $pull: {
-                    direcciones: {
-                        domicilio: direccion.domicilio,
-                        provincia: direccion.provincia,
-                        municipio: direccion.municipio,
-                        codigoPostal: direccion.codigoPostal,
-                        pais: direccion.pais
-                    }
-                }
-            },
-            { returnDocument: "after" }
-        );
-        if (updateData.modifiedCount === 0) throw new Error('No se pudo eliminar la dirección.');
-        res.status(200).send({ code: 0, message: 'Dirección eliminada con éxito', dataUpdate: updateData });
-    } catch (error) {
-        console.log('Error al eliminar dirección: ', error);
-        res.status(200).send({ code: 14, message: `${error.message}` });
-    }
-
-
-})
 
 manage_profile_data.post('/ChangeVisibility', async (req, res, next) => {
     try {
