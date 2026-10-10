@@ -14,13 +14,12 @@ import TipoLogin from "./componentes/ZonaCliente/Login/TipoLogin";
 import LoginCallback from "./componentes/ZonaCliente/Login/Proceso_Login/DiscordCallback";
 import FinPedido from "./componentes/ZonaTienda/FinalPedido/Fin_Pedido";
 import Cuenta from "./componentes/ZonaCliente/ZonaPanelCuenta/Cuenta";
-import Direcciones from "./componentes/ZonaTienda/FinalPedido/Datos_direcciones/Direcciones_1";
 import CompraFinalizada from "./componentes/ZonaTienda/FinalPedido/Compra_exito/CompraFinalizada";
 import Pedidos from "./componentes/ZonaCliente/ZonaPanelCuenta/2_Pedidos/Pedidos";
 import MisDirecciones from "./componentes/ZonaCliente/ZonaPanelCuenta/3_Direcciones/Direcciones";
 import RestablecerClave from "./componentes/ZonaCliente/Login/Restablecer_Clave/RestablecerClave";
 import CompraCancelada from "./componentes/ZonaTienda/FinalPedido/Compra_cancelada/CompraCancelada";
-import { request_filter_products, request_products } from "./componentes/Servicios/peticiones_productos/request_products";
+import { request_products } from "./componentes/Servicios/peticiones_productos/request_products";
 import request_external from "./componentes/Servicios/request_external_api";
 import PanelClientes from "./componentes/ZonaCliente/ZonaPanelCuenta/5_PanelClientes/PanelCliente";
 import SobreNosotros from "./componentes/ZonaTienda/MasInformacion/SobreNosotros/SobreNosotros";
@@ -51,28 +50,9 @@ const optionsPayPal = {
 }
 
 
-const requestHome = async () => {
-   const response = await request_products.get_home_products();
-   return response;
-}
+const getChosenProduct = ({ params }) => request_products.get_products(`/api/products/Chosen/${encodeURIComponent(params.categoria)}/${encodeURIComponent(params.slug)}`);
 
-const getChosenProduct = async ({ params }) => {
-   console.log(params)
-   const response = await request_filter_products.get_chosen_product({ params });
-   return response;
-}
-
-const getAllProducts = async () => {
-   const response = await request_products.get_all_products();
-   return response;
-}
-
-const getPriceProduct = async () => {
-   const response = await request_products.get_all_products();
-   const product = response.data.filter(prod => prod._id === "69cee2098fc9d70ce04f52af")[0]
-   return product;
-}
-
+const getAllProducts = () => request_products.get_products('/api/products/Productos');
 
 const applicationRoutes = createBrowserRouter(
    [
@@ -83,7 +63,7 @@ const applicationRoutes = createBrowserRouter(
             {
                path: '/',
                element: <Home />,
-               loader: requestHome
+               loader: () => request_products.get_products('/api/products/Productos/Home')
             },
 
             {
@@ -147,18 +127,11 @@ const applicationRoutes = createBrowserRouter(
                   {
                      path: 'Ruleta',
                      element: <Ruleta />,
-                     loader: async () => {
-                        const [product, securityResult] = await Promise.all([
-                           getPriceProduct(),
-                           securityApplication()
-                        ]);
-
-                        return securityResult instanceof Response ? securityResult : product;
-                     }
+                     loader: securityApplication
                   },
                   {
                      path: 'ZonaPremios', children: [
-                        { path: 'CanjearPuntos', element: <CanjePuntos />, loader: request_products.get_products_redeemables }
+                        { path: 'CanjearPuntos', element: <CanjePuntos />, loader: () => request_products.get_products('/api/products/Canjeables') }
                      ]
                   },
 
