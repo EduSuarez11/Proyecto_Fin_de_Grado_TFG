@@ -1,0 +1,387 @@
+/* ============================================================
+   MODAL
+============================================================ */
+
+.confirmar-canje-modal {
+    width: 100%;
+
+    background-color: #ffffff;
+
+    color: #000000;
+
+    border: 2px solid transparent;
+    border-radius: 16px;
+
+    background-image:
+        linear-gradient(#ffffff, #ffffff),
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        );
+
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.confirmar-canje-header {
+    padding: 16px 20px;
+
+    background-color: #ffffff;
+
+    border-bottom: 2px solid transparent;
+
+    border-image:
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        ) 1;
+}
+
+.confirmar-canje-header .modal-title {
+    margin: 0;
+
+    color: #000000;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   BODY
+============================================================ */
+
+.confirmar-canje-body {
+    padding: 22px;
+
+    background-color: #ffffff;
+}
+
+.confirmar-canje-description {
+    margin: 0 0 18px;
+
+    color: #000000;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   PRODUCTO
+============================================================ */
+
+.confirmar-canje-producto {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 14px;
+
+    background-color: #ffffff;
+
+    border: 2px solid transparent;
+    border-radius: 12px;
+
+    background-image:
+        linear-gradient(#ffffff, #ffffff),
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        );
+
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+
+/* Imagen */
+
+.confirmar-canje-imagen {
+    width: 80px;
+    height: 80px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 3px;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        );
+}
+
+.confirmar-canje-imagen img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    border-radius: 7px;
+
+    background-color: #ffffff;
+}
+
+
+/* Información */
+
+.confirmar-canje-info {
+    min-width: 0;
+}
+
+.confirmar-canje-nombre {
+    margin: 0 0 8px;
+
+    color: #000000;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.confirmar-canje-coste {
+    display: flex;
+    align-items: baseline;
+
+    gap: 5px;
+}
+
+.confirmar-canje-puntos {
+    color: #000000;
+
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.confirmar-canje-puntos-label {
+    color: #000000;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   RESUMEN
+============================================================ */
+
+.confirmar-canje-resumen {
+    margin-top: 18px;
+
+    padding: 15px;
+
+    background-color: #ffffff;
+
+    border-radius: 10px;
+
+    border: 1px solid #e6e6e6;
+}
+
+.confirmar-canje-resumen-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 5px 0;
+
+    color: #000000;
+
+    font-size: 13px;
+}
+
+.confirmar-canje-resumen-item strong {
+    color: #000000;
+
+    font-weight: 700;
+}
+
+.confirmar-canje-resumen-separador {
+    width: 100%;
+    height: 2px;
+
+    margin: 8px 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        );
+}
+
+.confirmar-canje-restantes span {
+    font-weight: 700;
+}
+
+.confirmar-canje-restantes strong {
+    font-size: 16px;
+}
+
+
+/* ============================================================
+   AVISO
+============================================================ */
+
+.confirmar-canje-aviso {
+    margin: 16px 0 0;
+
+    color: #000000;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.confirmar-canje-footer {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 14px 20px;
+
+    background-color: #ffffff;
+
+    border-top: 2px solid transparent;
+
+    border-image:
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        ) 1;
+}
+
+
+/* ============================================================
+   BOTÓN CANCELAR
+============================================================ */
+
+.confirmar-canje-cancelar {
+    padding: 8px 16px;
+
+    border: 2px solid #7b2ff7;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    color: #000000;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.confirmar-canje-cancelar:hover {
+    background-color: #ffffff;
+
+    color: #000000;
+
+    border-color: #7b2ff7;
+}
+
+
+/* ============================================================
+   BOTÓN CONFIRMAR
+============================================================ */
+
+.confirmar-canje-confirmar {
+    padding: 8px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7b2ff7,
+            #c778fb
+        );
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.confirmar-canje-confirmar:hover {
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 13px rgba(123, 47, 247, 0.25);
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 576px) {
+
+    .confirmar-canje-body {
+        padding: 18px;
+    }
+
+    .confirmar-canje-producto {
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .confirmar-canje-imagen {
+        width: 65px;
+        height: 65px;
+    }
+
+    .confirmar-canje-nombre {
+        font-size: 15px;
+    }
+
+    .confirmar-canje-puntos {
+        font-size: 20px;
+    }
+
+    .confirmar-canje-footer {
+        flex-direction: column;
+    }
+
+    .confirmar-canje-cancelar,
+    .confirmar-canje-confirmar {
+        width: 100%;
+    }
+}
