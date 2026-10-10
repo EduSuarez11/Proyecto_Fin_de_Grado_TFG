@@ -1,7 +1,7 @@
 import { data, Link, useLoaderData, useSearchParams } from 'react-router-dom';
 import './Productos.css';
-import { useEffect, useRef, useState } from 'react';
-import { request_filter_products } from '../../Servicios/peticiones_productos/request_products';
+import { useEffect, useState } from 'react';
+import { request_products } from '../../Servicios/peticiones_productos/request_products';
 
 
 function Productos() {
@@ -29,7 +29,9 @@ function Productos() {
     useEffect(
         () => {
             const getProductsByPage = async () => {
-                const response = await request_filter_products.get_products_filter(categories, page, minPrice, maxPrice, valoration);
+                const response = await request_products.get_products(
+                    `/api/products/FiltrarProductos?page=${page}&categoria=${categories}&minPrice=${minPrice}&maxPrice=${maxPrice}&valoracion=${valoration}`
+                );
                 console.log('Respuesta de la peticion: ', response)
                 setDataProducts({
                     ...dataProducts,

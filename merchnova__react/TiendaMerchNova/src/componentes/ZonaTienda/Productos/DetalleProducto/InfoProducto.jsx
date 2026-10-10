@@ -4,6 +4,7 @@ import useGlobalState from '../../../../global_state/globalState';
 import { startTransition, useEffect, useState } from 'react';
 import MensajeSuccess from '../../../global_components/MensajeComponent/MensajeSuccess';
 import { request_cart } from '../../../Servicios/peticiones_carrito/request_cart';
+import { request_products } from '../../../Servicios/peticiones_productos/request_products';
 
 function InfoProducto() {
 
@@ -20,9 +21,9 @@ function InfoProducto() {
     useEffect(
         () => {
             async function randomProducts() {
-                const requestProducts = await fetch(`http://localhost:3000/api/products/Chosen/${resp.product.categoria}/${resp.product.slug}`)
-                const response = await requestProducts.json();
-
+                const response = await request_products.get_products(`/api/products/Chosen/${encodeURIComponent(resp.product.categoria)}/${encodeURIComponent(resp.product.slug)}`);
+                
+                // Productos aleatorios
                 setMoreProducts(response.moreProducts);
             }
             randomProducts();
@@ -167,7 +168,6 @@ function InfoProducto() {
                         <Link to='/Portal/Pedido/DetallesEncargo'>
                             <button className="btn-buy" disabled={resp.product.stock === 0} onClick={handleAddToCart}>Comprar ahora</button>
                         </Link>
-
                     </div>
                 </div>
             </div>
